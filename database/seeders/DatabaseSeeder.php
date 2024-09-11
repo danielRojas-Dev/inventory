@@ -40,18 +40,18 @@ class DatabaseSeeder extends Seeder
         // AdvanceSalary::factory(25)->create();
 
         Customer::factory(25)->create();
-        Supplier::factory(10)->create();
+        // Supplier::factory(10)->create();
 
-        for ($i=0; $i < 10; $i++) {
-            Product::factory()->create([
-                'product_code' => IdGenerator::generate([
-                    'table' => 'products',
-                    'field' => 'product_code',
-                    'length' => 4,
-                    'prefix' => 'PC'
-                ])
-            ]);
-        }
+        // for ($i=0; $i < 10; $i++) {
+        //     Product::factory()->create([
+        //         'product_code' => IdGenerator::generate([
+        //             'table' => 'products',
+        //             'field' => 'product_code',
+        //             'length' => 4,
+        //             'prefix' => 'PC'
+        //         ])
+        //     ]);
+        // }
         Category::factory(5)->create();
 
         Permission::create(['name' => 'pos.menu', 'group_name' => 'pos']);

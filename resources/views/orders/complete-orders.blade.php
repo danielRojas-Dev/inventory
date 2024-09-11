@@ -48,10 +48,10 @@
                                         placeholder="Buscar pedido" value="{{ request('search') }}">
                                     <div class="input-group-append">
                                         <button type="submit" class="input-group-text bg-primary">
-                                            <i class="fa-solid fa-magnifying-glass font-size-20"></i>
+                                            <i class="fas fa-search font-size-20"></i>
                                         </button>
                                         <a href="{{ route('order.completeOrders') }}" class="input-group-text bg-danger">
-                                            <i class="fa-solid fa-trash"></i>
+                                            <i class="fas fa-trash"></i>
                                         </a>
                                     </div>
                                 </div>

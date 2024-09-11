@@ -20,7 +20,7 @@
                         <a href="{{ route('users.create') }}" class="btn btn-primary add-list"><i
                                 class="fa-solid fa-plus mr-3"></i>Crear Usuario</a>
                         <a href="{{ route('users.index') }}" class="btn btn-danger add-list"><i
-                                class="fa-solid fa-trash mr-3"></i>Limpiar Busqueda</a>
+                                class="fas fa-trash mr-3"></i>Limpiar Busqueda</a>
                     </div>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                                         placeholder="Search user" value="{{ request('search') }}">
                                     <div class="input-group-append">
                                         <button type="submit" class="input-group-text bg-primary"><i
-                                                class="fa-solid fa-magnifying-glass font-size-20"></i></button>
+                                                class="fas fa-search font-size-20"></i></button>
                                     </div>
                                 </div>
                             </div>

@@ -1,5 +1,30 @@
 @extends('dashboard.body.main')
 
+<style>
+    .price-button {
+        background-color: rgba(194, 218, 242, 0.7);
+        border: 1px solid #e9ecef;
+        padding: 5px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .price-button.selected {
+        background-color: #b3d4fc;
+        border-color: #a5c0e0;
+    }
+
+    .price-button strong {
+        display: block;
+        margin-bottom: 2px;
+    }
+</style>
+
 @section('container')
     <div class="container-fluid">
 
@@ -27,7 +52,7 @@
             </div>
 
 
-            <div class="col-lg-5 col-md-12 mb-3">
+            <div class="col-lg-6 col-md-12 mb-3">
                 <table class="table">
                     <thead>
                         <tr class="ligth">
@@ -42,7 +67,7 @@
                         @foreach ($productItem as $item)
                             <tr>
                                 <td>{{ $item->name }}</td>
-                                <td style="max-width: 140px;">
+                                <td style="min-width: 150px;">
                                     <form action="{{ route('pos.updateCart', $item->rowId) }}" method="POST">
                                         @csrf
                                         <div class="input-group">
@@ -61,7 +86,7 @@
                                 <td>
                                     <a href="{{ route('pos.deleteCart', $item->rowId) }}" class="btn btn-danger border-none"
                                         data-toggle="tooltip" data-placement="top" title=""
-                                        data-original-title="Eliminar"><i class="fa-solid fa-trash mr-0"></i></a>
+                                        data-original-title="Eliminar"><i class="fas fa-trash mr-0"></i></a>
                                 </td>
                             </tr>
                         @endforeach
@@ -118,7 +143,7 @@
 
             </div>
 
-            <div class="col-lg-7 col-md-12">
+            <div class="col-lg-6 col-md-12">
                 <div class="card card-block card-stretch card-height">
                     <div class="card-body">
                         <form action="#" method="get">
@@ -146,10 +171,10 @@
                                             placeholder="Buscar producto" value="{{ request('search') }}">
                                         <div class="input-group-append">
                                             <button type="submit" class="input-group-text bg-primary">
-                                                <i class="fa-solid fa-magnifying-glass font-size-20"></i>
+                                                <i class="fas fa-search font-size-20"></i>
                                             </button>
                                             <a href="{{ route('products.index') }}" class="input-group-text bg-danger">
-                                                <i class="fa-solid fa-trash"></i>
+                                                <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -160,35 +185,47 @@
 
 
                         <div class="table-responsive rounded mb-3 border-none">
-                            <table class="table mb-0">
+                            <table class="table mb-0" style="border-spacing: 0;">
                                 <thead class="bg-white text-uppercase">
                                     <tr class="ligth ligth-data">
                                         <th>Foto</th>
                                         <th>@sortablelink('product_name', 'Nombre')</th>
-                                        <th>@sortablelink('bulk_price', 'Precio por Mayor')</th>
-                                        <th>@sortablelink('price_for_curves', 'Precio por Curva')</th>
+                                        <th>Precios</th> <!-- Solo una columna de precios -->
                                         <th>@sortablelink('product_store', 'Stock')</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody class="ligth-body">
                                     @forelse ($products as $product)
-                                        <tr>
-                                            <td>
+                                        <tr style="border-bottom: 1px solid #e9ecef; padding: 0 !important;">
+                                            <td style="max-width: 60px; padding: 8px !important;">
                                                 <img class="avatar-60 rounded"
                                                     src="{{ $product->product_image ? asset('storage/products/' . $product->product_image) : asset('assets/images/product/default.webp') }}">
                                             </td>
-                                            <td>{{ $product->product_name }}</td>
-                                            <td>$
-                                                {{ number_format($product->bulk_price, 2, ',', '.') }}</td>
-                                            <td>$
-                                                {{ number_format($product->price_for_curves, 2, ',', '.') }}</td>
-                                            <td>
-                                                <span id="stock-{{ $product->id }}"
-                                                    class="btn btn-warning text-white mr-2">{{ $product->product_store }}</span>
+                                            <td style="padding: 8px !important;">{{ $product->product_name }}</td>
+                                            <td style="padding: 8px !important;">
+                                                <!-- Columna de precios -->
+                                                <div class="price-row" style="display: flex; flex-direction: column;">
+                                                    <button type="button" class="price-button"
+                                                        data-price="{{ $product->bulk_price }}" data-price-type="bulk">
+                                                        <strong>Mayor:</strong>
+                                                        ${{ number_format($product->bulk_price, 2, ',', '.') }}
+                                                    </button>
+                                                    <button type="button" class="price-button"
+                                                        data-price="{{ $product->price_for_curves }}"
+                                                        data-price-type="curva">
+                                                        <strong>Curva:</strong>
+                                                        ${{ number_format($product->price_for_curves, 2, ',', '.') }}
+                                                    </button>
+                                                </div>
                                             </td>
 
-                                            <td>
+                                            <td style="padding: 8px !important; text-align: center;">
+                                                <span id="stock-{{ $product->id }}"
+                                                    class="btn btn-warning text-white">{{ $product->product_store }}</span>
+                                            </td>
+
+                                            <td style="padding: 8px !important;">
                                                 <form action="{{ route('pos.addCart') }}" method="POST"
                                                     class="add-to-cart-form" data-product-id="{{ $product->id }}"
                                                     style="margin-bottom: 5px">
@@ -196,45 +233,46 @@
                                                     <input type="hidden" name="id" value="{{ $product->id }}">
                                                     <input type="hidden" name="name"
                                                         value="{{ $product->product_name }}">
+                                                    <input type="hidden" name="price" value="">
+                                                    <input type="hidden" name="price_type" value="">
 
-                                                    <!-- Selector para el precio -->
-                                                    <div class="product-options"
-                                                        style="display: flex;align-items: center;gap: 10px;">
-                                                        <select name="price" class="form-control mb-2" required>
-                                                            <option value="{{ $product->bulk_price }}">Mayor</option>
-                                                            <option value="{{ $product->price_for_curves }}">Curva
-                                                            </option>
-                                                        </select>
-
+                                                    <div class="product-options">
                                                         @if ($product->product_store == 0)
                                                             <button type="submit" disabled
-                                                                class="btn btn-primary border-none" data-toggle="tooltip"
-                                                                data-placement="top" title="Agregar">
+                                                                class="btn btn-primary form-control border-none"
+                                                                data-toggle="tooltip" data-placement="top"
+                                                                title="Agregar">
                                                                 <i class="far fa-plus mr-0"></i>
                                                             </button>
                                                         @else
-                                                            <button type="submit"
-                                                                class="btn btn-primary border-none add-to-cart-btn"
+                                                            <button type="submit" class="btn btn-primary"
                                                                 data-product-stock="{{ $product->product_store }}">
-                                                                <i class="far fa-plus mr-0"></i>
+                                                                <i class="fas fa-plus mr-0"></i>
                                                             </button>
                                                         @endif
                                                     </div>
                                                 </form>
+
                                             </td>
                                         </tr>
                                     @empty
-                                        <div class="alert text-white bg-danger" role="alert">
-                                            <div class="iq-alert-text">Datos no encontrados.</div>
-                                            <button type="button" class="close" data-dismiss="alert"
-                                                aria-label="Cerrar">
-                                                <i class="ri-close-line"></i>
-                                            </button>
-                                        </div>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="alert text-white bg-danger" role="alert">
+                                                    <div class="iq-alert-text">Datos no encontrados.</div>
+                                                    <button type="button" class="close" data-dismiss="alert"
+                                                        aria-label="Cerrar">
+                                                        <i class="ri-close-line"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
+
+
 
 
                         {{ $products->links() }}
@@ -244,3 +282,29 @@
         </div>
     </div>
 @endsection
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.price-button');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Desmarcar todos los botones
+                buttons.forEach(btn => btn.classList.remove('selected'));
+
+                // Marcar el botón seleccionado
+                this.classList.add('selected');
+
+                // Obtener el precio seleccionado
+                const price = this.getAttribute('data-price');
+                const priceType = this.getAttribute('data-price-type');
+
+                // Opcional: Guardar el precio seleccionado en el formulario
+                const form = this.closest('tr').querySelector('form');
+                if (form) {
+                    form.querySelector('input[name="price"]').value = price;
+                    form.querySelector('input[name="price_type"]').value = priceType;
+                }
+            });
+        });
+    });
+</script>

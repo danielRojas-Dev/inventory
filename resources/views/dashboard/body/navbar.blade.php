@@ -4,8 +4,8 @@
             <div class="iq-navbar-logo d-flex align-items-center justify-content-between">
                 <i class="ri-menu-line wrapper-menu"></i>
                 <a href="{{ route('dashboard') }}" class="header-logo">
-                    <img src="../assets/images/logo.png" class="img-fluid rounded-normal" alt="logo">
-                    <h5 class="logo-title ml-3">Mayorista Mia</h5>
+                    {{-- <img src="../assets/images/login/MIA.png" alt="logo"> --}}
+                    <h5 class="logo-title ml-3" style="color: #f8b6c4">MAYORISTA MIA</h5>
                 </a>
             </div>
             <div class="iq-search-bar device-search">
