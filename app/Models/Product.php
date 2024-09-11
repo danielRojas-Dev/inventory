@@ -21,12 +21,14 @@ class Product extends Model
         'buying_date',
         'expire_date',
         'buying_price',
-        'selling_price',
+        'bulk_price',
+        'price_for_curves',
     ];
 
     public $sortable = [
         'product_name',
-        'selling_price',
+        'bulk_price',
+        'price_for_curves',
     ];
 
     protected $guarded = [

@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/backend-plugin.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/fonts/remixicon.css') }}">
 </head>
+
 <body>
     <div class="wrapper">
         <div class="container">
@@ -16,12 +18,14 @@
                 <div class="col-sm-12 text-center align-self-center">
                     <div class="iq-error position-relative">
                         <h2 class="mb-0 mt-4">404</h2>
-                        <p>Oops! This Page is Not Found.</p>
-                        <a class="btn btn-primary d-inline-flex align-items-center mt-3" href="{{ route('dashboard') }}"><i class="ri-home-4-line"></i>Back to Home</a>
+                        <p>¡Uy! Esta página no se encuentra.</p>
+                        <a class="btn btn-primary d-inline-flex align-items-center mt-3"
+                            href="{{ route('dashboard') }}"><i class="ri-home-4-line"></i>Volver al inicio</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>

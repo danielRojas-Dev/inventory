@@ -28,9 +28,7 @@ use App\Http\Controllers\Dashboard\UserController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+route::get('/', function () {    return redirect()->route('login');});
 
 
 // DEFAULT DASHBOARD & PROFILE

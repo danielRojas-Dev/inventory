@@ -49,4 +49,4 @@
         localStorage.setItem('dark', dark)
     }
     
-})(jQuery)*/
+})(jQuery)

@@ -7,63 +7,66 @@
 @endsection
 
 @section('container')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-12">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
 
-            @if (session()->has('success'))
-                <div class="alert text-white bg-success" role="alert">
-                    <div class="iq-alert-text">{{ session('success') }}</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <i class="ri-close-line"></i>
-                    </button>
-                </div>
-            @endif
-            @if (session()->has('warning'))
-                <div class="alert text-white bg-warning" role="alert">
-                    <div class="iq-alert-text">{{ session('warning') }}</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <i class="ri-close-line"></i>
-                    </button>
-                </div>
-            @endif
+                @if (session()->has('success'))
+                    <div class="alert text-white bg-success" role="alert">
+                        <div class="iq-alert-text">{{ session('success') }}</div>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                @endif
+                @if (session()->has('warning'))
+                    <div class="alert text-white bg-warning" role="alert">
+                        <div class="iq-alert-text">{{ session('warning') }}</div>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                @endif
 
-            <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <div class="header-title">
-                        <h4 class="card-title">History Pay Salary</h4>
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Historial de Pago de Salario</h4>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- begin: Input Data -->
+                        <div class="row align-items-center">
+                            <div class="form-group col-md-6">
+                                <label>Nombre del Empleado</label>
+                                <input class="form-control bg-white" value="{{ $paySalary->employee->name }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Fecha</label>
+                                <input class="form-control bg-white" value="{{ $paySalary->date }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Salario</label>
+                                <input class="form-control bg-white" value="{{ $paySalary->paid_amount }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Salario Adelantado</label>
+                                <input class="form-control bg-white"
+                                    value="{{ $paySalary->advance_salary ? $paySalary->advance_salary : 'Sin Adelanto' }}"
+                                    readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Salario Pendiente</label>
+                                <input class="form-control bg-white" value="{{ $paySalary->due_salary }}" readonly>
+                            </div>
+                        </div>
+                        <!-- end: Input Data -->
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <!-- begin: Input Data -->
-                    <div class=" row align-items-center">
-                        <div class="form-group col-md-6">
-                            <label>Employee Name</label>
-                            <input class="form-control bg-white" value="{{ $paySalary->employee->name }}" readonly>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label>Date</label>
-                            <input class="form-control bg-white" value="{{ $paySalary->date }}" readonly>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label>Salary</label>
-                            <input class="form-control bg-white" value="{{ $paySalary->paid_amount }}" readonly>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label>Advance Salary</label>
-                            <input class="form-control bg-white" value="{{ $paySalary->advance_salary ? $paySalary->advance_salary : 'No Advance' }}" readonly>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label>Due Salary</label>
-                            <input class="form-control bg-white" value="{{ $paySalary->due_salary }}" readonly>
-                        </div>
-                    </div>
-                    <!-- end: Input Data -->
-                </div>
             </div>
         </div>
+        <!-- Page end  -->
     </div>
-    <!-- Page end  -->
-</div>
 @endsection

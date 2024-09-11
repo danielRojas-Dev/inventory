@@ -67,13 +67,14 @@ class ProductController extends Controller
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
-            'supplier_id' => 'required|integer',
+            'supplier_id' => 'integer',
             'product_garage' => 'string|nullable',
             'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'expire_date' => 'date_format:Y-m-d|max:10|nullable',
             'buying_price' => 'required|integer',
-            'selling_price' => 'required|integer',
+            'bulk_price' => 'required|integer',
+            'price_for_curves' => 'required|integer',
         ];
 
         $validatedData = $request->validate($rules);
@@ -134,13 +135,14 @@ class ProductController extends Controller
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
-            'supplier_id' => 'required|integer',
+            'supplier_id' => 'integer',
             'product_garage' => 'string|nullable',
             'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'expire_date' => 'date_format:Y-m-d|max:10|nullable',
             'buying_price' => 'required|integer',
-            'selling_price' => 'required|integer',
+            'bulk_price' => 'required|integer',
+            'price_for_curves' => 'required|integer',
         ];
 
         $validatedData = $request->validate($rules);
@@ -222,7 +224,8 @@ class ProductController extends Controller
                     'buying_date' =>$sheet->getCell( 'H' . $row )->getValue(),
                     'expire_date' =>$sheet->getCell( 'I' . $row )->getValue(),
                     'buying_price' =>$sheet->getCell( 'J' . $row )->getValue(),
-                    'selling_price' =>$sheet->getCell( 'K' . $row )->getValue(),
+                    'bulk_price' =>$sheet->getCell( 'K' . $row )->getValue(),
+                    'price_for_curves' =>$sheet->getCell( 'K' . $row )->getValue(),
                 ];
                 $startcount++;
             }
@@ -274,7 +277,8 @@ class ProductController extends Controller
             'Buying Date',
             'Expire Date',
             'Buying Price',
-            'Selling Price',
+            'bulk price',
+            'price for curves',
         );
 
         foreach($products as $product)
@@ -290,7 +294,8 @@ class ProductController extends Controller
                 'Buying Date' =>$product->buying_date,
                 'Expire Date' =>$product->expire_date,
                 'Buying Price' =>$product->buying_price,
-                'Selling Price' =>$product->selling_price,
+                'bulk price' =>$product->bulk_price,
+                'price for curves' =>$product->price_for_curves,
             );
         }
 

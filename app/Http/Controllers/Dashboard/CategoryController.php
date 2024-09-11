@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Redirect;
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar una lista de los recursos.
      */
     public function index()
     {
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         return view('categories.index', [
@@ -29,7 +29,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostrar el formulario para crear un nuevo recurso.
      */
     public function create()
     {
@@ -37,7 +37,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacenar un nuevo recurso en la base de datos.
      */
     public function store(Request $request)
     {
@@ -50,11 +50,11 @@ class CategoryController extends Controller
 
         Category::create($validatedData);
 
-        return Redirect::route('categories.index')->with('success', 'Category has been created!');
+        return Redirect::route('categories.index')->with('success', '¡Categoría creada exitosamente!');
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar el recurso especificado.
      */
     public function show(Category $category)
     {
@@ -62,7 +62,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Mostrar el formulario para editar el recurso especificado.
      */
     public function edit(Category $category)
     {
@@ -72,7 +72,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar el recurso especificado en la base de datos.
      */
     public function update(Request $request, Category $category)
     {
@@ -85,16 +85,26 @@ class CategoryController extends Controller
 
         Category::where('slug', $category->slug)->update($validatedData);
 
-        return Redirect::route('categories.index')->with('success', 'Category has been updated!');
+        return Redirect::route('categories.index')->with('success', '¡Categoría actualizada exitosamente!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar el recurso especificado de la base de datos.
      */
     public function destroy(Category $category)
     {
-        Category::destroy($category->slug);
-
-        return Redirect::route('categories.index')->with('success', 'Category has been deleted!');
+        try {
+            // Buscar la categoría por el slug y eliminarla
+            $categoryToDelete = Category::where('slug', $category->slug)->first();
+    
+            if ($categoryToDelete) {
+                $categoryToDelete->delete();
+                return Redirect::route('categories.index')->with('success', '¡Categoría eliminada exitosamente!');
+            } else {
+                return Redirect::route('categories.index')->with('error', '¡Categoría no encontrada!');
+            }
+        } catch (\Throwable $th) {
+        }
     }
+    
 }

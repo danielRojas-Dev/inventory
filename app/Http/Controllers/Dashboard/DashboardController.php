@@ -14,7 +14,7 @@ class DashboardController extends Controller
             'total_paid' => Order::sum('pay'),
             'total_due' => Order::sum('due'),
             'complete_orders' => Order::where('order_status', 'complete')->get(),
-            'products' => Product::orderBy('product_store')->take(5)->get(),
+            'products' => Product::orderBy('product_store', 'desc')->take(5)->get(),
             'new_products' => Product::orderBy('buying_date')->take(2)->get(),
         ]);
     }

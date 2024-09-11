@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_id');
-            $table->string('order_date');
+            $table->string('customer_id')->nullable();
+            $table->string('user_id');
+            $table->dateTime('order_date');
             $table->string('order_status');
             $table->integer('total_products');
             $table->integer('sub_total')->nullable();

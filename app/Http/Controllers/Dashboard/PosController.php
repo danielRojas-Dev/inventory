@@ -14,7 +14,7 @@ class PosController extends Controller
 {
     public function index()
     {
-        $todayDate = Carbon::now();
+        // $todayDate = Carbon::now();
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
@@ -24,7 +24,7 @@ class PosController extends Controller
         return view('pos.index', [
             'customers' => Customer::all()->sortBy('name'),
             'productItem' => Cart::content(),
-            'products' => Product::where('expire_date', '>', $todayDate)->filter(request(['search']))
+            'products' => Product::filter(request(['search']))
                 ->sortable()
                 ->paginate($row)
                 ->appends(request()->query()),
@@ -33,23 +33,41 @@ class PosController extends Controller
 
     public function addCart(Request $request)
     {
+        // Validar los datos del producto, incluyendo el precio seleccionado
         $rules = [
             'id' => 'required|numeric',
             'name' => 'required|string',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric', // Aquí ya validamos que se envíe un precio
         ];
-
+    
         $validatedData = $request->validate($rules);
-
+    
+        // Buscar el producto en la base de datos
+        $product = Product::find($validatedData['id']);
+    
+        if (!$product) {
+            return Redirect::back()->with('error', 'El producto no existe.');
+        }
+    
+        // Obtener la cantidad actual del producto en el carrito
+        $cartItem = Cart::content()->where('id', $product->id)->first();
+        $currentQtyInCart = $cartItem ? $cartItem->qty : 0;
+    
+        // Verificar si al agregar el producto excederíamos el stock disponible
+        if ($currentQtyInCart + 1 > $product->product_store) {
+            return Redirect::back()->with('error', 'No puedes agregar más productos. El stock disponible es: ' . $product->product_store);
+        }
+    
+        // Agregar el producto al carrito (cantidad por defecto: 1)
         Cart::add([
             'id' => $validatedData['id'],
             'name' => $validatedData['name'],
             'qty' => 1,
-            'price' => $validatedData['price'],
+            'price' => $validatedData['price'], // Usar el precio seleccionado por el usuario
             'options' => ['size' => 'large']
         ]);
-
-        return Redirect::back()->with('success', 'Product has been added!');
+    
+        return Redirect::back()->with('success', '¡El producto ha sido agregado al carrito!');
     }
 
     public function updateCart(Request $request, $rowId)
@@ -64,6 +82,10 @@ class PosController extends Controller
 
         return Redirect::back()->with('success', 'Cart has been updated!');
     }
+    
+    
+    
+    
 
     public function deleteCart(String $rowId)
     {
@@ -74,16 +96,16 @@ class PosController extends Controller
 
     public function createInvoice(Request $request)
     {
-        $rules = [
-            'customer_id' => 'required'
-        ];
+        // $rules = [
+        //     'customer_id' => 'required'
+        // ];
 
-        $validatedData = $request->validate($rules);
-        $customer = Customer::where('id', $validatedData['customer_id'])->first();
+        // $validatedData = $request->validate($rules);
+        // $customer = Customer::where('id', $validatedData['customer_id'])->first();
         $content = Cart::content();
 
         return view('pos.create-invoice', [
-            'customer' => $customer,
+            // 'customer' => $customer,
             'content' => $content
         ]);
     }
@@ -91,15 +113,15 @@ class PosController extends Controller
     public function printInvoice(Request $request)
     {
         $rules = [
-            'customer_id' => 'required'
+            // 'customer_id' => 'required'
         ];
 
         $validatedData = $request->validate($rules);
-        $customer = Customer::where('id', $validatedData['customer_id'])->first();
+        // $customer = Customer::where('id', $validatedData['customer_id'])->first();
         $content = Cart::content();
 
         return view('pos.print-invoice', [
-            'customer' => $customer,
+            // 'customer' => $customer,
             'content' => $content
         ]);
     }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('product_name');
             $table->integer('category_id');
-            $table->integer('supplier_id');
+            $table->integer('supplier_id')->nullable();
             $table->string('product_code')->nullable();
             $table->string('product_garage')->nullable();
             $table->string('product_image')->nullable();
@@ -23,7 +23,8 @@ return new class extends Migration
             $table->date('buying_date')->nullable();
             $table->string('expire_date')->nullable();
             $table->integer('buying_price')->nullable();
-            $table->integer('selling_price')->nullable();
+            $table->integer('bulk_price')->nullable();
+            $table->integer('price_for_curves')->nullable();
             $table->timestamps();
         });
     }
