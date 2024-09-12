@@ -85,7 +85,7 @@
 
                                             <a class="btn btn-danger mr-2" data-toggle="tooltip" data-placement="top"
                                                 title="" data-original-title="Cancelar"
-                                                href="{{ route('order.pendingOrders') }}">Cancelar</a>
+                                                href="{{ route('order.pendingDue') }}">Cancelar</a>
                                         </form>
                                     </div>
                                 </div>

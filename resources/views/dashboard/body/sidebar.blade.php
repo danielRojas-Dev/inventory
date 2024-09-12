@@ -52,19 +52,19 @@
                             </svg>
                         </a>
                         <ul id="orders" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle" style="">
-                            <li class="{{ Request::is('orders/pending*') ? 'active' : '' }}">
+                            {{-- <li class="{{ Request::is('orders/pending*') ? 'active' : '' }}">
                                 <a href="{{ route('order.pendingOrders') }}">
+                                    <i class="fas fa-arrow-right"></i><span>Pedidos Pendientes</span>
+                                </a>
+                            </li> --}}
+                            <li class="{{ Request::is('pending/due*') ? 'active' : '' }}">
+                                <a href="{{ route('order.pendingDue') }}">
                                     <i class="fas fa-arrow-right"></i><span>Pedidos Pendientes</span>
                                 </a>
                             </li>
                             <li class="{{ Request::is('orders/complete*') ? 'active' : '' }}">
                                 <a href="{{ route('order.completeOrders') }}">
                                     <i class="fas fa-arrow-right"></i><span>Pedidos Completados</span>
-                                </a>
-                            </li>
-                            <li class="{{ Request::is('pending/due*') ? 'active' : '' }}">
-                                <a href="{{ route('order.pendingDue') }}">
-                                    <i class="fas fa-arrow-right"></i><span>Pagos Pendientes</span>
                                 </a>
                             </li>
 
@@ -141,7 +141,7 @@
                 @endif --}}
 
 
-                @if (auth()->user()->can('salary.menu'))
+                {{-- @if (auth()->user()->can('salary.menu'))
                     <li>
                         <a href="#advance-salary" class="collapsed" data-toggle="collapse" aria-expanded="false">
                             <i class="fas fa-cash-register"></i>
@@ -168,11 +168,11 @@
                                     <i class="fas fa-arrow-right"></i><span>Anticipos de Sueldo</span>
                                 </a>
                             </li>
-                            {{-- <li class="{{ Request::is('advance-salary/create*') ? 'active' : '' }}">
+                            <li class="{{ Request::is('advance-salary/create*') ? 'active' : '' }}">
                                 <a href="{{ route('advance-salary.create') }}">
                                     <i class="fas fa-arrow-right"></i><span>Crear Anticipo de Sueldo</span>
                                 </a>
-                            </li> --}}
+                            </li>
                             <li class="{{ Request::is('pay-salary/history*') ? 'active' : '' }}">
                                 <a href="{{ route('pay-salary.payHistory') }}">
                                     <i class="fas fa-arrow-right"></i><span>Historial de Pagos</span>
@@ -180,12 +180,12 @@
                             </li>
                         </ul>
                     </li>
-                @endif
+                @endif --}}
 
 
                 @if (auth()->user()->can('attendence.menu'))
-                    <li>
-                        <a href="#attendence" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                    {{-- <li> --}}
+                    {{-- <a href="#attendence" class="collapsed" data-toggle="collapse" aria-expanded="false">
                             <i class="fas fa-calendar"></i>
                             <span class="ml-3">Asistencia</span>
                             <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
@@ -197,20 +197,21 @@
                             </svg>
                         </a>
                         <ul id="attendence" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle"
-                            style="">
+                            style=""> --}}
 
-                            <li class="{{ Request::is(['employee/attendence']) ? 'active' : '' }}">
-                                <a href="{{ route('attendence.index') }}">
-                                    <i class="fas fa-arrow-right"></i><span>Toda la Asistencia</span>
-                                </a>
-                            </li>
-                            {{-- <li class="{{ Request::is('employee/attendence/*') ? 'active' : '' }}">
+                    <li class="{{ Request::is(['employee/attendence']) ? 'active' : '' }} svg-icon">
+                        <a href="{{ route('attendence.index') }}">
+                            <i class="fas fa-calendar"></i><span class="ml-3">Asistencia</span>
+                        </a>
+                    </li>
+
+                    {{-- <li class="{{ Request::is('employee/attendence/*') ? 'active' : '' }}">
                                 <a href="{{ route('attendence.create') }}">
                                     <i class="fas fa-arrow-right"></i><span>Crear Asistencia</span>
                                 </a>
                             </li> --}}
-                        </ul>
-                    </li>
+                    {{-- </ul> --}}
+                    {{-- </li> --}}
                 @endif
 
 

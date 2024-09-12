@@ -17,8 +17,7 @@
                         <h4 class="mb-3"> Lista de Roles</h4>
                     </div>
                     <div>
-                        <a href="{{ route('role.create') }}" class="btn btn-primary add-list"><i
-                                class="fa-solid fa-plus mr-3"></i>Añadir Rol</a>
+                        <a href="{{ route('role.create') }}" class="btn btn-primary add-list"></i>Añadir Rol</a>
                     </div>
                 </div>
             </div>
@@ -80,7 +79,7 @@
                                                         class="ri-pencil-line mr-0"></i>
                                                 </a>
                                                 <button type="submit" class="btn btn-warning mr-2 border-none"
-                                                    onclick="return confirm('Are you sure you want to delete this record?')"
+                                                    onclick="return confirm('¿Estás seguro de que quieres borrar este registro?')"
                                                     data-toggle="tooltip" data-placement="top" title=""
                                                     data-original-title="Delete"><i
                                                         class="ri-delete-bin-line mr-0"></i></button>

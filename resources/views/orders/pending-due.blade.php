@@ -69,19 +69,20 @@
                                 <th>No. de Factura</th>
                                 <th>@sortablelink('user.name', 'Vendedor')</th>
                                 <th>@sortablelink('order_date', 'Fecha del Pedido')</th>
-                                <th>Pago</th>
+                                <th>@sortablelink('pago', 'Pago')</th>
                                 <th>@sortablelink('pay', 'Pagado')</th>
                                 <th>@sortablelink('due', 'Pendiente')</th>
                                 <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody class="ligth-body">
-                            @foreach ($orders as $order)
+
+                            @forelse ($orders as $order)
                                 <tr>
                                     <td>{{ $orders->currentPage() * 10 - 10 + $loop->iteration }}</td>
                                     <td>{{ $order->invoice_no }}</td>
                                     <td>{{ $order->user->name }}</td>
-                                    <td>{{ Carbon\Carbon::parse($order->order_date)->format('Y m, d') }}</td>
+                                    <td>{{ $order->order_date }}</td>
                                     <td>{{ $order->payment_status }}</td>
                                     <td>
                                         <span class="btn btn-warning text-white">
@@ -106,8 +107,16 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <div class="alert text-white bg-danger" role="alert">
+                                    <div class="iq-alert-text">Datos no encontrados.</div>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                            @endforelse
                         </tbody>
+
                     </table>
                 </div>
                 {{ $orders->links() }}

@@ -77,7 +77,7 @@
                                         </div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
+                                {{-- <div class="form-group col-md-6">
                                     <label for="experience">Experiencia del Empleado</label>
                                     <select class="form-control" name="experience">
                                         <option value="">Seleccionar Año..</option>
@@ -92,7 +92,7 @@
                                         <option value="5 Year" @if (old('experience', $employee->experience) == '5 Year') selected="selected" @endif>
                                             5 Años</option>
                                     </select>
-                                </div>
+                                </div> --}}
                                 <div class="form-group col-md-6">
                                     <label for="salary">Salario del Empleado <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('salary') is-invalid @enderror"
@@ -104,7 +104,7 @@
                                         </div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
+                                {{-- <div class="form-group col-md-6">
                                     <label for="vacation">Vacaciones del Empleado</label>
                                     <input type="text" class="form-control @error('vacation') is-invalid @enderror"
                                         id="vacation" name="vacation" value="{{ old('vacation') }}">
@@ -113,7 +113,7 @@
                                             {{ $message }}
                                         </div>
                                     @enderror
-                                </div>
+                                </div> --}}
                                 <div class="form-group col-md-6">
                                     <label for="city">Ciudad del Empleado <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('city') is-invalid @enderror"

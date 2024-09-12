@@ -14,11 +14,10 @@
                 @endif
                 <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                     <div>
-                        <h4 class="mb-3">Listado de Empleados</h4>
+                        <h4 class="mb-3">Lista de Empleados</h4>
                     </div>
                     <div>
-                        <a href="{{ route('employees.create') }}" class="btn btn-primary add-list"><i
-                                class="fa-solid fa-plus mr-3"></i>Añadir Empleado</a>
+                        <a href="{{ route('employees.create') }}" class="btn btn-primary add-list">Añadir Empleado</a>
                     </div>
                 </div>
             </div>
@@ -91,7 +90,7 @@
                                     <td>{{ $employee->name }}</td>
                                     <td>{{ $employee->email }}</td>
                                     <td>{{ $employee->phone }}</td>
-                                    <td>${{ $employee->salary }}</td>
+                                    <td>$ {{ number_format($employee->salary, 2, ',', '.') }}</td>
                                     <td>{{ $employee->city }}</td>
                                     <td>
                                         <div class="d-flex align-items-center list-action">

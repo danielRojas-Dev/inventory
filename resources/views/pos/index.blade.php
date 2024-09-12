@@ -23,6 +23,12 @@
         display: block;
         margin-bottom: 2px;
     }
+
+    .price-button:hover {
+        background-color: #d4e8fc;
+        /* Un color más claro para el hover */
+        border-color: #c0d4e0;
+    }
 </style>
 
 @section('container')

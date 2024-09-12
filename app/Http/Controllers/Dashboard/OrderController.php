@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Dashboard;
 
 use App\Models\Order;
@@ -42,7 +41,7 @@ class OrderController extends Controller
             abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
-        $orders = Order::where('order_status', 'complete')->sortable()->paginate($row);
+        $orders = Order::where('order_status', 'complete')->orderBy('order_date', 'desc')->sortable()->paginate($row);
 
         return view('orders.complete-orders', [
             'orders' => $orders
@@ -75,7 +74,7 @@ class OrderController extends Controller
             $rules = [
                 // 'customer_id' => 'required|numeric',
                 'payment_status' => 'required|string',
-                'pay' => 'numeric|nullable',
+                // 'pay' => 'numeric|nullable',
                 'due' => 'numeric|nullable',
             ];
 
@@ -85,7 +84,6 @@ class OrderController extends Controller
                 'length' => 10,
                 'prefix' => 'INV-'
             ]);
-
             $validatedData = $request->validate($rules);
             $validatedData['order_date'] = Carbon::now()->format('Y-m-d H:i:s');
             $validatedData['order_status'] = 'Pendiente';
@@ -94,12 +92,12 @@ class OrderController extends Controller
             $validatedData['vat'] = Cart::tax();
             $validatedData['invoice_no'] = $invoice_no;
             $validatedData['total'] = Cart::total();
-            $validatedData['due'] = Cart::total() - $validatedData['pay'];
+            $validatedData['due'] = Cart::total();
+            $validatedData['pay'] = 0;
+            // $validatedData['due'] = Cart::total() - $validatedData['pay'];
             $validatedData['created_at'] = Carbon::now();
             $validatedData['created_at'] = Carbon::now();
             $validatedData['user_id'] = auth()->id(); // ID del usuario logueado
-
-
 
             $order_id = Order::insertGetId($validatedData);
 
@@ -117,7 +115,6 @@ class OrderController extends Controller
 
                 OrderDetails::insert($oDetails);
             }
-
 
             // Delete Cart Sopping History
             Cart::destroy();
@@ -138,7 +135,6 @@ class OrderController extends Controller
             ->where('order_id', $order_id)
             ->orderBy('id', 'DESC')
             ->get();
-
 
         return view('orders.details-order', [
             'order' => $order,
@@ -163,7 +159,7 @@ class OrderController extends Controller
 
         Order::findOrFail($order_id)->update(['order_status' => 'complete']);
 
-        return Redirect::route('order.pendingOrders')->with('success', 'Order has been completed!');
+        return Redirect::route('order.pendingOrders')->with('success', '¡La orden ha sido completada!');
     }
 
     public function invoiceDownload(Int $order_id)
@@ -186,7 +182,7 @@ class OrderController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         $orders = Order::where('due', '>', '0')
@@ -207,6 +203,7 @@ class OrderController extends Controller
 
     public function updateDue(Request $request)
     {
+        // Validaciones
         $rules = [
             'order_id' => 'required|numeric',
             'due' => 'required|numeric',
@@ -214,18 +211,30 @@ class OrderController extends Controller
 
         $validatedData = $request->validate($rules);
 
+        // Buscar la orden
         $order = Order::findOrFail($request->order_id);
         $mainPay = $order->pay;
         $mainDue = $order->due;
 
+        // Calcular el nuevo valor de due y pay
         $paid_due = $mainDue - $validatedData['due'];
         $paid_pay = $mainPay + $validatedData['due'];
 
-        Order::findOrFail($request->order_id)->update([
+        // Verificar si el monto pendiente es 0, para actualizar el estado de la orden
+        $order_status = $paid_due <= 0 ? 'complete' : $order->order_status;
+
+        // Actualizar la orden
+        $order->update([
             'due' => $paid_due,
             'pay' => $paid_pay,
+            'order_status' => $order_status, // Cambiar el estado si es necesario
         ]);
 
-        return Redirect::route('order.pendingDue')->with('success', 'Due Amount Updated Successfully!');
+        if ($order_status == 'complete') {
+            return Redirect::route('order.completeOrders')->with('success', '¡Pago Completado con éxito!');
+        }
+
+        // Redirigir con un mensaje de éxito
+        return Redirect::route('order.pendingDue')->with('success', '¡Importe adeudado actualizado correctamente!');
     }
 }

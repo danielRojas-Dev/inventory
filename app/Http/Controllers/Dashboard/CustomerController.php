@@ -5,21 +5,20 @@ namespace App\Http\Controllers\Dashboard;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 
 class CustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista del recurso.
      */
     public function index()
     {
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un entero entre 1 y 100.');
         }
 
         return view('customers.index', [
@@ -28,7 +27,7 @@ class CustomerController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo recurso.
      */
     public function create()
     {
@@ -36,7 +35,7 @@ class CustomerController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo recurso en la base de datos.
      */
     public function store(Request $request)
     {
@@ -57,7 +56,7 @@ class CustomerController extends Controller
         $validatedData = $request->validate($rules);
 
         /**
-         * Handle upload image with Storage.
+         * Manejo de la carga de imagen usando Storage.
          */
         if ($file = $request->file('photo')) {
             $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
@@ -69,11 +68,11 @@ class CustomerController extends Controller
 
         Customer::create($validatedData);
 
-        return Redirect::route('customers.index')->with('success', 'Customer has been created!');
+        return Redirect::route('customers.index')->with('success', '¡Cliente ha sido creado!');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra el recurso especificado.
      */
     public function show(Customer $customer)
     {
@@ -83,7 +82,7 @@ class CustomerController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar el recurso especificado.
      */
     public function edit(Customer $customer)
     {
@@ -93,7 +92,7 @@ class CustomerController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el recurso especificado en la base de datos.
      */
     public function update(Request $request, Customer $customer)
     {
@@ -114,14 +113,14 @@ class CustomerController extends Controller
         $validatedData = $request->validate($rules);
 
         /**
-         * Handle upload image with Storage.
+         * Manejo de la carga de imagen usando Storage.
          */
         if ($file = $request->file('photo')) {
             $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
             $path = 'public/customers/';
 
             /**
-             * Delete photo if exists.
+             * Elimina la foto si existe.
              */
             if($customer->photo){
                 Storage::delete($path . $customer->photo);
@@ -133,16 +132,16 @@ class CustomerController extends Controller
 
         Customer::where('id', $customer->id)->update($validatedData);
 
-        return Redirect::route('customers.index')->with('success', 'Customer has been updated!');
+        return Redirect::route('customers.index')->with('success', '¡Cliente ha sido actualizado!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina el recurso especificado de la base de datos.
      */
     public function destroy(Customer $customer)
     {
         /**
-         * Delete photo if exists.
+         * Elimina la foto si existe.
          */
         if($customer->photo){
             Storage::delete('public/customers/' . $customer->photo);
@@ -150,6 +149,6 @@ class CustomerController extends Controller
 
         Customer::destroy($customer->id);
 
-        return Redirect::route('customers.index')->with('success', 'Customer has been deleted!');
+        return Redirect::route('customers.index')->with('success', '¡Cliente ha sido eliminado!');
     }
 }

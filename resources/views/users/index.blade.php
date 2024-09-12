@@ -14,13 +14,11 @@
                 @endif
                 <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                     <div>
-                        <h4 class="mb-3">User List</h4>
+                        <h4 class="mb-3"> Lista de Usuario</h4>
                     </div>
                     <div>
-                        <a href="{{ route('users.create') }}" class="btn btn-primary add-list"><i
-                                class="fa-solid fa-plus mr-3"></i>Crear Usuario</a>
-                        <a href="{{ route('users.index') }}" class="btn btn-danger add-list"><i
-                                class="fas fa-trash mr-3"></i>Limpiar Busqueda</a>
+                        <a href="{{ route('users.create') }}" class="btn btn-primary add-list">Crear Usuario</a>
+
                     </div>
                 </div>
             </div>
@@ -49,10 +47,12 @@
                             <div class="col-sm-8">
                                 <div class="input-group">
                                     <input type="text" id="search" class="form-control" name="search"
-                                        placeholder="Search user" value="{{ request('search') }}">
+                                        placeholder="Buscar Usuario" value="{{ request('search') }}">
                                     <div class="input-group-append">
                                         <button type="submit" class="input-group-text bg-primary"><i
                                                 class="fas fa-search font-size-20"></i></button>
+                                        <a href="{{ route('users.index') }}" class="input-group-text bg-danger"><i
+                                                class="fas fa-trash"></i></a>
                                     </div>
                                 </div>
                             </div>

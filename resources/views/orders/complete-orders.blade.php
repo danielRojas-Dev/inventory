@@ -78,7 +78,7 @@
                             </tr>
                         </thead>
                         <tbody class="ligth-body">
-                            @foreach ($orders as $order)
+                            @forelse ($orders as $order)
                                 <tr>
                                     <td>{{ $orders->currentPage() * 10 - 10 + $loop->iteration }}</td>
                                     <td>{{ $order->invoice_no }}</td>
@@ -104,7 +104,14 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <div class="alert text-white bg-danger" role="alert">
+                                    <div class="iq-alert-text">Datos no encontrados.</div>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

@@ -63,7 +63,9 @@ Route::middleware(['permission:employee.menu'])->group(function () {
 
 // ====== EMPLOYEE ATTENDENCE ======
 Route::middleware(['permission:attendence.menu'])->group(function () {
-    Route::resource('/employee/attendence', AttendenceController::class)->except(['show', 'update', 'destroy']);
+    Route::resource('/employee/attendence', AttendenceController::class)->except(['update', 'destroy']);
+
+    // Route::get('/employee/attendence-show/', [AttendenceController::class, 'show'])->name('attendence.show');
 });
 
 // ====== SALARY EMPLOYEE ======
@@ -73,6 +75,7 @@ Route::middleware(['permission:salary.menu'])->group(function () {
     Route::get('/pay-salary/history', [PaySalaryController::class, 'payHistory'])->name('pay-salary.payHistory');
     Route::get('/pay-salary/history/{id}', [PaySalaryController::class, 'payHistoryDetail'])->name('pay-salary.payHistoryDetail');
     Route::get('/pay-salary/{id}', [PaySalaryController::class, 'paySalary'])->name('pay-salary.paySalary');
+    Route::get('/pay-salary', [PaySalaryController::class, 'index'])->name('pay-salary.index');
 
     // Advance Salary
     Route::resource('/advance-salary', AdvanceSalaryController::class)->except(['show']);

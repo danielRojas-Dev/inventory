@@ -54,7 +54,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
+                                                {{-- <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="pay">Pagar Ahora</label>
                                                         <input type="text"
@@ -66,7 +66,7 @@
                                                             </div>
                                                         @enderror
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"

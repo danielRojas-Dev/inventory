@@ -28,7 +28,7 @@ class ProductController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         return view('products.index', [
@@ -95,7 +95,7 @@ class ProductController extends Controller
 
         Product::create($validatedData);
 
-        return Redirect::route('products.index')->with('success', 'Product has been created!');
+        return Redirect::route('products.index')->with('success', 'El producto ha sido creado!');
     }
 
     /**
@@ -167,7 +167,7 @@ class ProductController extends Controller
 
         Product::where('id', $product->id)->update($validatedData);
 
-        return Redirect::route('products.index')->with('success', 'Product has been updated!');
+        return Redirect::route('products.index')->with('success', 'El Producto ha sido actualizado!');
     }
 
     /**
@@ -184,7 +184,7 @@ class ProductController extends Controller
 
         Product::destroy($product->id);
 
-        return Redirect::route('products.index')->with('success', 'Product has been deleted!');
+        return Redirect::route('products.index')->with('success', 'El Producto ha sido eliminado!');
     }
 
     /**

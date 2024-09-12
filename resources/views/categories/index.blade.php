@@ -17,8 +17,7 @@
                         <h4 class="mb-3">Lista de Categorias</h4>
                     </div>
                     <div>
-                        <a href="{{ route('categories.create') }}" class="btn btn-primary add-list"><i
-                                class="fas fa-plus mr-3"></i>Crear Categoria</a>
+                        <a href="{{ route('categories.create') }}" class="btn btn-primary add-list">Crear Categoria</a>
                     </div>
                 </div>
             </div>

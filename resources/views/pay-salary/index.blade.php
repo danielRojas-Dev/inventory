@@ -16,6 +16,11 @@
                     <div>
                         <h4 class="mb-3">Lista de Sueldos</h4>
                     </div>
+                    <div>
+                        <a class=" btn btn-primary add-list-" href="{{ route('advance-salary.create') }}">
+                            <span>Pagar Sueldo</span>
+                        </a>
+                    </div>
 
                 </div>
             </div>

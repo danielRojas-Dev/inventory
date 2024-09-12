@@ -1,17 +1,19 @@
 @extends('auth.body.main')
 
 @section('container')
-    <div class="row align-items-center justify-content-center height-self-center">
-        <div class="col-lg-9">
+    <div class="row align-items-center justify-content-center min-vh-100">
+        <div class="col-lg-4">
             <div class="card auth-card">
                 <div class="card-body p-0">
                     <div class="d-flex align-items-center auth-content">
-                        <div class="col-lg-7 align-self-center">
-                            <div class="p-3">
-
-                                <h2 class="mb-2">Iniciar sesión</h2>
-                                <p>Inicia sesión para mantenerte conectado.</p>
-
+                        <div class="col-lg-12 align-self-center">
+                            <div class=" text-center">
+                                <img src="{{ asset('assets/images/login/MIA.png') }}" class="img-fluid"
+                                    style="max-width: 60%; height: auto;" alt="">
+                            </div>
+                            <div class="">
+                                <h2 class="mb-2 text-center">Iniciar sesión</h2>
+                                <p class="text-center">Inicia sesión para mantenerte conectado.</p>
                                 <form action="{{ route('login') }}" method="POST">
                                     @csrf
                                     <div class="row">
@@ -44,22 +46,11 @@
                                                 <label>Contraseña</label>
                                             </div>
                                         </div>
-                                        {{-- <div class="col-lg-6">
-                                            <p>
-                                                ¿No eres miembro? <a href="{{ route('register') }}"
-                                                    class="text-primary">Regístrate</a>
-                                            </p>
-                                        </div> --}}
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                                    <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
                                 </form>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-center">
-                            <img src="{{ asset('assets/images/login/MIA.png') }}"
-                                style="width: 400px; height: auto; margin-right: 25%;" alt="">
-                        </div>
-
 
                     </div>
                 </div>

@@ -17,8 +17,8 @@ class PosController extends Controller
         // $todayDate = Carbon::now();
         $row = (int) request('row', 10);
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+        if ($row < 1 || el $row > 100) {
+            abort(400, 'El parámetro de filas por página debe ser un número entero entre 1 y 100.');
         }
 
         return view('pos.index', [
@@ -34,30 +34,34 @@ class PosController extends Controller
     public function addCart(Request $request)
     {
         // Validar los datos del producto, incluyendo el precio seleccionado
-        $rules = [
-            'id' => 'required|numeric',
-            'name' => 'required|string',
-            'price' => 'required|numeric', // Aquí ya validamos que se envíe un precio
-        ];
-    
-        $validatedData = $request->validate($rules);
-    
+        try {
+            $rules = [
+                'id' => 'required|numeric',
+                'name' => 'required|string',
+                'price' => 'required|numeric', // Validar que se envíe un precio
+            ];
+
+            $validatedData = $request->validate($rules);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return Redirect::back()->withErrors($e->errors())->with('error', 'Debe seleccionar un precio.');
+        }
+
         // Buscar el producto en la base de datos
         $product = Product::find($validatedData['id']);
-    
+
         if (!$product) {
             return Redirect::back()->with('error', 'El producto no existe.');
         }
-    
+
         // Obtener la cantidad actual del producto en el carrito
         $cartItem = Cart::content()->where('id', $product->id)->first();
         $currentQtyInCart = $cartItem ? $cartItem->qty : 0;
-    
+
         // Verificar si al agregar el producto excederíamos el stock disponible
         if ($currentQtyInCart + 1 > $product->product_store) {
             return Redirect::back()->with('error', 'No puedes agregar más productos. El stock disponible es: ' . $product->product_store);
         }
-    
+
         // Agregar el producto al carrito (cantidad por defecto: 1)
         Cart::add([
             'id' => $validatedData['id'],
@@ -66,7 +70,7 @@ class PosController extends Controller
             'price' => $validatedData['price'], // Usar el precio seleccionado por el usuario
             'options' => ['size' => 'large']
         ]);
-    
+
         return Redirect::back()->with('success', '¡El producto ha sido agregado al carrito!');
     }
 
@@ -80,18 +84,14 @@ class PosController extends Controller
 
         Cart::update($rowId, $validatedData['qty']);
 
-        return Redirect::back()->with('success', 'Cart has been updated!');
+        return Redirect::back()->with('success', '¡El carrito ha sido actualizado!');
     }
-    
-    
-    
-    
 
     public function deleteCart(String $rowId)
     {
         Cart::remove($rowId);
 
-        return Redirect::back()->with('success', 'Cart has been deleted!');
+        return Redirect::back()->with('success', '¡El producto ha sido eliminado del carrito!');
     }
 
     public function createInvoice(Request $request)

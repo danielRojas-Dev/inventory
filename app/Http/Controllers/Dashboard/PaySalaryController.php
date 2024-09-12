@@ -12,17 +12,17 @@ use Illuminate\Support\Facades\Redirect;
 class PaySalaryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar un listado del recurso.
      */
     public function index()
     {
         $row = (int) request('row', 10);
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The row parameter must be an integer between 1 and 100.');
+        if ($row < 1 || el $row > 100) {
+            abort(400, 'El parámetro de fila debe ser un número entero entre 1 y 100.');
         }
 
-        if(request('search')){
+        if (request('search')) {
             Employee::firstWhere('name', request('search'));
         }
 
@@ -37,7 +37,7 @@ class PaySalaryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostrar el formulario para pagar salario a un empleado.
      */
     public function paySalary(String $id)
     {
@@ -52,21 +52,21 @@ class PaySalaryController extends Controller
     {
         $row = (int) request('row', 10);
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The row parameter must be an integer between 1 and 100.');
+        if ($row < 1 || el $row > 100) {
+            abort(400, 'El parámetro de fila debe ser un número entero entre 1 y 100.');
         }
 
-        if(request('search')){
+        if (request('search')) {
             Employee::firstWhere('name', request('search'));
         }
 
         return view('pay-salary.history', [
             'paySalaries' => PaySalary::with(['employee'])
-            ->orderByDesc('date')
-            ->filter(request(['search']))
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query()),
+                ->orderByDesc('date')
+                ->filter(request(['search']))
+                ->sortable()
+                ->paginate($row)
+                ->appends(request()->query()),
         ]);
     }
 
@@ -74,13 +74,13 @@ class PaySalaryController extends Controller
     {
         return view('pay-salary.history-details', [
             'paySalary' => PaySalary::with(['employee'])
-            ->where('id', $id)
-            ->first(),
+                ->where('id', $id)
+                ->first(),
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostrar el formulario para crear un nuevo recurso.
      */
     public function create()
     {
@@ -88,7 +88,7 @@ class PaySalaryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guardar un nuevo recurso en el almacenamiento.
      */
     public function store(Request $request)
     {
@@ -109,11 +109,11 @@ class PaySalaryController extends Controller
 
         PaySalary::create($validatedData);
 
-        return Redirect::route('pay-salary.payHistory')->with('success', 'Employee Salary Paid Successfully!');
+        return Redirect::route('pay-salary.payHistory')->with('success', '¡El salario del empleado se ha pagado con éxito!');
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar el recurso especificado.
      */
     public function show(PaySalary $paySalary)
     {
@@ -121,7 +121,7 @@ class PaySalaryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Mostrar el formulario para editar el recurso especificado.
      */
     public function edit(PaySalary $paySalary)
     {
@@ -129,7 +129,7 @@ class PaySalaryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar el recurso especificado en el almacenamiento.
      */
     public function update(Request $request, PaySalary $paySalary)
     {
@@ -137,12 +137,12 @@ class PaySalaryController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar el recurso especificado del almacenamiento.
      */
     public function destroy(PaySalary $paySalary)
     {
         PaySalary::destroy($paySalary->id);
 
-        return Redirect::route('pay-salary.payHistory')->with('success', 'Employee History Pay Salary has been deleted!');
+        return Redirect::route('pay-salary.payHistory')->with('success', '¡El historial de pagos del empleado ha sido eliminado!');
     }
 }

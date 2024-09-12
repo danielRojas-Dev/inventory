@@ -17,8 +17,7 @@
                         <h4 class="mb-3"> Lista de Permisos</h4>
                     </div>
                     <div>
-                        <a href="{{ route('permission.create') }}" class="btn btn-primary add-list"><i
-                                class="fa-solid fa-plus mr-3"></i>Añadir Permiso</a>
+                        <a href="{{ route('permission.create') }}" class="btn btn-primary add-list">Añadir Permiso</a>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-<div class="col-lg-4 card-profile mb-5 h-50">
+<div class="col-lg-4 ">
     <div class="card card-block card-stretch card-height mb-5">
         <div class="card-body">
             <div class="d-flex align-items-center mb-3">
@@ -8,8 +8,8 @@
                 </div>
                 <div class="ml-3">
                     <h4 class="mb-1">{{ auth()->user()->name }}</h4>
-                    <p class="mb-2">UI/UX Designer</p>
-                    <a href="#" class="btn btn-primary font-size-14">Editar Perfil</a>
+                    <p class="mb-2"></p>
+                    <a href="{{ route('profile.edit') }}" class="btn btn-primary font-size-14">Editar Perfil</a>
                 </div>
             </div>
             <ul class="list-inline p-0 m-0">

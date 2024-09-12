@@ -17,8 +17,7 @@
                         <h4 class="mb-3">Lista de Asistencia</h4>
                     </div>
                     <div>
-                        <a href="{{ route('attendence.create') }}" class="btn btn-primary add-list"><i
-                                class="fas fa-plus mr-3"></i>Crear Asistencia</a>
+                        <a href="{{ route('attendence.create') }}" class="btn btn-primary add-list">Crear Asistencia</a>
                     </div>
                 </div>
             </div>
@@ -65,7 +64,7 @@
                                         <div class="d-flex align-items-center list-action">
                                             <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top"
                                                 title="" data-original-title="Ver"
-                                                href="{{ route('attendence.edit', $attendence->date) }}"><i
+                                                href="{{ route('attendence.show', $attendence->date) }}"><i
                                                     class="ri-eye-line mr-0"></i>
                                             </a>
                                             <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"

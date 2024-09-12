@@ -19,7 +19,7 @@ class AdvanceSalaryController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro de filas por página debe ser un número entero entre 1 y 100.');
         }
 
         if(request('search')){
@@ -58,12 +58,11 @@ class AdvanceSalaryController extends Controller
         ];
 
         if ($request->date) {
-            // format date only shows the year and month
+            // formatea la fecha para mostrar solo el año y mes
             $getYm = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y-m');
         } else {
             $validatedData = $request->validate($rules);
         }
-
 
         $advanced = AdvanceSalary::where('employee_id', $request->employee_id)
             ->whereDate('date', 'LIKE',  $getYm . '%')
@@ -73,9 +72,9 @@ class AdvanceSalaryController extends Controller
             $validatedData = $request->validate($rules);
             AdvanceSalary::create($validatedData);
 
-            return Redirect::route('advance-salary.create')->with('success', 'Advance Salary Paid Successfully!');
+            return Redirect::route('advance-salary.create')->with('success', '¡Salario adelantado pagado con éxito!');
         } else {
-            return Redirect::route('advance-salary.create')->with('warning', 'Advance Salary Already Paid!');
+            return Redirect::route('advance-salary.create')->with('warning', '¡El salario adelantado ya ha sido pagado!');
         }
     }
 
@@ -109,7 +108,7 @@ class AdvanceSalaryController extends Controller
             'advance_salary' => 'required|numeric'
         ];
 
-        // format date only shows the YM (year and month)
+        // formatea la fecha para mostrar solo el año y mes (YM)
         $newYm = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y-m');
         $oldYm = Carbon::createFromFormat('Y-m-d', $advanceSalary->date)->format('Y-m');
 
@@ -121,9 +120,9 @@ class AdvanceSalaryController extends Controller
             $validatedData = $request->validate($rules);
             AdvanceSalary::where('id', $advanceSalary->id)->update($validatedData);
 
-            return Redirect::route('advance-salary.edit', $advanceSalary->id)->with('success', 'Advance Salary Updated Successfully!');
+            return Redirect::route('advance-salary.edit', $advanceSalary->id)->with('success', '¡Salario adelantado actualizado con éxito!');
         } else {
-            return Redirect::route('advance-salary.edit', $advanceSalary->id)->with('warning', 'Advance Salary Already Paid!');
+            return Redirect::route('advance-salary.edit', $advanceSalary->id)->with('warning', '¡El salario adelantado ya ha sido pagado!');
         }
     }
 
@@ -134,6 +133,6 @@ class AdvanceSalaryController extends Controller
     {
         AdvanceSalary::destroy($advanceSalary->id);
 
-        return Redirect::route('advance-salary.index')->with('success', 'Advance Salary has been deleted!');
+        return Redirect::route('advance-salary.index')->with('success', '¡El salario adelantado ha sido eliminado!');
     }
 }

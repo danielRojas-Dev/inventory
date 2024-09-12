@@ -21,7 +21,7 @@ class UserController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         return view('users.index', [
@@ -73,7 +73,7 @@ class UserController extends Controller
             $user->assignRole($request->role);
         }
 
-        return Redirect::route('users.index')->with('success', 'New User has been created!');
+        return Redirect::route('users.index')->with('success', 'Se ha creado un nuevo usuario!');
     }
 
     /**
@@ -140,7 +140,7 @@ class UserController extends Controller
             $userData->syncRoles($request->role);
         }
 
-        return Redirect::route('users.index')->with('success', 'User has been updated!');
+        return Redirect::route('users.index')->with('success', 'Se ha actualizado el usuario!');
     }
 
     /**
@@ -157,6 +157,6 @@ class UserController extends Controller
 
         User::destroy($user->id);
 
-        return Redirect::route('users.index')->with('success', 'User has been deleted!');
+        return Redirect::route('users.index')->with('success', 'Se ha eliminado el usuario!');
     }
 }

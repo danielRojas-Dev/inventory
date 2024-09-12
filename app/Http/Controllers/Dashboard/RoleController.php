@@ -39,7 +39,7 @@ class RoleController extends Controller
 
         Permission::create($validatedData);
 
-        return Redirect::route('permission.index')->with('success', 'Permission has been created!');
+        return Redirect::route('permission.index')->with('success', '¡Se ha creado el permiso!');
     }
 
     public function permissionEdit(Int $id)
@@ -62,14 +62,14 @@ class RoleController extends Controller
 
         Permission::findOrFail($id)->update($validatedData);
 
-        return Redirect::route('permission.index')->with('success', 'Permission has been updated!');
+        return Redirect::route('permission.index')->with('success', '¡Se ha actualizado el permiso!');
     }
 
     public function permissionDestroy(Int $id)
     {
         Permission::destroy($id);
 
-        return Redirect::route('permission.index')->with('success', 'Permission has been deleted!');
+        return Redirect::route('permission.index')->with('success', '¡Se ha eliminado el permiso!');
     }
 
     // Role Controller
@@ -97,7 +97,7 @@ class RoleController extends Controller
 
         Role::create($validatedData);
 
-        return Redirect::route('roles.index')->with('success', 'Role has been created!');
+        return Redirect::route('role.index')->with('success', '¡Se ha creado el Rol!');
     }
 
     public function roleEdit(Int $id)
@@ -119,14 +119,14 @@ class RoleController extends Controller
 
         Role::findOrFail($id)->update($validatedData);
 
-        return Redirect::route('roles.index')->with('success', 'Role has been updated!');
+        return Redirect::route('role.index')->with('success', '¡Se ha actualizado el Rol!');
     }
 
     public function roleDestroy(Int $id)
     {
         Role::destroy($id);
 
-        return Redirect::route('roles.index')->with('success', 'Role has been deleted!');
+        return Redirect::route('role.index')->with('success', '¡Se ha eliminado el Rol!');
     }
 
     public function rolePermissionIndex()
@@ -166,7 +166,7 @@ class RoleController extends Controller
             DB::table('role_has_permissions')->insert($data);
         }
 
-        return Redirect::route('rolePermission.index')->with('success', 'Role Permission has been created!');
+        return Redirect::route('rolePermission.index')->with('success', 'Se ha creado el rol con permiso!');
     }
 
     public function rolePermissionEdit(Int $id)
@@ -184,14 +184,17 @@ class RoleController extends Controller
 
     public function rolePermissionUpdate(Request $request, Int $id)
     {
-        $role = Role::findOrFail($id);
+        try {
+            $role = Role::findOrFail($id);
         $permissions = $request->permission_id;
 
         if(!empty($permissions)) {
             $role->syncPermissions($permissions);
         }
 
-        return Redirect::route('rolePermission.index')->with('success', 'Role Permission has been updated!');
+        return Redirect::route('rolePermission.index')->with('success', 'Se ha actualizado el rol con permiso!');
+        } catch (\Throwable $th) {
+        }
     }
 
     public function rolePermissionDestroy(Int $id)
@@ -202,6 +205,6 @@ class RoleController extends Controller
             $role->delete();
         }
 
-        return Redirect::route('rolePermission.index')->with('success', 'Role Permission has been deleted!');
+        return Redirect::route('rolePermission.index')->with('success', 'Se ha eliminado el rol con permiso!');
     }
 }

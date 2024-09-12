@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Redirect;
 class AttendenceController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista del recurso.
      */
     public function index()
     {
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un entero entre 1 y 100.');
         }
 
         return view('attendence.index', [
@@ -32,7 +32,7 @@ class AttendenceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo recurso.
      */
     public function create()
     {
@@ -42,7 +42,7 @@ class AttendenceController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo recurso en la base de datos.
      */
     public function store(Request $request)
     {
@@ -53,7 +53,7 @@ class AttendenceController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        // Delete if the date is already created (it is just for updating new attendance). If not it will create new attendance
+        // Elimina si la fecha ya existe (esto es solo para actualizar la nueva asistencia). Si no, creará una nueva asistencia.
         Attendence::where('date', $validatedData['date'])->delete();
 
         for ($i=1; $i <= $countEmployee; $i++) {
@@ -67,19 +67,22 @@ class AttendenceController extends Controller
             $attend->save();
         }
 
-        return Redirect::route('attendence.index')->with('success', 'Attendence has been Created!');
+        return Redirect::route('attendence.index')->with('success', '¡Asistencia creada correctamente!');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra el recurso especificado.
      */
     public function show(Attendence $attendence)
     {
-        //
+        return view('attendence.show', [
+            'attendences' => Attendence::with(['employee'])->where('date', $attendence->date)->get(),
+            'date' => $attendence->date
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar el recurso especificado.
      */
     public function edit(Attendence $attendence)
     {
@@ -90,7 +93,7 @@ class AttendenceController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el recurso especificado en la base de datos.
      */
     public function update(Request $request, Attendence $attendence)
     {
@@ -98,7 +101,7 @@ class AttendenceController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina el recurso especificado de la base de datos.
      */
     public function destroy(Attendence $attendence)
     {

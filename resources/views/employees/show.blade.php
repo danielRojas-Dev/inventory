@@ -2,22 +2,9 @@
 
 @section('container')
     <div class="container-fluid mb-3">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card car-transparent">
-                    <div class="card-body p-0">
-                        <div class="profile-image position-relative">
-                            <img src="{{ asset('assets/images/page-img/profile.png') }}" class="img-fluid rounded h-30 w-100"
-                                alt="profile-image">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="row px-3">
             <!-- begin: Left Detail Employee -->
-            <div class="col-lg-4 card-profile mb-5 h-50">
+            <div class="col-lg-4 ">
                 <div class="card card-block card-stretch card-height mb-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
@@ -78,7 +65,7 @@
             <!-- end: Left Detail Employee -->
 
             <!-- begin: Right Detail Employee -->
-            <div class="col-lg-8 card-profile">
+            <div class="col-lg-8 ">
                 <div class="card card-block card-stretch mb-0">
                     <div class="card-header px-3">
                         <div class="header-title">
@@ -120,7 +107,7 @@
                                     </div>
                                 </div>
                             </li>
-                            <li class="col-lg-12">
+                            {{-- <li class="col-lg-12">
                                 <div class="form-group row">
                                     <div class="col-sm-3 col-4">
                                         <label class="col-form-label">Experiencia</label>
@@ -130,7 +117,7 @@
                                             value="{{ $employee->experience }}" readonly>
                                     </div>
                                 </div>
-                            </li>
+                            </li> --}}
                             {{-- Experiencia --}}
                             <li class="col-lg-12">
                                 <div class="form-group row">
@@ -139,11 +126,11 @@
                                     </div>
                                     <div class="col-sm-9 col-8">
                                         <input type="text" class="form-control bg-white"
-                                            value="${{ $employee->salary }}" readonly>
+                                            value="$ {{ number_format($employee->salary, 2, ',', '.') }}" readonly>
                                     </div>
                                 </div>
                             </li>
-                            <li class="col-lg-12">
+                            {{-- <li class="col-lg-12">
                                 <div class="form-group row">
                                     <div class="col-sm-3 col-4">
                                         <label class="col-form-label">Vacaciones</label>
@@ -153,7 +140,7 @@
                                             value="{{ $employee->vacation }}" readonly>
                                     </div>
                                 </div>
-                            </li>
+                            </li> --}}
                             <li class="col-lg-12">
                                 <div class="form-group row">
                                     <div class="col-sm-3 col-4">
@@ -171,7 +158,7 @@
                                         <label class="col-form-label">Dirección</label>
                                     </div>
                                     <div class="col-sm-9 col-8">
-                                        <textarea class="form-control bg-white" readonly>{{ $employee->address }}</textarea>
+                                        <textarea class="form-control bg-white" rows="2" readonly>{{ $employee->address }}</textarea>
                                     </div>
                                 </div>
                             </li>

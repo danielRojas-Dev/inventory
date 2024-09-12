@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Redirect;
 class EmployeeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista del recurso.
      */
     public function index()
     {
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         return view('employees.index', [
@@ -28,7 +28,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo recurso.
      */
     public function create()
     {
@@ -36,7 +36,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un recurso recién creado en el almacenamiento.
      */
     public function store(Request $request)
     {
@@ -48,14 +48,14 @@ class EmployeeController extends Controller
             'experience' => 'max:6|nullable',
             'salary' => 'required|numeric',
             'vacation' => 'max:50|nullable',
-            'city' => 'requried|max:50',
+            'city' => 'required|max:50',
             'address' => 'required|max:100',
         ];
 
         $validatedData = $request->validate($rules);
 
         /**
-         * Handle upload image with Storage.
+         * Manejar la subida de la imagen con Storage.
          */
         if ($file = $request->file('photo')) {
             $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
@@ -67,11 +67,11 @@ class EmployeeController extends Controller
 
         Employee::create($validatedData);
 
-        return Redirect::route('employees.index')->with('success', 'Employee has been created!');
+        return Redirect::route('employees.index')->with('success', '¡Empleado ha sido creado!');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra el recurso especificado.
      */
     public function show(Employee $employee)
     {
@@ -81,7 +81,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar el recurso especificado.
      */
     public function edit(Employee $employee)
     {
@@ -91,7 +91,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el recurso especificado en el almacenamiento.
      */
     public function update(Request $request, Employee $employee)
     {
@@ -110,14 +110,14 @@ class EmployeeController extends Controller
         $validatedData = $request->validate($rules);
 
         /**
-         * Handle upload image with Storage.
+         * Manejar la subida de la imagen con Storage.
          */
         if ($file = $request->file('photo')) {
             $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
             $path = 'public/employees/';
 
             /**
-             * Delete photo if exists.
+             * Eliminar la foto si existe.
              */
             if($employee->photo){
                 Storage::delete($path . $employee->photo);
@@ -129,16 +129,16 @@ class EmployeeController extends Controller
 
         Employee::where('id', $employee->id)->update($validatedData);
 
-        return Redirect::route('employees.index')->with('success', 'Employee has been updated!');
+        return Redirect::route('employees.index')->with('success', '¡Empleado ha sido actualizado!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina el recurso especificado del almacenamiento.
      */
     public function destroy(Employee $employee)
     {
         /**
-         * Delete photo if exists.
+         * Eliminar la foto si existe.
          */
         if($employee->photo){
             Storage::delete('public/employees/' . $employee->photo);
@@ -146,6 +146,6 @@ class EmployeeController extends Controller
 
         Employee::destroy($employee->id);
 
-        return Redirect::route('employees.index')->with('success', 'Employee has been deleted!');
+        return Redirect::route('employees.index')->with('success', '¡Empleado ha sido eliminado!');
     }
 }
