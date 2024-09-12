@@ -56,13 +56,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $product_code = IdGenerator::generate([
-            'table' => 'products',
-            'field' => 'product_code',
-            'length' => 4,
-            'prefix' => 'PC'
-        ]);
-
+        // Validar los datos del request
         $rules = [
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
@@ -79,23 +73,64 @@ class ProductController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        // save product code value
+        // Obtener el nombre de la categoría y generar una abreviatura
+        $category = Category::find($validatedData['category_id']);
+        $categoryAbbreviation = $this->generateCategoryAbbreviation($category->name);
+
+        // Generar un código de producto único que incluya la abreviatura de la categoría
+        $product_code = $this->generateProductCode($categoryAbbreviation);
+
+        // Guardar el valor del código de producto
         $validatedData['product_code'] = $product_code;
 
-        /**
-         * Handle upload image with Storage.
-         */
+        // Manejar la subida de la imagen con Storage
         if ($file = $request->file('product_image')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/products/';
 
             $file->storeAs($path, $fileName);
             $validatedData['product_image'] = $fileName;
         }
 
+        // Crear el producto en la base de datos
         Product::create($validatedData);
 
+        // Redirigir con un mensaje de éxito
         return Redirect::route('products.index')->with('success', 'El producto ha sido creado!');
+    }
+
+    /**
+     * Genera una abreviatura a partir del nombre de la categoría.
+     *
+     * @param string $categoryName
+     * @return string
+     */
+    protected function generateCategoryAbbreviation($categoryName)
+    {
+        // Obtener las primeras letras de cada palabra en el nombre de la categoría
+        $words = explode(' ', $categoryName);
+        $abbreviation = '';
+
+        foreach ($words as $word) {
+            $abbreviation .= strtoupper(substr($word, 0, 1));
+        }
+
+        return $abbreviation;
+    }
+
+    /**
+     * Genera un código de producto único.
+     *
+     * @param string $categoryAbbreviation
+     * @return string
+     */
+    protected function generateProductCode($categoryAbbreviation)
+    {
+        // Obtener el número de productos existentes con la misma categoría
+        $count = Product::where('product_code', 'like', $categoryAbbreviation . '%')->count() + 1;
+
+        // Generar el código de producto
+        return $categoryAbbreviation . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -151,13 +186,13 @@ class ProductController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('product_image')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/products/';
 
             /**
              * Delete photo if exists.
              */
-            if($product->product_image){
+            if ($product->product_image) {
                 Storage::delete($path . $product->product_image);
             }
 
@@ -178,7 +213,7 @@ class ProductController extends Controller
         /**
          * Delete photo if exists.
          */
-        if($product->product_image){
+        if ($product->product_image) {
             Storage::delete('public/products/' . $product->product_image);
         }
 
@@ -203,35 +238,34 @@ class ProductController extends Controller
 
         $the_file = $request->file('upload_file');
 
-        try{
+        try {
             $spreadsheet = IOFactory::load($the_file->getRealPath());
             $sheet        = $spreadsheet->getActiveSheet();
             $row_limit    = $sheet->getHighestDataRow();
             $column_limit = $sheet->getHighestDataColumn();
-            $row_range    = range( 2, $row_limit );
-            $column_range = range( 'J', $column_limit );
+            $row_range    = range(2, $row_limit);
+            $column_range = range('J', $column_limit);
             $startcount = 2;
             $data = array();
-            foreach ( $row_range as $row ) {
+            foreach ($row_range as $row) {
                 $data[] = [
-                    'product_name' => $sheet->getCell( 'A' . $row )->getValue(),
-                    'category_id' => $sheet->getCell( 'B' . $row )->getValue(),
-                    'supplier_id' => $sheet->getCell( 'C' . $row )->getValue(),
-                    'product_code' => $sheet->getCell( 'D' . $row )->getValue(),
-                    'product_garage' => $sheet->getCell( 'E' . $row )->getValue(),
-                    'product_image' => $sheet->getCell( 'F' . $row )->getValue(),
-                    'product_store' =>$sheet->getCell( 'G' . $row )->getValue(),
-                    'buying_date' =>$sheet->getCell( 'H' . $row )->getValue(),
-                    'expire_date' =>$sheet->getCell( 'I' . $row )->getValue(),
-                    'buying_price' =>$sheet->getCell( 'J' . $row )->getValue(),
-                    'bulk_price' =>$sheet->getCell( 'K' . $row )->getValue(),
-                    'price_for_curves' =>$sheet->getCell( 'K' . $row )->getValue(),
+                    'product_name' => $sheet->getCell('A' . $row)->getValue(),
+                    'category_id' => $sheet->getCell('B' . $row)->getValue(),
+                    'supplier_id' => $sheet->getCell('C' . $row)->getValue(),
+                    'product_code' => $sheet->getCell('D' . $row)->getValue(),
+                    'product_garage' => $sheet->getCell('E' . $row)->getValue(),
+                    'product_image' => $sheet->getCell('F' . $row)->getValue(),
+                    'product_store' => $sheet->getCell('G' . $row)->getValue(),
+                    'buying_date' => $sheet->getCell('H' . $row)->getValue(),
+                    'expire_date' => $sheet->getCell('I' . $row)->getValue(),
+                    'buying_price' => $sheet->getCell('J' . $row)->getValue(),
+                    'bulk_price' => $sheet->getCell('K' . $row)->getValue(),
+                    'price_for_curves' => $sheet->getCell('K' . $row)->getValue(),
                 ];
                 $startcount++;
             }
 
             Product::insert($data);
-
         } catch (Exception $e) {
             // $error_code = $e->errorInfo[1];
             return Redirect::route('products.index')->with('error', 'There was a problem uploading the data!');
@@ -239,7 +273,8 @@ class ProductController extends Controller
         return Redirect::route('products.index')->with('success', 'Data has been successfully imported!');
     }
 
-    public function exportExcel($products){
+    public function exportExcel($products)
+    {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
 
@@ -263,10 +298,11 @@ class ProductController extends Controller
      *This function loads the customer data from the database then converts it
      * into an Array that will be exported to Excel
      */
-    function exportData(){
+    function exportData()
+    {
         $products = Product::all()->sortByDesc('product_id');
 
-        $product_array [] = array(
+        $product_array[] = array(
             'Product Name',
             'Category Id',
             'Supplier Id',
@@ -281,8 +317,7 @@ class ProductController extends Controller
             'price for curves',
         );
 
-        foreach($products as $product)
-        {
+        foreach ($products as $product) {
             $product_array[] = array(
                 'Product Name' => $product->product_name,
                 'Category Id' => $product->category_id,
@@ -290,12 +325,12 @@ class ProductController extends Controller
                 'Product Code' => $product->product_code,
                 'Product Garage' => $product->product_garage,
                 'Product Image' => $product->product_image,
-                'Product Store' =>$product->product_store,
-                'Buying Date' =>$product->buying_date,
-                'Expire Date' =>$product->expire_date,
-                'Buying Price' =>$product->buying_price,
-                'bulk price' =>$product->bulk_price,
-                'price for curves' =>$product->price_for_curves,
+                'Product Store' => $product->product_store,
+                'Buying Date' => $product->buying_date,
+                'Expire Date' => $product->expire_date,
+                'Buying Price' => $product->buying_price,
+                'bulk price' => $product->bulk_price,
+                'price for curves' => $product->price_for_curves,
             );
         }
 

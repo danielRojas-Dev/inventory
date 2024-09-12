@@ -51,7 +51,24 @@ class Product extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {
-            return $query->where('product_name', 'like', '%' . $search . '%');
+            return $query->where(function ($query) use ($search) {
+                $query->where('product_name', 'like', '%' . $search . '%')
+                      ->orWhere('product_code', 'like', '%' . $search . '%')
+                      ->orWhere('product_garage', 'like', '%' . $search . '%');
+            });
+        })
+        ->when($filters['price_min'] ?? false, function ($query, $priceMin) {
+            return $query->where('buying_price', '>=', $priceMin);
+        })
+        ->when($filters['price_max'] ?? false, function ($query, $priceMax) {
+            return $query->where('buying_price', '<=', $priceMax);
+        })
+        ->when($filters['bulk_price_min'] ?? false, function ($query, $bulkPriceMin) {
+            return $query->where('bulk_price', '>=', $bulkPriceMin);
+        })
+        ->when($filters['bulk_price_max'] ?? false, function ($query, $bulkPriceMax) {
+            return $query->where('bulk_price', '<=', $bulkPriceMax);
         });
     }
+    
 }

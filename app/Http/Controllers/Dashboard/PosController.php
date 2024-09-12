@@ -17,7 +17,7 @@ class PosController extends Controller
         // $todayDate = Carbon::now();
         $row = (int) request('row', 10);
 
-        if ($row < 1 || el $row > 100) {
+        if ($row < 1 || $row > 100) {
             abort(400, 'El parámetro de filas por página debe ser un número entero entre 1 y 100.');
         }
 

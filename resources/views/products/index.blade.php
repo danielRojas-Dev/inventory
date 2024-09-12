@@ -55,7 +55,7 @@
                             <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
                             <div class="input-group col-sm-8">
                                 <input type="text" id="search" class="form-control" name="search"
-                                    placeholder="Search product" value="{{ request('search') }}">
+                                    placeholder="Buscar Producto" value="{{ request('search') }}">
                                 <div class="input-group-append">
                                     <button type="submit" class="input-group-text bg-primary"><i
                                             class="fas fa-search font-size-20"></i></button>
@@ -73,6 +73,7 @@
                     <table class="table mb-0">
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
+                                <th>@sortablelink('product_code', 'Codigo')</th>
                                 <th>Foto</th>
                                 <th>@sortablelink('product_name', 'nombre')</th>
                                 <th>@sortablelink('category.name', 'categoría')</th>
@@ -86,6 +87,7 @@
                         <tbody class="ligth-body">
                             @forelse ($products as $product)
                                 <tr>
+                                    <td>{{ $product->product_code }}</td>
                                     <td>
                                         <img class="avatar-60 rounded"
                                             src="{{ $product->product_image ? asset('storage/products/' . $product->product_image) : asset('assets/images/product/default.webp') }}">
