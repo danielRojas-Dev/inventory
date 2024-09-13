@@ -12,6 +12,7 @@ class Product extends Model
 
     protected $fillable = [
         'product_name',
+        'product_description',
         'category_id',
         'supplier_id',
         'product_code',
@@ -27,6 +28,7 @@ class Product extends Model
 
     public $sortable = [
         'product_name',
+        'product_description',
         'bulk_price',
         'price_for_curves',
     ];

@@ -60,13 +60,14 @@ class ProductController extends Controller
         $rules = [
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
+            'product_description' => 'string|nullable',
             'category_id' => 'required|integer',
             'supplier_id' => 'integer',
             'product_garage' => 'string|nullable',
             'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'expire_date' => 'date_format:Y-m-d|max:10|nullable',
-            'buying_price' => 'required|integer',
+            'buying_price' => 'integer|nullable',
             'bulk_price' => 'required|integer',
             'price_for_curves' => 'required|integer',
         ];
@@ -169,13 +170,14 @@ class ProductController extends Controller
         $rules = [
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
+            'product_description' => 'string|nullable',
             'category_id' => 'required|integer',
             'supplier_id' => 'integer',
             'product_garage' => 'string|nullable',
             'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'expire_date' => 'date_format:Y-m-d|max:10|nullable',
-            'buying_price' => 'required|integer',
+            'buying_price' => 'integer|nullable',
             'bulk_price' => 'required|integer',
             'price_for_curves' => 'required|integer',
         ];

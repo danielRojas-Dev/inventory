@@ -76,6 +76,7 @@
                                 <th>@sortablelink('product_code', 'Codigo')</th>
                                 <th>Foto</th>
                                 <th>@sortablelink('product_name', 'nombre')</th>
+                                <th>@sortablelink('product_description', 'Descripcion')</th>
                                 <th>@sortablelink('category.name', 'categoría')</th>
                                 {{-- <th>@sortablelink('supplier.name', 'proveedor')</th> --}}
                                 <th>@sortablelink('bulk_price', 'precio por Mayor')</th>
@@ -93,6 +94,7 @@
                                             src="{{ $product->product_image ? asset('storage/products/' . $product->product_image) : asset('assets/images/product/default.webp') }}">
                                     </td>
                                     <td>{{ $product->product_name }}</td>
+                                    <td>{{ $product->product_description }}</td>
                                     <td>{{ $product->category->name }}</td>
                                     {{-- <td>{{ $product->supplier->name }}</td> --}}
                                     <td>$ {{ number_format($product->bulk_price, 2, ',', '.') }}</td>

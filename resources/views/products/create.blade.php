@@ -60,6 +60,18 @@
                                         </div>
                                     @enderror
                                 </div>
+                                <div class="form-group col-md-12">
+                                    <label for="product_description">Descripcion del Producto</label>
+                                    <input type="text"
+                                        class="form-control @error('product_description') is-invalid @enderror"
+                                        id="product_description" name="product_description"
+                                        value="{{ old('product_description') }}">
+                                    @error('product_description')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                                 <div class="form-group col-md-6">
                                     <label for="category_id">Categoría <span class="text-danger">*</span></label>
                                     <select class="form-control" name="category_id" required>
@@ -135,7 +147,7 @@
                                 <div class="form-group col-md-6">
                                     <label for="buying_price">Precio de Compra <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('buying_price') is-invalid @enderror"
-                                        id="buying_price" name="buying_price" value="{{ old('buying_price') }}" required>
+                                        id="buying_price" name="buying_price" value="{{ old('buying_price') }}">
                                     @error('buying_price')
                                         <div class="invalid-feedback">
                                             {{ $message }}

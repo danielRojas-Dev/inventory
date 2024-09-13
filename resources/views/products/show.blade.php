@@ -62,6 +62,11 @@
                                 <input type="text" class="form-control bg-white" value="{{ $product->product_name }}"
                                     readonly>
                             </div>
+                            <div class="form-group col-md-12">
+                                <label>Descripcion del Producto</label>
+                                <input type="text" class="form-control bg-white"
+                                    value="{{ $product->product_description }}" readonly>
+                            </div>
                             <div class="form-group col-md-6">
                                 <label>Categoría</label>
                                 <input type="text" class="form-control bg-white" value="{{ $product->category->name }}"

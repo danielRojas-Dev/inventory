@@ -65,7 +65,6 @@
                     <table class="table mb-0">
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
-                                <th>No.</th>
                                 <th>No. de Factura</th>
                                 <th>@sortablelink('user.name', 'Vendedor')</th>
                                 <th>@sortablelink('order_date', 'Fecha del Pedido')</th>
@@ -79,7 +78,6 @@
 
                             @forelse ($orders as $order)
                                 <tr>
-                                    <td>{{ $orders->currentPage() * 10 - 10 + $loop->iteration }}</td>
                                     <td>{{ $order->invoice_no }}</td>
                                     <td>{{ $order->user->name }}</td>
                                     <td>{{ $order->order_date }}</td>
