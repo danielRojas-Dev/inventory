@@ -28,11 +28,11 @@ class ProductController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         return view('products.index', [
-            'products' => Product::with(['category', 'supplier'])
+            'products' => Product::with(['category'])
                 ->filter(request(['search']))
                 ->sortable()
                 ->paginate($row)
@@ -47,7 +47,6 @@ class ProductController extends Controller
     {
         return view('products.create', [
             'categories' => Category::all(),
-            'suppliers' => Supplier::all(),
         ]);
     }
 
@@ -67,11 +66,8 @@ class ProductController extends Controller
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
-            'supplier_id' => 'required|integer',
-            'product_garage' => 'string|nullable',
-            'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
-            'expire_date' => 'date_format:Y-m-d|max:10|nullable',
+            'product_store' => 'string|nullable',
             'buying_price' => 'required|integer',
             'selling_price' => 'required|integer',
         ];
@@ -94,7 +90,7 @@ class ProductController extends Controller
 
         Product::create($validatedData);
 
-        return Redirect::route('products.index')->with('success', 'Product has been created!');
+        return Redirect::route('products.index')->with('success', 'Se ha creado el producto.');
     }
 
     /**
@@ -120,7 +116,6 @@ class ProductController extends Controller
     {
         return view('products.edit', [
             'categories' => Category::all(),
-            'suppliers' => Supplier::all(),
             'product' => $product
         ]);
     }
@@ -134,11 +129,8 @@ class ProductController extends Controller
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
-            'supplier_id' => 'required|integer',
-            'product_garage' => 'string|nullable',
             'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
-            'expire_date' => 'date_format:Y-m-d|max:10|nullable',
             'buying_price' => 'required|integer',
             'selling_price' => 'required|integer',
         ];
@@ -165,7 +157,7 @@ class ProductController extends Controller
 
         Product::where('id', $product->id)->update($validatedData);
 
-        return Redirect::route('products.index')->with('success', 'Product has been updated!');
+        return Redirect::route('products.index')->with('success', 'Se ha actualizado el producto.');
     }
 
     /**
@@ -182,7 +174,7 @@ class ProductController extends Controller
 
         Product::destroy($product->id);
 
-        return Redirect::route('products.index')->with('success', 'Product has been deleted!');
+        return Redirect::route('products.index')->with('success', 'Se ha eliminado el producto!');
     }
 
     /**
@@ -214,13 +206,10 @@ class ProductController extends Controller
                 $data[] = [
                     'product_name' => $sheet->getCell( 'A' . $row )->getValue(),
                     'category_id' => $sheet->getCell( 'B' . $row )->getValue(),
-                    'supplier_id' => $sheet->getCell( 'C' . $row )->getValue(),
                     'product_code' => $sheet->getCell( 'D' . $row )->getValue(),
-                    'product_garage' => $sheet->getCell( 'E' . $row )->getValue(),
                     'product_image' => $sheet->getCell( 'F' . $row )->getValue(),
                     'product_store' =>$sheet->getCell( 'G' . $row )->getValue(),
                     'buying_date' =>$sheet->getCell( 'H' . $row )->getValue(),
-                    'expire_date' =>$sheet->getCell( 'I' . $row )->getValue(),
                     'buying_price' =>$sheet->getCell( 'J' . $row )->getValue(),
                     'selling_price' =>$sheet->getCell( 'K' . $row )->getValue(),
                 ];
@@ -231,9 +220,9 @@ class ProductController extends Controller
 
         } catch (Exception $e) {
             // $error_code = $e->errorInfo[1];
-            return Redirect::route('products.index')->with('error', 'There was a problem uploading the data!');
+            return Redirect::route('products.index')->with('error', 'Ha habido un problema al cargar los datos.');
         }
-        return Redirect::route('products.index')->with('success', 'Data has been successfully imported!');
+        return Redirect::route('products.index')->with('success', 'Los datos se han importado correctamente.');
     }
 
     public function exportExcel($products){
@@ -266,13 +255,10 @@ class ProductController extends Controller
         $product_array [] = array(
             'Product Name',
             'Category Id',
-            'Supplier Id',
             'Product Code',
-            'Product Garage',
             'Product Image',
             'Product Store',
-            'Buying Date',
-            'Expire Date',
+            'Buying Date'.
             'Buying Price',
             'Selling Price',
         );
@@ -282,13 +268,10 @@ class ProductController extends Controller
             $product_array[] = array(
                 'Product Name' => $product->product_name,
                 'Category Id' => $product->category_id,
-                'Supplier Id' => $product->supplier_id,
                 'Product Code' => $product->product_code,
-                'Product Garage' => $product->product_garage,
                 'Product Image' => $product->product_image,
                 'Product Store' =>$product->product_store,
                 'Buying Date' =>$product->buying_date,
-                'Expire Date' =>$product->expire_date,
                 'Buying Price' =>$product->buying_price,
                 'Selling Price' =>$product->selling_price,
             );

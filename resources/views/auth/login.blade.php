@@ -8,8 +8,8 @@
                     <div class="d-flex align-items-center auth-content">
                         <div class="col-lg-12 align-self-center">
                             <div class=" text-center">
-                                <img src="{{ asset('assets/images/login/MIA.png') }}" class="img-fluid"
-                                    style="max-width: 60%; height: auto;" alt="">
+                                <img src="{{ asset('assets/images/login/logodr.png') }}" class="img-fluid"
+                                    style="max-width: 40%; height: auto;" alt="">
                             </div>
                             <div class="">
                                 <h2 class="mb-2 text-center">Iniciar sesión</h2>
