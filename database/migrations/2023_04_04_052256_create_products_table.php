@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('product_code')->nullable();
             $table->string('product_image')->nullable();
             $table->integer('product_store')->nullable();
+            $table->datetime('buying_date')->nullable();
             $table->integer('buying_price')->nullable();
             $table->integer('selling_price')->nullable();
             $table->timestamps();

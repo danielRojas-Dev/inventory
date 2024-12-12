@@ -24,7 +24,7 @@ class OrderController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         $orders = Order::where('order_status', 'pending')->sortable()->paginate($row);
@@ -39,7 +39,7 @@ class OrderController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         $orders = Order::where('order_status', 'complete')->sortable()->paginate($row);
@@ -54,7 +54,7 @@ class OrderController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         return view('stock.index', [
@@ -176,7 +176,7 @@ class OrderController extends Controller
         $row = (int) request('row', 10);
 
         if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
         $orders = Order::where('due', '>', '0')

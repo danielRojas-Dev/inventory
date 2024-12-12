@@ -31,7 +31,7 @@ class ProductController extends Controller
             abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
-        return view('products.index', [
+        return view('products.index', [ 
             'products' => Product::with(['category'])
                 ->filter(request(['search']))
                 ->sortable()
