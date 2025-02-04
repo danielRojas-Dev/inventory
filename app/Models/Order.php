@@ -15,20 +15,18 @@ class Order extends Model
         'order_date',
         'order_status',
         'total_products',
-        'sub_total',
-        'vat',
         'invoice_no',
         'total',
-        'payment_status',
+        'payment_method',
         'pay',
-        'due',
+        'quotas',
+        'employee_id',
     ];
 
     public $sortable = [
         'customer_id',
         'order_date',
         'pay',
-        'due',
         'total',
     ];
 
@@ -39,5 +37,29 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
+    }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetails::class, 'order_id', 'id');
+    }
+
+    public function orderquotaDetails()
+    {
+        return $this->hasMany(OrderquotasDetails::class, 'order_id', 'id');
+    }
+
+    public function getCantidadDeudasAttribute()
+    {
+        $orderId = $this::where('customer_id', '=', $this->customer_id)->value('id');
+
+
+        $debeCuotas = OrderquotasDetails::where('order_id', $orderId)
+            ->where('estimated_payment_date', '<', date('Y-m-d'))
+            ->where('status_payment', '!=', 'Pagado')
+            ->count();
+
+
+        return $debeCuotas;
     }
 }

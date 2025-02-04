@@ -55,7 +55,7 @@
                                         </div>
                                         <div>
                                             <p class="mb-2">Total Adeudado</p>
-                                            <h4>$ {{ number_format($total_due, 2, ',', '.') }}</h4>
+                                            {{-- <h4>$ {{ number_format($total_due, 2, ',', '.') }}</h4> --}}
                                         </div>
                                     </div>
                                     <div class="iq-progress-bar mt-2">

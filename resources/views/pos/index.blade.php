@@ -47,8 +47,8 @@
                                         </div>
                                     </form>
                                 </td>
-                                <td>{{ $item->price }}</td>
-                                <td>{{ $item->subtotal }}</td>
+                                <td> $ {{ number_format($item->price, 0, ',', '.') }}</td>
+                                <td>$ {{ number_format($item->subtotal, 0, ',', '.') }}</td>
                                 <td>
                                     <a href="{{ route('pos.deleteCart', $item->rowId) }}" class="btn btn-danger border-none"
                                         data-toggle="tooltip" data-placement="top" title=""
@@ -59,48 +59,27 @@
                     </tbody>
                 </table>
 
-                <div class="container row text-center">
-                    <div class="form-group col-sm-6">
-                        <p class="h4 text-primary">Cantidad: {{ Cart::count() }}</p>
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <p class="h4 text-primary">Subtotal: {{ Cart::subtotal() }}</p>
-                    </div>
-                    {{-- <div class="form-group col-sm-6">
-                        <p class="h4 text-primary">IVA: {{ Cart::tax() }}</p>
-                    </div> --}}
-                    <div class="form-group col-sm-6">
-                        <p class="h4 text-primary">Total: {{ Cart::total() }}</p>
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 mb-2">
+                            <p class="h5 text-primary">Cantidad: {{ Cart::count() }}</p>
+                        </div>
+                        <div class="col-md-6 col-sm-12 mb-2">
+                            <p class="h5 text-primary">Subtotal: $ {{ number_format(Cart::subtotal(), 0, ',', '.') }}</p>
+                        </div>
+                        <div class="col-md-6 col-sm-12 mb-2">
+                            <p class="h5 text-primary">Total: $ {{ number_format(Cart::total(), 0, ',', '.') }}</p>
+                            <input type="hidden" id="total_compra" value="{{ Cart::total() }}">
+                        </div>
                     </div>
                 </div>
 
-                <form action="{{ route('pos.createInvoice') }}" method="POST">
-                    @csrf
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <div class="input-group">
-                                <select class="form-control" id="customer_id" name="customer_id">
-                                    <option selected="" disabled="">-- Seleccionar Cliente --</option>
-                                    @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('customer_id')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="col-md-12 mt-4">
-                            <div class="d-flex flex-wrap align-items-center justify-content-center">
-                                <a href="{{ route('customers.create') }}" class="btn btn-primary add-list mx-1">Agregar
-                                    Cliente</a>
-                                <button type="submit" class="btn btn-success add-list mx-1">Crear Factura</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                <div class="d-flex flex-wrap align-items-center justify-content-center">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                        Seleccionar metodo de pago
+                    </button>
+                </div>
+
             </div>
 
             <div class="col-lg-6 col-md-12">
@@ -161,7 +140,7 @@
                                                     src="{{ $product->product_image ? asset('storage/products/' . $product->product_image) : asset('assets/images/product/default.webp') }}">
                                             </td>
                                             <td>{{ $product->product_name }}</td>
-                                            <td>{{ $product->selling_price }}</td>
+                                            <td>$ {{ number_format($product->selling_price, 0, ',', '.') }}</td>
                                             <td>
                                                 <form action="{{ route('pos.addCart') }}" method="POST"
                                                     style="margin-bottom: 5px">
@@ -198,4 +177,121 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Seleccionar Cliente y Método de Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('pos.createInvoice') }}" method="POST">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="customer_id">Seleccionar Cliente</label>
+                                <select class="form-control" id="customer_id" name="customer_id" required>
+                                    <option selected disabled>-- Seleccionar Cliente --</option>
+                                    @foreach ($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                                <label for="payment_method">Método de Pago</label>
+                                <select class="form-control" id="payment_method" name="payment_method" required>
+                                    <option selected disabled>-- Seleccionar Método --</option>
+                                    <option value="EFECTIVO">Efectivo</option>
+                                    <option value="TRANSFERENCIA">Transferencia</option>
+                                    <option value="DEBITO">Débito</option>
+                                    <option value="CUOTAS">Cuotas</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mt-3" id="cuotas_section" hidden>
+                                <label for="quotas">Número de Cuotas</label>
+                                <select class="form-control" id="quotas" name="quotas">
+                                    <option value="" selected disabled>Seleccione cuotas</option>
+                                    <option value="6">6</option>
+                                    <option value="9">9</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mt-3" id="fecha_pactada" hidden>
+                                <label for="day">Día Pactado a pagar Cuota</label>
+                                <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
+                                    <option value="" selected disabled>Seleccione Día</option>
+                                    @for ($i = 1; $i <= 30; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+
+
+                            <div class="col-md-12 mt-3" id="cuotas_info_section" hidden>
+                                <h5>Detalles del Plan de Cuotas</h5>
+                                <p><strong>Total Original:</strong> $<span id="total_original">0.00</span></p>
+                                <p><strong>Total con Interés:</strong> $<span id="total_interes">0.00</span></p>
+                                <p><strong>Cuotas:</strong> $<span id="monto_cuota">0.00</span> cada una</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-success">Crear Factura</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('payment_method').addEventListener('change', function() {
+            let cuotasSection = document.getElementById('cuotas_section');
+            let cuotasInfoSection = document.getElementById('cuotas_info_section');
+            let fechaPactada = document.getElementById('fecha_pactada');
+            let selectCuotas = document.getElementById('quotas');
+            let day = document.getElementById('estimated_payment_date');
+
+            if (this.value === 'CUOTAS') {
+                cuotasSection.removeAttribute('hidden');
+                cuotasInfoSection.removeAttribute('hidden');
+                fechaPactada.removeAttribute('hidden');
+            } else {
+                cuotasSection.setAttribute('hidden', 'true');
+                cuotasInfoSection.setAttribute('hidden', 'true');
+                fechaPactada.setAttribute('hidden', 'true');
+                selectCuotas.value = '';
+                day.value = '';
+
+            }
+        });
+
+        document.getElementById('quotas').addEventListener('change', calcularCuotas);
+        document.getElementById('day').addEventListener('input', calcularCuotas);
+
+        function calcularCuotas() {
+            let totalOriginal = parseFloat(document.getElementById('total_compra').value) || 0;
+
+            let cuotas = parseInt(document.getElementById('quotas').value);
+            let interes = 0;
+
+            if (cuotas === 9) {
+                interes = 0.70;
+            } else if (cuotas === 6) {
+                interes = 0.35;
+            }
+
+            let totalConInteres = (totalOriginal) * (1 + interes);
+            let montoCuota = totalConInteres / cuotas;
+
+            document.getElementById('total_original').innerText = totalOriginal.toFixed(2);
+            document.getElementById('total_interes').innerText = totalConInteres.toFixed(2);
+            document.getElementById('monto_cuota').innerText = montoCuota.toFixed(2);
+        }
+    </script>
 @endsection

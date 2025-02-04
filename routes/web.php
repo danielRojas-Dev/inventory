@@ -16,6 +16,7 @@ use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PosController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Middleware\VerificarCuotaAnteriorPagada;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +29,9 @@ use App\Http\Controllers\Dashboard\UserController;
 |
 */
 
-route::get('/', function () {    return redirect()->route('login');});
+route::get('/', function () {
+    return redirect()->route('login');
+});
 
 
 // DEFAULT DASHBOARD & PROFILE
@@ -93,7 +96,7 @@ Route::middleware(['permission:category.menu'])->group(function () {
 
 // ====== POS ======
 Route::middleware(['permission:pos.menu'])->group(function () {
-    Route::get('/pos', [PosController::class,'index'])->name('pos.index');
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::post('/pos/add', [PosController::class, 'addCart'])->name('pos.addCart');
     Route::post('/pos/update/{rowId}', [PosController::class, 'updateCart'])->name('pos.updateCart');
     Route::get('/pos/delete/{rowId}', [PosController::class, 'deleteCart'])->name('pos.deleteCart');
@@ -108,7 +111,14 @@ Route::middleware(['permission:pos.menu'])->group(function () {
 Route::middleware(['permission:orders.menu'])->group(function () {
     Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order.pendingOrders');
     Route::get('/orders/complete', [OrderController::class, 'completeOrders'])->name('order.completeOrders');
-    Route::get('/orders/details/{order_id}', [OrderController::class, 'orderDetails'])->name('order.orderDetails');
+    Route::get('/customer/details/{customer_id}', [OrderController::class, 'customerDetails'])->name('customer.customerDetails');
+    Route::get('/quotas/{order_id}', [OrderController::class, 'quotas'])->name('order.quotas');
+    Route::get('/payment_quota/{quota}', [OrderController::class, 'paymentQuota'])->name('quota.paymentQuota')->middleware([VerificarCuotaAnteriorPagada::class]);
+    Route::post('/payment', [OrderController::class, 'payment'])->name('quota.payment');
+
+
+    Route::get('/download-receipt-venta/{order}', [OrderController::class, 'downloadReceipt'])->name('order.downloadReceipt');
+    Route::get('/download-receipt-quota/{quota}', [OrderController::class, 'downloadReceiptQuota'])->name('order.downloadReceiptQuota');
     Route::put('/orders/update/status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
     Route::get('/orders/invoice/download/{order_id}', [OrderController::class, 'invoiceDownload'])->name('order.invoiceDownload');
 
@@ -156,4 +166,4 @@ Route::middleware(['permission:roles.menu'])->group(function () {
     Route::delete('/role/permission/{id}', [RoleController::class, 'rolePermissionDestroy'])->name('rolePermission.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

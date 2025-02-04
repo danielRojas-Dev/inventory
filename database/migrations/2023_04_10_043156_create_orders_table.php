@@ -17,13 +17,13 @@ return new class extends Migration
             $table->string('order_date');
             $table->string('order_status');
             $table->integer('total_products');
-            $table->integer('sub_total')->nullable();
-            $table->integer('vat')->nullable();
             $table->string('invoice_no')->nullable();
-            $table->integer('total')->nullable();
-            $table->string('payment_status')->nullable();
-            $table->integer('pay')->nullable();
-            $table->integer('due')->nullable();
+            $table->string('total')->nullable();
+            $table->enum('payment_method', ['EFECTIVO', 'TRANSFERENCIA', 'DEBITO', 'CUOTAS'])->nullable();
+            $table->string('pay')->nullable();
+            $table->string('quotas')->nullable();
+            $table->string('employee_id');
+
             $table->timestamps();
         });
     }

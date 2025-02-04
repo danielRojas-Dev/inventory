@@ -36,7 +36,7 @@
     </div>
     <!-- Wrapper End-->
 
-    @include('dashboard.body.footer')
+    {{-- @include('dashboard.body.footer') --}}
 
     <!-- Backend Bundle JavaScript -->
     <script src="{{ asset('assets/js/backend-bundle.min.js') }}"></script>

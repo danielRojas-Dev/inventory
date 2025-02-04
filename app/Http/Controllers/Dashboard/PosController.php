@@ -54,7 +54,7 @@ class PosController extends Controller
     public function updateCart(Request $request, $rowId)
     {
         $rules = [
-            'qty' => 'required|numeric',    
+            'qty' => 'required|numeric',
         ];
 
         $validatedData = $request->validate($rules);
@@ -74,18 +74,46 @@ class PosController extends Controller
     public function createInvoice(Request $request)
     {
         $rules = [
-            'customer_id' => 'required'
+            'customer_id' => 'required',
+            'payment_method' => 'required',
+            'quotas' => 'sometimes|nullable|in:6,9',
+            'estimated_payment_date' => 'sometimes|nullable',
         ];
 
+
         $validatedData = $request->validate($rules);
-        $customer = Customer::where('id', $validatedData['customer_id'])->first();
+
+        $customer = Customer::find($validatedData['customer_id']);
         $content = Cart::content();
+        $totalOriginal = Cart::total(); // Total sin modificaciones
+
+        $quotas = $validatedData['quotas'] ?? null;
+
+        $totalConInteres = $totalOriginal; // Se descuenta la entrega
+
+        if ($quotas) {
+            // Aplicar interés según la cantidad de cuotas
+            $interes = $quotas == 6 ? 0.35 : 0.70;
+            $totalConInteres *= (1 + $interes);
+            $montoCuota = $totalConInteres / $quotas;
+        } else {
+            $totalConInteres = $totalOriginal;
+            $montoCuota = 0;
+        }
+
 
         return view('pos.create-invoice', [
             'customer' => $customer,
-            'content' => $content
+            'content' => $content,
+            'payment_method' => $validatedData['payment_method'],
+            'quotas' => $quotas,
+            'estimated_payment_date' => $validatedData['estimated_payment_date'] ?? null,
+            'total_original' => $totalOriginal,
+            'total_con_interes' => $totalConInteres,
+            'monto_cuota' => $montoCuota,
         ]);
     }
+
 
     public function printInvoice(Request $request)
     {

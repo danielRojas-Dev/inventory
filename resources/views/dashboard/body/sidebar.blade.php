@@ -43,7 +43,7 @@
                     <li>
                         <a href="#orders" class="collapsed" data-toggle="collapse" aria-expanded="false">
                             <i class="fas fa-shopping-basket"></i>
-                            <span class="ml-3">Pedidos</span>
+                            <span class="ml-3">Ventas</span>
                             <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -57,14 +57,14 @@
                                     <i class="fas fa-arrow-right"></i><span>Pedidos Pendientes</span>
                                 </a>
                             </li> --}}
-                            <li class="{{ Request::is('pending/due*') ? 'active' : '' }}">
+                            {{-- <li class="{{ Request::is('pending/due*') ? 'active' : '' }}">
                                 <a href="{{ route('order.pendingDue') }}">
-                                    <i class="fas fa-arrow-right"></i><span>Pedidos Pendientes</span>
+                                    <i class="fas fa-arrow-right"></i><span>Ventas Realizadas</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="{{ Request::is('orders/complete*') ? 'active' : '' }}">
                                 <a href="{{ route('order.completeOrders') }}">
-                                    <i class="fas fa-arrow-right"></i><span>Pedidos Completados</span>
+                                    <i class="fas fa-arrow-right"></i><span>Ventas Realizadas</span>
                                 </a>
                             </li>
 
