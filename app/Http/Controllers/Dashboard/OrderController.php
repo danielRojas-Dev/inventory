@@ -253,7 +253,8 @@ class OrderController extends Controller
 
         $pdfFileName = 'Factura_' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
-        $pdf = Pdf::loadView('pos.print-invoice', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
+
+        $pdf = Pdf::loadView('orders.payment-receipt-venta-normal', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
             ->setPaper('cart', 'vertical');
 
         return $pdf->stream($pdfFileName, array('Attachment' => 0));
