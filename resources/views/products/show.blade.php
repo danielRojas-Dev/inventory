@@ -79,13 +79,13 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Precio de Compra</label>
-                                <input type="text" class="form-control bg-white" value="{{ $product->buying_price }}"
-                                    readonly>
+                                <input type="text" class="form-control bg-white"
+                                    value="$ {{ number_format($product->buying_price, 0, ',', '.') }}" readonly>
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Precio de Venta</label>
-                                <input type="text" class="form-control bg-white" value="{{ $product->selling_price }}"
-                                    readonly>
+                                <input type="text" class="form-control bg-white"
+                                    value="$ {{ number_format($product->selling_price, 0, ',', '.') }}" readonly>
                             </div>
                         </div>
                         <!-- end: Show Data -->

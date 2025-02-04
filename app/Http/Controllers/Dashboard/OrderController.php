@@ -205,13 +205,13 @@ class OrderController extends Controller
             Cart::destroy();
 
             // Redirigir con éxito
-            return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceipt', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
+            return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceiptVenta', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
         } catch (\Throwable $th) {
             DB::rollBack();
         }
     }
 
-    public function downloadReceipt(Order $order)
+    public function downloadReceiptVenta(Order $order)
     {
         $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
 
@@ -232,6 +232,28 @@ class OrderController extends Controller
         $pdfFileName = 'Factura_' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
         $pdf = Pdf::loadView('orders.payment-receipt', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'valorCuota', 'estimatedPaymentDate', 'details'))
+            ->setPaper('cart', 'vertical');
+
+        return $pdf->stream($pdfFileName, array('Attachment' => 0));
+    }
+    public function downloadReceiptVentaNormal(Order $order)
+    {
+        $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
+
+        $details = OrderDetails::where('order_id', $order->id)->with('product')->get();
+
+        $pathLogo = public_path('assets/images/login/electrodr.png');
+        $logo = file_get_contents($pathLogo);
+
+        $pathTitle = public_path('assets/images/login/title.png');
+        $title = file_get_contents($pathTitle);
+
+        $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
+        $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
+
+        $pdfFileName = 'Factura_' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+
+        $pdf = Pdf::loadView('pos.print-invoice', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
             ->setPaper('cart', 'vertical');
 
         return $pdf->stream($pdfFileName, array('Attachment' => 0));

@@ -94,7 +94,8 @@
                                 <div class="form-group col-md-6">
                                     <label for="buying_date">Fecha de Compra</label>
                                     <input id="buying_date" class="form-control @error('buying_date') is-invalid @enderror"
-                                        name="buying_date" value="{{ old('buying_date', $product->buying_date) }}" />
+                                        name="buying_date"
+                                        value="{{ old('buying_date', $product->buying_date->format('Y-m-d')) }}" />
                                     @error('buying_date')
                                         <div class="invalid-feedback">
                                             {{ $message }}

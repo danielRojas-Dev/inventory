@@ -37,12 +37,17 @@ class Product extends Model
         'category',
         'supplier'
     ];
+    protected $casts = [
+        'buying_date' => 'date',
+    ];
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function supplier(){
+    public function supplier()
+    {
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
@@ -51,5 +56,10 @@ class Product extends Model
         $query->when($filters['search'] ?? false, function ($query, $search) {
             return $query->where('product_name', 'like', '%' . $search . '%');
         });
+    }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetails::class, 'product_id', 'id');
     }
 }

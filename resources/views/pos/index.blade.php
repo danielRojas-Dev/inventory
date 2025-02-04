@@ -212,7 +212,7 @@
 
                             <div class="col-md-12 mt-3" id="cuotas_section" hidden>
                                 <label for="quotas">Número de Cuotas</label>
-                                <select class="form-control" id="quotas" name="quotas">
+                                <select class="form-control" id="quotas" name="quotas" required>
                                     <option value="" selected disabled>Seleccione cuotas</option>
                                     <option value="6">6</option>
                                     <option value="9">9</option>
@@ -221,7 +221,8 @@
 
                             <div class="col-md-12 mt-3" id="fecha_pactada" hidden>
                                 <label for="day">Día Pactado a pagar Cuota</label>
-                                <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
+                                <select class="form-control" id="estimated_payment_date" name="estimated_payment_date"
+                                    required>
                                     <option value="" selected disabled>Seleccione Día</option>
                                     @for ($i = 1; $i <= 30; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>

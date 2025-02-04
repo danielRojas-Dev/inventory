@@ -54,7 +54,7 @@
                             <div class="col-sm-8">
                                 <div class="input-group">
                                     <input type="text" id="search" class="form-control" name="search"
-                                        placeholder="Buscar pedido" value="{{ request('search') }}">
+                                        placeholder="Buscar Cliente" value="{{ request('search') }}">
                                     <div class="input-group-append">
                                         <button type="submit" class="input-group-text bg-primary">
                                             <i class="fas fa-search font-size-20"></i>

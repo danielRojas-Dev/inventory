@@ -31,7 +31,7 @@ class ProductController extends Controller
             abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
-        return view('products.index', [ 
+        return view('products.index', [
             'products' => Product::with(['category'])
                 ->filter(request(['search']))
                 ->sortable()
@@ -81,7 +81,7 @@ class ProductController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('product_image')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/products/';
 
             $file->storeAs($path, $fileName);
@@ -141,13 +141,13 @@ class ProductController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('product_image')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/products/';
 
             /**
              * Delete photo if exists.
              */
-            if($product->product_image){
+            if ($product->product_image) {
                 Storage::delete($path . $product->product_image);
             }
 
@@ -168,7 +168,11 @@ class ProductController extends Controller
         /**
          * Delete photo if exists.
          */
-        if($product->product_image){
+
+        if ($product->orderDetails()->exists()) {
+            return Redirect::route('products.index')->with('error', 'No se puede eliminar el producto porque tiene ventas asociadas.');
+        }
+        if ($product->product_image) {
             Storage::delete('public/products/' . $product->product_image);
         }
 
@@ -193,31 +197,30 @@ class ProductController extends Controller
 
         $the_file = $request->file('upload_file');
 
-        try{
+        try {
             $spreadsheet = IOFactory::load($the_file->getRealPath());
             $sheet        = $spreadsheet->getActiveSheet();
             $row_limit    = $sheet->getHighestDataRow();
             $column_limit = $sheet->getHighestDataColumn();
-            $row_range    = range( 2, $row_limit );
-            $column_range = range( 'J', $column_limit );
+            $row_range    = range(2, $row_limit);
+            $column_range = range('J', $column_limit);
             $startcount = 2;
             $data = array();
-            foreach ( $row_range as $row ) {
+            foreach ($row_range as $row) {
                 $data[] = [
-                    'product_name' => $sheet->getCell( 'A' . $row )->getValue(),
-                    'category_id' => $sheet->getCell( 'B' . $row )->getValue(),
-                    'product_code' => $sheet->getCell( 'D' . $row )->getValue(),
-                    'product_image' => $sheet->getCell( 'F' . $row )->getValue(),
-                    'product_store' =>$sheet->getCell( 'G' . $row )->getValue(),
-                    'buying_date' =>$sheet->getCell( 'H' . $row )->getValue(),
-                    'buying_price' =>$sheet->getCell( 'J' . $row )->getValue(),
-                    'selling_price' =>$sheet->getCell( 'K' . $row )->getValue(),
+                    'product_name' => $sheet->getCell('A' . $row)->getValue(),
+                    'category_id' => $sheet->getCell('B' . $row)->getValue(),
+                    'product_code' => $sheet->getCell('D' . $row)->getValue(),
+                    'product_image' => $sheet->getCell('F' . $row)->getValue(),
+                    'product_store' => $sheet->getCell('G' . $row)->getValue(),
+                    'buying_date' => $sheet->getCell('H' . $row)->getValue(),
+                    'buying_price' => $sheet->getCell('J' . $row)->getValue(),
+                    'selling_price' => $sheet->getCell('K' . $row)->getValue(),
                 ];
                 $startcount++;
             }
 
             Product::insert($data);
-
         } catch (Exception $e) {
             // $error_code = $e->errorInfo[1];
             return Redirect::route('products.index')->with('error', 'Ha habido un problema al cargar los datos.');
@@ -225,7 +228,8 @@ class ProductController extends Controller
         return Redirect::route('products.index')->with('success', 'Los datos se han importado correctamente.');
     }
 
-    public function exportExcel($products){
+    public function exportExcel($products)
+    {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
 
@@ -249,31 +253,31 @@ class ProductController extends Controller
      *This function loads the customer data from the database then converts it
      * into an Array that will be exported to Excel
      */
-    function exportData(){
+    function exportData()
+    {
         $products = Product::all()->sortByDesc('product_id');
 
-        $product_array [] = array(
+        $product_array[] = array(
             'Product Name',
             'Category Id',
             'Product Code',
             'Product Image',
             'Product Store',
-            'Buying Date'.
-            'Buying Price',
+            'Buying Date' .
+                'Buying Price',
             'Selling Price',
         );
 
-        foreach($products as $product)
-        {
+        foreach ($products as $product) {
             $product_array[] = array(
                 'Product Name' => $product->product_name,
                 'Category Id' => $product->category_id,
                 'Product Code' => $product->product_code,
                 'Product Image' => $product->product_image,
-                'Product Store' =>$product->product_store,
-                'Buying Date' =>$product->buying_date,
-                'Buying Price' =>$product->buying_price,
-                'Selling Price' =>$product->selling_price,
+                'Product Store' => $product->product_store,
+                'Buying Date' => $product->buying_date,
+                'Buying Price' => $product->buying_price,
+                'Selling Price' => $product->selling_price,
             );
         }
 

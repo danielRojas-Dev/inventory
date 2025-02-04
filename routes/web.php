@@ -117,7 +117,8 @@ Route::middleware(['permission:orders.menu'])->group(function () {
     Route::post('/payment', [OrderController::class, 'payment'])->name('quota.payment');
 
 
-    Route::get('/download-receipt-venta/{order}', [OrderController::class, 'downloadReceipt'])->name('order.downloadReceipt');
+    Route::get('/download-receipt-venta/{order}', [OrderController::class, 'downloadReceiptVenta'])->name('order.downloadReceiptVenta');
+    Route::get('/download-receipt-venta-normal/{order}', [OrderController::class, 'downloadReceiptVentaNormal'])->name('order.downloadReceiptVentaNormal');
     Route::get('/download-receipt-quota/{quota}', [OrderController::class, 'downloadReceiptQuota'])->name('order.downloadReceiptQuota');
     Route::put('/orders/update/status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
     Route::get('/orders/invoice/download/{order_id}', [OrderController::class, 'invoiceDownload'])->name('order.invoiceDownload');

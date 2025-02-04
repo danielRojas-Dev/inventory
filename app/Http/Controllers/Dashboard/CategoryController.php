@@ -50,7 +50,7 @@ class CategoryController extends Controller
 
         Category::create($validatedData);
 
-        return Redirect::route('categories.index')->with('success', 'Category has been created!');
+        return Redirect::route('categories.index')->with('success', 'Categoria creada correctamente!');
     }
 
     /**
@@ -77,15 +77,15 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $rules = [
-            'name' => 'required|unique:categories,name,'.$category->id,
-            'slug' => 'required|alpha_dash|unique:categories,slug,'.$category->id,
+            'name' => 'required|unique:categories,name,' . $category->id,
+            'slug' => 'required|alpha_dash|unique:categories,slug,' . $category->id,
         ];
 
         $validatedData = $request->validate($rules);
 
         Category::where('slug', $category->slug)->update($validatedData);
 
-        return Redirect::route('categories.index')->with('success', 'Category has been updated!');
+        return Redirect::route('categories.index')->with('success', 'Categoria modificada correctamente!');
     }
 
     /**
@@ -93,8 +93,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+
+        if ($category->products()->exists()) {
+            return Redirect::route('customers.index')->with('error', 'No se puede eliminar la categoria porque tiene productos asociados.');
+        }
         Category::destroy($category->slug);
 
-        return Redirect::route('categories.index')->with('success', 'Category has been deleted!');
+        return Redirect::route('categories.index')->with('success', 'Categoria eliminada con exito!');
     }
 }

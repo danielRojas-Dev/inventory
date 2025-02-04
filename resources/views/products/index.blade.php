@@ -92,7 +92,7 @@
                                     </td>
                                     <td>{{ $product->product_name }}</td>
                                     <td>{{ $product->category->name }}</td>
-                                    <td>{{ $product->selling_price }}</td>
+                                    <td>$ {{ number_format($product->selling_price, 0, ',', '.') }} </td>
                                     <td>
                                         @if ($product->expire_date > Carbon\Carbon::now()->format('Y-m-d'))
                                             <span class="badge rounded-pill bg-success">Válido</span>

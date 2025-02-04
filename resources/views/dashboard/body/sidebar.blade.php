@@ -91,11 +91,11 @@
                                     <i class="fas fa-arrow-right"></i><span>Productos</span>
                                 </a>
                             </li>
-                            <li class="{{ Request::is(['products/create']) ? 'active' : '' }}">
+                            {{-- <li class="{{ Request::is(['products/create']) ? 'active' : '' }}">
                                 <a href="{{ route('products.create') }}">
                                     <i class="fas fa-arrow-right"></i><span>Agregar Producto</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             {{-- <li class="{{ Request::is(['stock*']) ? 'active' : '' }}">
                                 <a href="{{ route('order.stockManage') }}">
                                     <i class="fas fa-arrow-right"></i><span>Gestión de Stock</span>
@@ -113,14 +113,14 @@
 
                 <hr>
 
-                @if (auth()->user()->can('employee.menu'))
+                {{-- @if (auth()->user()->can('employee.menu'))
                     <li class="{{ Request::is('employees*') ? 'active' : '' }}">
                         <a href="{{ route('employees.index') }}" class="svg-icon">
                             <i class="fas fa-users"></i>
                             <span class="ml-3">Empleados</span>
                         </a>
                     </li>
-                @endif
+                @endif --}}
 
                 @if (auth()->user()->can('customer.menu'))
                     <li class="{{ Request::is('customers*') ? 'active' : '' }}">
@@ -131,17 +131,17 @@
                     </li>
                 @endif
 
-                @if (auth()->user()->can('supplier.menu'))
+                {{-- @if (auth()->user()->can('supplier.menu'))
                     <li class="{{ Request::is('suppliers*') ? 'active' : '' }}">
                         <a href="{{ route('suppliers.index') }}" class="svg-icon">
                             <i class="fas fa-users"></i>
                             <span class="ml-3">Proveedores</span>
                         </a>
                     </li>
-                @endif
+                @endif --}}
 
 
-                @if (auth()->user()->can('salary.menu'))
+                {{-- @if (auth()->user()->can('salary.menu'))
                     <li>
                         <a href="#advance-salary" class="collapsed" data-toggle="collapse" aria-expanded="false">
                             <i class="fas fa-cash-register"></i>
@@ -180,9 +180,9 @@
                             </li>
                         </ul>
                     </li>
-                @endif
+                @endif --}}
 
-
+                {{-- 
                 @if (auth()->user()->can('attendence.menu'))
                     <li>
                         <a href="#attendence" class="collapsed" data-toggle="collapse" aria-expanded="false">
@@ -212,7 +212,7 @@
                             </li>
                         </ul>
                     </li>
-                @endif
+                @endif --}}
 
 
                 <hr>

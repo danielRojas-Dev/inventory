@@ -43,15 +43,10 @@ class CustomerController extends Controller
         $rules = [
             'photo' => 'image|file|max:1024',
             'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:customers,email',
             'phone' => 'required|string|max:15|unique:customers,phone',
-            'shopname' => 'required|string|max:50',
-            'account_holder' => 'max:50',
-            'account_number' => 'max:25',
-            'bank_name' => 'max:25',
-            'bank_branch' => 'max:50',
             'city' => 'required|string|max:50',
             'address' => 'required|string|max:100',
+            'dni' => 'required|string|max:8|unique:customers,dni,',
         ];
 
         $validatedData = $request->validate($rules);
@@ -60,7 +55,7 @@ class CustomerController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/customers/';
 
             $file->storeAs($path, $fileName);
@@ -69,7 +64,7 @@ class CustomerController extends Controller
 
         Customer::create($validatedData);
 
-        return Redirect::route('customers.index')->with('success', 'Customer has been created!');
+        return Redirect::route('customers.index')->with('success', 'Cliente creado correctamente!');
     }
 
     /**
@@ -100,15 +95,10 @@ class CustomerController extends Controller
         $rules = [
             'photo' => 'image|file|max:1024',
             'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:customers,email,'.$customer->id,
-            'phone' => 'required|string|max:15|unique:customers,phone,'.$customer->id,
-            'shopname' => 'required|string|max:50',
-            'account_holder' => 'max:50',
-            'account_number' => 'max:25',
-            'bank_name' => 'max:25',
-            'bank_branch' => 'max:50',
+            'phone' => 'required|string|max:15|unique:customers,phone,' . $customer->id,
             'city' => 'required|string|max:50',
             'address' => 'required|string|max:100',
+            'dni' => 'required|string|max:8|unique:customers,dni,' . $customer->id,
         ];
 
         $validatedData = $request->validate($rules);
@@ -117,13 +107,13 @@ class CustomerController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/customers/';
 
             /**
              * Delete photo if exists.
              */
-            if($customer->photo){
+            if ($customer->photo) {
                 Storage::delete($path . $customer->photo);
             }
 
@@ -133,23 +123,27 @@ class CustomerController extends Controller
 
         Customer::where('id', $customer->id)->update($validatedData);
 
-        return Redirect::route('customers.index')->with('success', 'Customer has been updated!');
+        return Redirect::route('customers.index')->with('success', 'Cliente modificado correctamente!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina el cliente si no tiene órdenes asociadas.
      */
     public function destroy(Customer $customer)
     {
-        /**
-         * Delete photo if exists.
-         */
-        if($customer->photo){
+        // Verificar si el cliente tiene órdenes asociadas
+        if ($customer->orders()->exists()) {
+            return Redirect::route('customers.index')->with('error', 'No se puede eliminar el cliente porque tiene ventas asociadas.');
+        }
+
+        // Eliminar la foto si existe
+        if ($customer->photo) {
             Storage::delete('public/customers/' . $customer->photo);
         }
 
+        // Eliminar el cliente
         Customer::destroy($customer->id);
 
-        return Redirect::route('customers.index')->with('success', 'Customer has been deleted!');
+        return Redirect::route('customers.index')->with('success', '¡El cliente ha sido eliminado correctamente!');
     }
 }
