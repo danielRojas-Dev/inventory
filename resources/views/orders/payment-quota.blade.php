@@ -33,8 +33,8 @@
 
             <div class="mb-3">
                 <label class="form-label">Formas de Pago</label>
-                <select class="form-control" name="payment_method">
-                    <option value="0" selected disabled>Seleccione un Método de Pago</option>
+                <select class="form-control" name="payment_method" required>
+                    <option value="" selected disabled>Seleccione un Método de Pago</option>
                     <option value="EFECTIVO">Efectivo</option>
                     <option value="TRANSFERENCIA">Tarjeta</option>
                     <option value="DEBITO">Transferencia</option>
@@ -43,8 +43,8 @@
 
             <div class="mb-3">
                 <label class="form-label">Moneda de Pago</label>
-                <select class="form-control" name="currency">
-                    <option value="0" selected disabled>Seleccione una Moneda</option>
+                <select class="form-control" name="currency" required>
+                    <option value="" selected disabled>Seleccione una Moneda</option>
                     <option value="DOLARES">Dólares</option>
                     <option value="PESOS">Pesos</option>
                 </select>
@@ -52,7 +52,7 @@
 
             <div class="mb-3" id="interestContainer" style="display: none;">
                 <label class="form-label">Interés (%)</label>
-                <select class="form-control" name="interest" id="interest">
+                <select class="form-control" name="interest" id="interest" required>
                     <option value="0" disabled selected>Seleccione un % de interes</option>
                     <option value="0.5">0.5%</option>
                     <option value="1">1%</option>

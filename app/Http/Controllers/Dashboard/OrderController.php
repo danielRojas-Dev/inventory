@@ -68,12 +68,8 @@ class OrderController extends Controller
             ];
 
             // Generación del número de factura
-            $invoice_no = IdGenerator::generate([
-                'table' => 'orders',
-                'field' => 'invoice_no',
-                'length' => 10,
-                'prefix' => 'INV-'
-            ]);
+            $invoice_no = $this->generateInvoiceNo();
+
 
 
 
@@ -229,9 +225,9 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Factura_' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Factura_Venta' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
-        $pdf = Pdf::loadView('orders.payment-receipt', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'valorCuota', 'estimatedPaymentDate', 'details'))
+        $pdf = Pdf::loadView('orders.payment-receipt-venta-quota', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'valorCuota', 'estimatedPaymentDate', 'details'))
             ->setPaper('cart', 'vertical');
 
         return $pdf->stream($pdfFileName, array('Attachment' => 0));
@@ -251,7 +247,7 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Factura_' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Factura_Venta' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
 
         $pdf = Pdf::loadView('orders.payment-receipt-venta-normal', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
@@ -264,17 +260,24 @@ class OrderController extends Controller
 
     public function downloadReceiptQuota(OrderquotasDetails $quota)
     {
-        $venta = Order::all()->where('id', '=', $quota->order_id)->first();
-        $cliente = Customer::all()->where('id', '=', $venta->customer_id)->first();
-
+        $order = Order::all()->where('id', '=', $quota->order_id)->first();
+        $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
+        $details = OrderDetails::where('order_id', $order->id)->with('product')->get();
+        $valorCuota = OrderquotasDetails::where('order_id', $order->id)->first()->value('estimated_payment');
 
         $pathLogo = public_path('assets/images/login/electrodr.png');
         $logo = file_get_contents($pathLogo);
 
+        $pathTitle = public_path('assets/images/login/title.png');
+        $title = file_get_contents($pathTitle);
 
-        $html = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="100" />';
+        $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
+        $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdf = Pdf::loadView('orders.payment-receipt', compact('quota', 'venta', 'cliente', 'pathLogo', 'html'))
+        $pdfFileName = 'Factura_Cuota' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+
+
+        $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota'))
             ->setPaper('cart', 'vertical');
 
         return $pdf->stream(date('d-m-Y') . ".pdf", array('Attachment' => 0));
@@ -336,12 +339,8 @@ class OrderController extends Controller
             ];
 
             // Generación del número de factura
-            $invoice_no = IdGenerator::generate([
-                'table' => 'orders',
-                'field' => 'invoice_no',
-                'length' => 10,
-                'prefix' => 'INV-'
-            ]);
+            $invoice_no = $this->generateInvoiceNo();
+
 
             $validatedData = $request->validate($rules);
 
@@ -374,8 +373,38 @@ class OrderController extends Controller
 
             return redirect()->back()->with('success', 'Pago registrado correctamente.');
         } catch (\Throwable $th) {
+            dd($th);
             DB::rollBack();
         }
+    }
+
+
+    public function generateInvoiceNo()
+    {
+        // Obtener el último invoice_no de ambas tablas
+        $lastOrderInvoice = Order::whereNotNull('invoice_no')
+            ->orderBy('invoice_no', 'desc')
+            ->limit(1)
+            ->value('invoice_no');
+
+        $lastQuotaInvoice = OrderquotasDetails::whereNotNull('invoice_no')
+            ->orderBy('invoice_no', 'desc')
+            ->limit(1)
+            ->value('invoice_no');
+
+        // Determinar cuál es el último invoice_no
+        $lastInvoice = max($lastOrderInvoice, $lastQuotaInvoice);
+
+        // Extraer el número y generar el siguiente
+        if ($lastInvoice) {
+            preg_match('/INV-(\d+)/', $lastInvoice, $matches);
+            $nextNumber = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
+        } else {
+            $nextNumber = 1; // Si no hay registros, iniciamos en 1
+        }
+
+        // Formatear el nuevo invoice_no
+        return 'INV-' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
     }
 
 

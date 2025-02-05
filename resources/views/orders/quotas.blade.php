@@ -95,7 +95,7 @@
                                         @if ($quota->status_payment != 'Pendiente')
                                             <span class="badge bg-success">
                                                 <a href="{{ Route('order.downloadReceiptQuota', $quota->id) }}"
-                                                    class="text-white">
+                                                    target='_blank' class="text-white">
                                                     <i class="fas fa-download"></i>
                                                 </a>
                                             </span>

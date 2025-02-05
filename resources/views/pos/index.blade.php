@@ -52,7 +52,7 @@
                                 <td>
                                     <a href="{{ route('pos.deleteCart', $item->rowId) }}" class="btn btn-danger border-none"
                                         data-toggle="tooltip" data-placement="top" title=""
-                                        data-original-title="Eliminar"><i class="fa-solid fa-trash mr-0"></i></a>
+                                        data-original-title="Eliminar"><i class="fa fa-trash mr-0"></i></a>
                                 </td>
                             </tr>
                         @endforeach
@@ -154,7 +154,7 @@
                                                     <button type="submit" class="btn btn-primary border-none"
                                                         data-toggle="tooltip" data-placement="top" title=""
                                                         data-original-title="Agregar"><i
-                                                            class="far fa-plus mr-0"></i></button>
+                                                            class="fa fa-plus mr-0"></i></button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -212,7 +212,7 @@
 
                             <div class="col-md-12 mt-3" id="cuotas_section" hidden>
                                 <label for="quotas">Número de Cuotas</label>
-                                <select class="form-control" id="quotas" name="quotas" required>
+                                <select class="form-control" id="quotas" name="quotas">
                                     <option value="" selected disabled>Seleccione cuotas</option>
                                     <option value="6">6</option>
                                     <option value="9">9</option>
@@ -221,8 +221,7 @@
 
                             <div class="col-md-12 mt-3" id="fecha_pactada" hidden>
                                 <label for="day">Día Pactado a pagar Cuota</label>
-                                <select class="form-control" id="estimated_payment_date" name="estimated_payment_date"
-                                    required>
+                                <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
                                     <option value="" selected disabled>Seleccione Día</option>
                                     @for ($i = 1; $i <= 30; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
@@ -262,10 +261,15 @@
                 cuotasSection.removeAttribute('hidden');
                 cuotasInfoSection.removeAttribute('hidden');
                 fechaPactada.removeAttribute('hidden');
+                selectCuotas.setAttribute('required', true)
+                day.setAttribute('required', true)
+
             } else {
                 cuotasSection.setAttribute('hidden', 'true');
                 cuotasInfoSection.setAttribute('hidden', 'true');
                 fechaPactada.setAttribute('hidden', 'true');
+                selectCuotas.removeAttribute('required', false)
+                day.removeAttribute('required', false)
                 selectCuotas.value = '';
                 day.value = '';
 
