@@ -40,6 +40,24 @@ class PosController extends Controller
 
         $validatedData = $request->validate($rules);
 
+        // Buscar el producto en la base de datos
+        $product = Product::find($validatedData['id']);
+
+        if (!$product) {
+            return Redirect::back()->with('error', 'El producto no existe.');
+        }
+
+        // Obtener la cantidad actual del producto en el carrito
+        $cartItem = Cart::content()->where('id', $product->id)->first();
+        $currentQtyInCart = $cartItem ? $cartItem->qty : 0;
+
+
+        // Verificar si al agregar el producto excederíamos el stock disponible
+        if ($currentQtyInCart + 1 > $product->product_store) {
+            return Redirect::back()->with('error', 'No puedes agregar más productos. El stock disponible es: ' . $product->product_store);
+        }
+
+
         Cart::add([
             'id' => $validatedData['id'],
             'name' => $validatedData['name'],
@@ -50,19 +68,39 @@ class PosController extends Controller
 
         return Redirect::back()->with('success', '¡Se ha añadido el producto!');
     }
-
     public function updateCart(Request $request, $rowId)
     {
         $rules = [
-            'qty' => 'required|numeric',
+            'qty' => 'required|numeric|min:1',
         ];
 
         $validatedData = $request->validate($rules);
 
+        // Obtener el item del carrito
+        $cartItem = Cart::get($rowId);
+
+        if (!$cartItem) {
+            return Redirect::back()->with('error', 'El producto no existe en el carrito.');
+        }
+
+        // Buscar el producto en la base de datos
+        $product = Product::find($cartItem->id);
+
+        if (!$product) {
+            return Redirect::back()->with('error', 'El producto no existe en la base de datos.');
+        }
+
+        // Verificar si la cantidad solicitada excede el stock disponible
+        if ($validatedData['qty'] > $product->product_store) {
+            return Redirect::back()->with('error', 'No puedes actualizar la cantidad. Stock disponible: ' . $product->product_store);
+        }
+
+        // Actualizar la cantidad en el carrito
         Cart::update($rowId, $validatedData['qty']);
 
         return Redirect::back()->with('success', '¡Se ha actualizado el carrito!');
     }
+
 
     public function deleteCart(String $rowId)
     {

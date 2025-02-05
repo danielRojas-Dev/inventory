@@ -13,6 +13,14 @@
                         </button>
                     </div>
                 @endif
+                @if (session()->has('error'))
+                    <div class="alert text-white bg-danger" role="alert">
+                        <div class="iq-alert-text">{{ session('error') }}</div>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                @endif
                 <div>
                     <h4 class="mb-3">Punto de Venta</h4>
                 </div>
@@ -128,6 +136,7 @@
                                         <th>@sortablelink('product_name', 'Nombre')</th>
                                         <th>@sortablelink('brand_name', 'Marca')</th>
                                         <th>@sortablelink('selling_price', 'Precio')</th>
+                                        <th>@sortablelink('product_store', 'Stock')</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
@@ -141,6 +150,15 @@
                                             <td>{{ $product->product_name }}</td>
                                             <td>{{ $product->brand->name }}</td>
                                             <td>$ {{ number_format($product->selling_price, 0, ',', '.') }}</td>
+                                            <td style="padding: 8px !important; font-size: 18px; text-align: center;">
+                                                @if ($product->product_store == 0)
+                                                    <span id="stock-{{ $product->id }}"
+                                                        class="badge bg-danger text-white">{{ $product->product_store }}</span>
+                                                @else
+                                                    <span id="stock-{{ $product->id }}"
+                                                        class="badge bg-success text-white">{{ $product->product_store }}</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <form action="{{ route('pos.addCart') }}" method="POST"
                                                     style="margin-bottom: 5px">
@@ -151,10 +169,20 @@
                                                     <input type="hidden" name="price"
                                                         value="{{ $product->selling_price }}">
 
-                                                    <button type="submit" class="btn btn-primary border-none"
-                                                        data-toggle="tooltip" data-placement="top" title=""
-                                                        data-original-title="Agregar"><i
-                                                            class="fa fa-plus mr-0"></i></button>
+                                                    <div class="product-options">
+                                                        @if ($product->product_store == 0)
+                                                            <button type="submit" disabled class="btn btn-primary "
+                                                                data-toggle="tooltip" data-placement="top"
+                                                                title="Agregar">
+                                                                <i class="fas fa-plus mr-0"></i>
+                                                            </button>
+                                                        @else
+                                                            <button type="submit" class="btn btn-primary"
+                                                                data-product-stock="{{ $product->product_store }}">
+                                                                <i class="fas fa-plus mr-0"></i>
+                                                            </button>
+                                                        @endif
+                                                    </div>
                                                 </form>
                                             </td>
                                         </tr>

@@ -70,18 +70,14 @@ class OrderController extends Controller
             // Generación del número de factura
             $invoice_no = $this->generateInvoiceNo();
 
-
-
-
             // Validación de los datos de entrada
             $validatedData = $request->validate($rules);
 
             DB::beginTransaction();
 
             if ($validatedData['payment_method'] == 'CUOTAS') {
-
                 // Calcular el total con el interés
-                $totalOriginal = Cart::total();  // Total original menos el pago inicial
+                $totalOriginal = Cart::total();
                 $interesMin = 0.35;
                 $interesMax = 0.70;
                 $interes = $validatedData['quotas'] == 6 ? $interesMin : $interesMax;
@@ -95,12 +91,12 @@ class OrderController extends Controller
                     'customer_id' => $validatedData['customer_id'],
                     'payment_method' => $validatedData['payment_method'],
                     'order_date' => Carbon::now()->format('Y-m-d H:i:s'),
-                    'order_status' => $validatedData['payment_method'] == 'CUOTAS' ? 'Pendiente' : 'Pagado',
+                    'order_status' => 'Pendiente',
                     'total_products' => Cart::count(),
                     'invoice_no' => $invoice_no,
                     'quotas' => $validatedData['quotas'],
-                    'total' => $validatedData['payment_method'] == 'CUOTAS' ? $totalConInteres : Cart::total(),
-                    'pay' => $validatedData['payment_method'] == 'CUOTAS' ? 0 : Cart::total(),
+                    'total' => $totalConInteres,
+                    'pay' => 0,
                     'employee_id' => auth()->id(),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -108,60 +104,32 @@ class OrderController extends Controller
 
                 $order_id = Order::insertGetId($orderData);
 
-
                 // Crear los registros en OrderquotasDetails
                 $quotaDetails = [];
                 for ($i = 1; $i <= $validatedData['quotas']; $i++) {
                     $quotaDetails[] = [
                         'order_id' => $order_id,
                         'number_quota' => $i,
-                        'estimated_payment' => $montoCuota,  // Monto por cuota
-                        'interest_plan' => $interes,  // Total con interés
-                        'total_payment' => null,  // Total pago (puede ser igual a estimated_payment en este caso)
-                        'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),  // Fecha estimada de pago
-                        'status_payment' => 'Pendiente',  // Estado de la cuota
-                        'invoice_no' => null,  // Número de recibo (puedes asignar después si lo tienes)
-                        'payment_method' => null,  // Método de pago
-                        'payment_currency' => null,  // Moneda de pago (puedes ajustar esto si es necesario)
+                        'estimated_payment' => $montoCuota,
+                        'interest_plan' => $interes,
+                        'total_payment' => null,
+                        'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
+                        'status_payment' => 'Pendiente',
+                        'invoice_no' => null,
+                        'payment_method' => null,
+                        'payment_currency' => null,
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ];
                 }
 
-
-                // Insertar todos los detalles de cuotas en la tabla 'order_quotas_details'
                 OrderquotasDetails::insert($quotaDetails);
-                // Crear los detalles del pedido
-                $contents = Cart::content();
-                $orderDetails = [];
-
-                foreach ($contents as $content) {
-                    $orderDetails[] = [
-                        'order_id' => $order_id,
-                        'product_id' => $content->id,
-                        'quantity' => $content->qty,
-                        'unitcost' => $content->price,
-                        'total' => $content->total,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ];
-                }
-
-                // Insertar todos los detalles de productos en la tabla 'order_details'
-                OrderDetails::insert($orderDetails);
             } else {
-
-                $validatedData = array_merge($validatedData, ['pay' => 0]);
-
-
-                // Asignación de datos adicionales
-
-
                 $orderData = [
                     'customer_id' => $validatedData['customer_id'],
                     'payment_method' => $validatedData['payment_method'],
                     'order_date' => Carbon::now()->format('Y-m-d H:i:s'),
-                    'order_status' => $validatedData['payment_method'] == 'CUOTAS' ? 'Pendiente' : 'Pagado',
+                    'order_status' => 'Pagado',
                     'total_products' => Cart::count(),
                     'invoice_no' => $invoice_no,
                     'total' => Cart::total(),
@@ -172,30 +140,33 @@ class OrderController extends Controller
                 ];
 
                 $order_id = Order::insertGetId($orderData);
-
-                // Crear los detalles del pedido
-                $contents = Cart::content();
-                $orderDetails = [];
-
-                foreach ($contents as $content) {
-                    $orderDetails[] = [
-                        'order_id' => $order_id,
-                        'product_id' => $content->id,
-                        'quantity' => $content->qty,
-                        'unitcost' => $content->price,
-                        'total' => $content->total,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ];
-                }
-
-                // Insertar todos los detalles de productos en la tabla 'order_details'
-                OrderDetails::insert($orderDetails);
             }
 
+            // Crear los detalles del pedido
+            $contents = Cart::content();
+            $orderDetails = [];
+
+            foreach ($contents as $content) {
+                $orderDetails[] = [
+                    'order_id' => $order_id,
+                    'product_id' => $content->id,
+                    'quantity' => $content->qty,
+                    'unitcost' => $content->price,
+                    'total' => $content->total,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ];
+            }
+
+            // Insertar todos los detalles de productos en la tabla 'order_details'
+            OrderDetails::insert($orderDetails);
+
+            // **Actualizar el stock de los productos**
+            foreach ($contents as $content) {
+                Product::where('id', $content->id)->decrement('product_store', $content->qty);
+            }
 
             DB::commit();
-
 
             // Vaciar el carrito
             Cart::destroy();
@@ -206,6 +177,7 @@ class OrderController extends Controller
             return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceiptVentaNormal', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
         } catch (\Throwable $th) {
             DB::rollBack();
+            return redirect()->back()->with('error', 'Ocurrió un error al procesar la orden.');
         }
     }
 
