@@ -13,13 +13,11 @@ class Product extends Model
     protected $fillable = [
         'product_name',
         'category_id',
-        'supplier_id',
+        'brand_id',
         'product_code',
-        'product_garage',
         'product_image',
         'product_store',
         'buying_date',
-        'expire_date',
         'buying_price',
         'selling_price',
     ];
@@ -35,7 +33,6 @@ class Product extends Model
 
     protected $with = [
         'category',
-        'supplier'
     ];
     protected $casts = [
         'buying_date' => 'date',
@@ -44,6 +41,10 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
     }
 
     public function supplier()

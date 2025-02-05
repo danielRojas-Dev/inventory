@@ -106,6 +106,11 @@
                                     <i class="fas fa-arrow-right"></i><span>Categorías</span>
                                 </a>
                             </li>
+                            <li class="{{ Request::is(['brands*']) ? 'active' : '' }}">
+                                <a href="{{ route('brands.index') }}">
+                                    <i class="fas fa-arrow-right"></i><span>Marcas</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif

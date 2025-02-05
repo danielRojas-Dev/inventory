@@ -23,7 +23,7 @@ class PosController extends Controller
         return view('pos.index', [
             'customers' => Customer::all()->sortBy('name'),
             'productItem' => Cart::content(),
-            'products' => Product::filter(request(['search']))
+            'products' => Product::with('brand')->filter(request(['search']))
                 ->sortable()
                 ->paginate($row)
                 ->appends(request()->query()),

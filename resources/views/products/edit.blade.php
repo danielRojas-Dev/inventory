@@ -81,6 +81,22 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6">
+                                    <label for="brand_id">Marca <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="brand_id" required>
+                                        <option selected="" disabled>-- Seleccionar Marca --</option>
+                                        @foreach ($brands as $brand)
+                                            <option value="{{ $brand->id }}"
+                                                {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                                {{ $brand->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('brand_id')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-6">
                                     <label for="product_store">Cantidad en Stock</label>
                                     <input type="text" class="form-control @error('product_store') is-invalid @enderror"
                                         id="product_store" name="product_store"

@@ -27,14 +27,14 @@
         }
 
         .info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 3px;
         }
 
         .section {
             margin-top: 10px;
+            font-size: 13px;
+
         }
 
         table {
@@ -97,26 +97,46 @@
             </div>
         </div>
 
-
+        <div>COMPROBANTE DE PAGO</div>
         <div class="header"></div>
-        <div class="info">
-            <div><strong>Cliente:</strong> {{ $cliente->name }}</div>
-            <div><strong>Documento N°:</strong> 43712325</div>
-        </div>
-        <div class="info">
-            <div><strong>Domicilio:</strong> {{ $cliente->address }}</div>
-            <div><strong>Teléfono:</strong> {{ $cliente->phone }}</div>
-        </div>
-        <div class="info">
-            <div><strong>Barrio:</strong> Republica Argentina</div>
-            <div><strong>Localidad:</strong> {{ $cliente->city }}</div>
-        </div>
+        <table style="width: 100%;" class="info">
+            <tr>
+                <td style="text-align: left; vertical-align: top; width: 50%;">
+                    <strong>Cliente:</strong> {{ $cliente->name }}<br>
+                    <strong>Documento N°:</strong> {{ $cliente->dni }}<br>
+                    <strong>Teléfono:</strong> {{ $cliente->phone }}
+                </td>
+                <td style="text-align: left; vertical-align: top; width: 50%;">
+                    <strong>Domicilio:</strong> {{ $cliente->address }} <br>
+                    <strong>Localidad:</strong> {{ $cliente->city }}
+                </td>
+            </tr>
+
+        </table>
+        <table style="width: 100%;" class="info">
+            <tr>
+                <td style="width: 25%;">
+                    <strong>Forma de Pago:</strong> {{ $quota->payment_method }}
+                </td>
+                <td style="width: 25%;">
+                    <strong>Cuota N° :</strong> {{ $quota->number_quota }}
+                </td>
+                <td style="width: 25%;">
+                    <strong>Plan :</strong> {{ $order->quotas }} <strong>cuotas</strong>
+                </td>
+                <td style="width: 25%;">
+                    <strong>Importe Total :</strong> ${{ number_format($quota->total_payment, 0, ',', '.') }}
+
+                </td>
+            </tr>
+
+        </table>
+
         <div class="section">
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
                 <tr>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Cuotas Pagadas</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Pago</th>
                 </tr>
                 @foreach ($details as $detail)
                     <tr>
@@ -126,36 +146,10 @@
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">
                             {{ $quota->number_quota }}/{{ $order->quotas }}
                         </td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">$
-                            {{ number_format($valorCuota, 0, ',', '.') }}
-                        </td>
                     </tr>
                 @endforeach
             </table>
         </div>
-
-
-
-
-        {{-- <div class="important">
-            <p><strong>Nota Importante:</strong> Por falta de cualquier mensualidad nos reservamos el derecho de
-                cobrar
-                el total del saldo de la venta.
-                <br> En caso de vencimiento de las cuotas, se aplicará un interés del
-                <b>1.5%</b> diario sobre el valor de la cuota hasta su cancelación. <br>Sírvase avisar el cambio de
-                domicilio.
-            </p>
-
-            <p><strong>Compromiso de pago:</strong> Conste por la presente que me comprometo a abonar la Mercadería
-                detallada en <b>{{ $order->quotas }}</b> cuotas fijas de $
-                <b>{{ number_format($valorCuota, 0, ',', '.') }}</b> a
-                partir del día <b>{{ $dia }}</b> del <b>{{ $mes }}</b>
-                del año <b>{{ $anio }}</b>.
-            </p>
-            <p class="firma"><strong>Firma:</strong> _______________</p>
-        </div> --}}
-
-
     </div>
 </body>
 

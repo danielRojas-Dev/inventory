@@ -23,10 +23,9 @@
                 </div>
             </div>
 
-            @if (auth()->user()->can('salary.menu'))
+            {{-- @if (auth()->user()->can('salary.menu'))
                 <div class="col-lg-12">
                     <div class="row">
-                        <!-- Total Paid -->
                         <div class="col-lg-4 col-md-4">
                             <div class="card card-block card-stretch card-height bg-primary">
                                 <div class="card-body">
@@ -45,7 +44,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Total Due -->
                         <div class="col-lg-4 col-md-4">
                             <div class="card card-block card-stretch card-height bg-danger">
                                 <div class="card-body">
@@ -55,7 +53,6 @@
                                         </div>
                                         <div>
                                             <p class="mb-2">Total Adeudado</p>
-                                            {{-- <h4>$ {{ number_format($total_due, 2, ',', '.') }}</h4> --}}
                                         </div>
                                     </div>
                                     <div class="iq-progress-bar mt-2">
@@ -64,7 +61,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Complete Orders -->
                         <div class="col-lg-4 col-md-4">
                             <div class="card card-block card-stretch card-height bg-success">
                                 <div class="card-body">
@@ -85,7 +81,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
 
 

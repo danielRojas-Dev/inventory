@@ -124,9 +124,9 @@
                             <table class="table mb-0">
                                 <thead class="bg-white text-uppercase">
                                     <tr class="ligth ligth-data">
-                                        <th>No.</th>
                                         <th>Foto</th>
                                         <th>@sortablelink('product_name', 'Nombre')</th>
+                                        <th>@sortablelink('brand_name', 'Marca')</th>
                                         <th>@sortablelink('selling_price', 'Precio')</th>
                                         <th>Acción</th>
                                     </tr>
@@ -134,12 +134,12 @@
                                 <tbody class="ligth-body">
                                     @forelse ($products as $product)
                                         <tr>
-                                            <td>{{ $products->currentPage() * 10 - 10 + $loop->iteration }}</td>
                                             <td>
                                                 <img class="avatar-60 rounded"
                                                     src="{{ $product->product_image ? asset('storage/products/' . $product->product_image) : asset('assets/images/product/default.webp') }}">
                                             </td>
                                             <td>{{ $product->product_name }}</td>
+                                            <td>{{ $product->brand->name }}</td>
                                             <td>$ {{ number_format($product->selling_price, 0, ',', '.') }}</td>
                                             <td>
                                                 <form action="{{ route('pos.addCart') }}" method="POST"

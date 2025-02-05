@@ -27,14 +27,13 @@
         }
 
         .info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 3px;
         }
 
         .section {
             margin-top: 10px;
+            font-size: 13px;
         }
 
         table {
@@ -71,6 +70,12 @@
             padding-right: 20px;
             padding-top: 30px;
         }
+
+        .resumen {
+            margin-top: 10px;
+            text-align: left;
+            font-size: 18px;
+        }
     </style>
 </head>
 
@@ -97,26 +102,38 @@
             </div>
         </div>
 
+        <div>COMPROBANTE DE VENTA</div>
 
         <div class="header"></div>
-        <div class="info">
-            <div><strong>Cliente:</strong> {{ $cliente->name }}</div>
-            <div><strong>Documento N°:</strong> 43712325</div>
-        </div>
-        <div class="info">
-            <div><strong>Domicilio:</strong> {{ $cliente->address }}</div>
-            <div><strong>Teléfono:</strong> {{ $cliente->phone }}</div>
-        </div>
-        <div class="info">
-            <div><strong>Barrio:</strong> Republica Argentina</div>
-            <div><strong>Localidad:</strong> {{ $cliente->city }}</div>
-        </div>
+        <!-- Columna izquierda -->
+        <table style="width: 100%;" class="info">
+            <tr>
+                <!-- Primera columna -->
+                <td style="text-align: left; vertical-align: top; width: 33%;">
+                    <strong>Cliente:</strong> {{ $cliente->name }}<br>
+                    <strong>Documento N°:</strong> {{ $cliente->dni }}<br>
+                    <strong>Teléfono:</strong> {{ $cliente->phone }}
+
+                </td>
+
+                <!-- Segunda columna -->
+                <td style="text-align: left; vertical-align: top; width: 33%;">
+                    <strong>Domicilio:</strong> {{ $cliente->address }} <br>
+                    <strong>Localidad:</strong> {{ $cliente->city }}
+                </td>
+            </tr>
+        </table>
+
+
+
+
         <div class="section">
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
                 <tr>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Cantidad</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Precio</th>
+                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Precio Unico</th>
+                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Precio Total</th>
                 </tr>
                 @foreach ($details as $detail)
                     <tr>
@@ -127,10 +144,16 @@
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">$
                             {{ number_format($detail->unitcost, 0, ',', '.') }}
                         </td>
+                        <td style="border: 1px solid black; padding: 1px; text-align: center;">$
+                            {{ number_format($detail->quantity * $detail->unitcost, 0, ',', '.') }}
+                        </td>
 
                     </tr>
                 @endforeach
             </table>
+        </div>
+        <div class="resumen">
+            <div><strong>Total:</strong> <b>$ {{ number_format($order->pay, 0, ',', '.') }}</b></div>
         </div>
 
     </div>

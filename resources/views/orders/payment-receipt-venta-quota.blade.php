@@ -27,14 +27,13 @@
         }
 
         .info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 3px;
         }
 
         .section {
             margin-top: 10px;
+            font-size: 13px;
         }
 
         table {
@@ -97,25 +96,32 @@
             </div>
         </div>
 
+        <div>COMPROBANTE DE VENTA</div>
 
         <div class="header"></div>
-        <div class="info">
-            <div><strong>Cliente:</strong> {{ $cliente->name }}</div>
-            <div><strong>Documento N°:</strong> 43712325</div>
-        </div>
-        <div class="info">
-            <div><strong>Domicilio:</strong> {{ $cliente->address }}</div>
-            <div><strong>Teléfono:</strong> {{ $cliente->phone }}</div>
-        </div>
-        <div class="info">
-            <div><strong>Barrio:</strong> Republica Argentina</div>
-            <div><strong>Localidad:</strong> {{ $cliente->city }}</div>
-        </div>
+        <table style="width: 100%;" class="info">
+            <tr>
+                <!-- Primera columna -->
+                <td style="text-align: left; vertical-align: top; width: 33%;">
+                    <strong>Cliente:</strong> {{ $cliente->name }}<br>
+                    <strong>Documento N°:</strong> {{ $cliente->dni }}<br>
+                    <strong>Teléfono:</strong> {{ $cliente->phone }}
+
+                </td>
+
+                <!-- Segunda columna -->
+                <td style="text-align: left; vertical-align: top; width: 33%;">
+                    <strong>Domicilio:</strong> {{ $cliente->address }} <br>
+                    <strong>Localidad:</strong> {{ $cliente->city }}
+                </td>
+            </tr>
+        </table>
         <div class="section">
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
                 <tr>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Cantidad</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
+                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Marca</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Plan de Cuotas</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Monto de Cuotas</th>
                 </tr>
@@ -125,7 +131,10 @@
                         </td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">
                             {{ $detail->product->product_name }}</td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">{{ $order->quotas }}</td>
+                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                            {{ $detail->product->brand->name }}</td>
+                        <td style="border: 1px solid black; padding: 1px; text-align: center;">{{ $order->quotas }}
+                        </td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">$
                             {{ number_format($valorCuota, 0, ',', '.') }}
                         </td>

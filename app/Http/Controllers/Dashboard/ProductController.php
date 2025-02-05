@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -32,7 +33,7 @@ class ProductController extends Controller
         }
 
         return view('products.index', [
-            'products' => Product::with(['category'])
+            'products' => Product::with(['category', 'brand'])
                 ->filter(request(['search']))
                 ->sortable()
                 ->paginate($row)
@@ -47,6 +48,7 @@ class ProductController extends Controller
     {
         return view('products.create', [
             'categories' => Category::all(),
+            'brands' => Brand::all(),
         ]);
     }
 
@@ -66,6 +68,7 @@ class ProductController extends Controller
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
+            'brand_id' => 'required|integer',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'product_store' => 'string|nullable',
             'buying_price' => 'required|integer',
@@ -129,6 +132,7 @@ class ProductController extends Controller
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
+            'brand_id' => 'required|integer',
             'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'buying_price' => 'required|integer',

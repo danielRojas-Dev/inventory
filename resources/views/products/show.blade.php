@@ -63,6 +63,11 @@
                                     readonly>
                             </div>
                             <div class="form-group col-md-6">
+                                <label>Marca</label>
+                                <input type="text" class="form-control bg-white" value="{{ $product->brand->name }}"
+                                    readonly>
+                            </div>
+                            <div class="form-group col-md-6">
                                 <label>Categoria</label>
                                 <input type="text" class="form-control bg-white" value="{{ $product->category->name }}"
                                     readonly>

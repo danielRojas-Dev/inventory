@@ -11,6 +11,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\PaySalaryController;
 use App\Http\Controllers\Dashboard\AttendenceController;
 use App\Http\Controllers\Dashboard\AdvanceSalaryController;
+use App\Http\Controllers\Dashboard\BrandController;
 use App\Http\Controllers\Dashboard\DatabaseBackupController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PosController;
@@ -92,6 +93,11 @@ Route::middleware(['permission:product.menu'])->group(function () {
 // ====== CATEGORY PRODUCTS ======
 Route::middleware(['permission:category.menu'])->group(function () {
     Route::resource('/categories', CategoryController::class);
+});
+
+// ====== CATEGORY PRODUCTS ======
+Route::middleware(['permission:brand.menu'])->group(function () {
+    Route::resource('/brands', BrandController::class);
 });
 
 // ====== POS ======

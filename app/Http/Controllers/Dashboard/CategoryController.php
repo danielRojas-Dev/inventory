@@ -94,11 +94,15 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
 
-        if ($category->products()->exists()) {
-            return Redirect::route('customers.index')->with('error', 'No se puede eliminar la categoria porque tiene productos asociados.');
-        }
-        Category::destroy($category->slug);
+        try {
+            if ($category->products()->exists()) {
+                return Redirect::route('categories.index')->with('error', 'No se puede eliminar la categoria porque tiene productos asociados.');
+            }
 
-        return Redirect::route('categories.index')->with('success', 'Categoria eliminada con exito!');
+            Category::where('slug', $category->slug)->delete();
+
+            return Redirect::route('categories.index')->with('success', 'Categoria eliminada con exito!');
+        } catch (\Throwable $th) {
+        }
     }
 }

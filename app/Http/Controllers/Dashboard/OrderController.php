@@ -200,8 +200,10 @@ class OrderController extends Controller
             // Vaciar el carrito
             Cart::destroy();
 
-            // Redirigir con éxito
-            return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceiptVenta', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
+            if ($validatedData['payment_method'] == 'CUOTAS') {
+                return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceiptVenta', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
+            }
+            return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceiptVentaNormal', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
         } catch (\Throwable $th) {
             DB::rollBack();
         }
@@ -214,7 +216,7 @@ class OrderController extends Controller
         $valorCuota = OrderquotasDetails::where('order_id', $order->id)->first()->value('estimated_payment');
         $estimatedPaymentDate = OrderquotasDetails::where('order_id', $order->id)->first()->value('estimated_payment_date');
 
-        $details = OrderDetails::where('order_id', $order->id)->with('product')->get();
+        $details = OrderDetails::where('order_id', $order->id)->with('product.brand')->get();
 
         $pathLogo = public_path('assets/images/login/electrodr.png');
         $logo = file_get_contents($pathLogo);

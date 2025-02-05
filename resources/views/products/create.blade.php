@@ -64,7 +64,7 @@
                                 <div class="form-group col-md-6">
                                     <label for="category_id">Categoría <span class="text-danger">*</span></label>
                                     <select class="form-control" name="category_id" required>
-                                        <option selected="" disabled>-- Seleccionar Categoría --</option>
+                                        <option selected value="" disabled>-- Seleccionar Categoría --</option>
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->id }}"
                                                 {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -72,6 +72,22 @@
                                         @endforeach
                                     </select>
                                     @error('category_id')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="brand_id">Marca <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="brand_id" required>
+                                        <option selected value="" disabled>-- Seleccionar Marca --</option>
+                                        @foreach ($brands as $brand)
+                                            <option value="{{ $brand->id }}"
+                                                {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                                {{ $brand->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('brand_id')
                                         <div class="invalid-feedback">
                                             {{ $message }}
                                         </div>

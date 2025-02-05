@@ -61,6 +61,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'salary.menu', 'group_name' => 'salary']);
         Permission::create(['name' => 'attendence.menu', 'group_name' => 'attendence']);
         Permission::create(['name' => 'category.menu', 'group_name' => 'category']);
+        Permission::create(['name' => 'brand.menu', 'group_name' => 'brand']);
         Permission::create(['name' => 'product.menu', 'group_name' => 'product']);
         Permission::create(['name' => 'orders.menu', 'group_name' => 'orders']);
         Permission::create(['name' => 'stock.menu', 'group_name' => 'stock']);
