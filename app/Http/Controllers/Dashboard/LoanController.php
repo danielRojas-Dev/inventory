@@ -18,10 +18,10 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Support\Facades\Storage;
 
-class OrderController extends Controller
+class LoanController extends Controller
 {
 
-    public function completeOrders()
+    public function completeLoans()
     {
         $row = (int) request('row', 10);
 
@@ -95,7 +95,6 @@ class OrderController extends Controller
                     'total_products' => Cart::count(),
                     'invoice_no' => $invoice_no,
                     'quotas' => $validatedData['quotas'],
-                    'interest_plan' => $interestRate,
                     'total' => $totalConInteres,
                     'pay' => 0,
                     'employee_id' => auth()->id(),
@@ -112,6 +111,7 @@ class OrderController extends Controller
                         'order_id' => $order_id,
                         'number_quota' => $i,
                         'estimated_payment' => round($montoCuota),
+                        'interest_plan' => $interestRate,
                         'total_payment' => null,
                         'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
                         'status_payment' => 'Pendiente',

@@ -16,7 +16,6 @@ class OrderquotasDetails extends Model
         'number_quota',
         'estimated_payment',
         'invoice_no',
-        'interest_plan',
         'interest_due',
         'increment_due',
         'total_payment',

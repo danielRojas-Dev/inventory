@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders_quotas_details', function (Blueprint $table) {
+        Schema::create('loan_details', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id');
+            $table->string('loan_id');
             $table->integer('number_quota')->nullable();
             $table->string('invoice_no')->nullable();
             $table->string('estimated_payment')->nullable();
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders_quotas_details');
+        Schema::dropIfExists('loan_details');
     }
 };

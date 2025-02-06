@@ -140,6 +140,11 @@ Route::middleware(['permission:orders.menu'])->group(function () {
     Route::get('/stock', [OrderController::class, 'stockManage'])->name('order.stockManage');
 });
 
+Route::middleware(['permission:loans.menu'])->group(function () {
+
+    Route::get('/loans/complete', [OrderController::class, 'completeLoans'])->name('loan.completeLoans');
+});
+
 // ====== DATABASE BACKUP ======
 Route::middleware(['permission:database.menu'])->group(function () {
     Route::get('/database/backup', [DatabaseBackupController::class, 'index'])->name('backup.index');

@@ -71,6 +71,27 @@
                         </ul>
                     </li>
                 @endif
+                @if (auth()->user()->can('loans.menu'))
+                    <li>
+                        <a href="#loans" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                            <i class="fas fa-landmark"></i>
+                            <span class="ml-3">Prestamos</span>
+                            <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="10 15 15 20 20 15"></polyline>
+                                <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
+                            </svg>
+                        </a>
+                        <ul id="loans" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle" style="">
+                            <li class="{{ Request::is('loans/complete*') ? 'active' : '' }}">
+                                <a href="{{ route('loan.completeLoans') }}">
+                                    <i class="fas fa-arrow-right"></i><span>Prestamos Realizados</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
 
 
                 @if (auth()->user()->can('product.menu'))
@@ -80,12 +101,14 @@
                             <span class="ml-3">Productos</span>
                             <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <polyline points="10 15 15 20 20 15"></polyline>
                                 <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
                             </svg>
                         </a>
-                        <ul id="products" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle" style="">
+                        <ul id="products" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle"
+                            style="">
                             <li class="{{ Request::is(['products']) ? 'active' : '' }}">
                                 <a href="{{ route('products.index') }}">
                                     <i class="fas fa-arrow-right"></i><span>Productos</span>

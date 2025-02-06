@@ -20,6 +20,7 @@ class Order extends Model
         'payment_method',
         'pay',
         'quotas',
+        'interest_plan',
         'employee_id',
     ];
 

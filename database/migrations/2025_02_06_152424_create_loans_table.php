@@ -11,20 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->string('customer_id');
-            $table->string('order_date');
-            $table->string('order_status');
-            $table->integer('total_products');
+            $table->string('loan_date');
+            $table->string('loan_status');
             $table->string('invoice_no')->nullable();
             $table->string('total')->nullable();
-            $table->enum('payment_method', ['EFECTIVO', 'TRANSFERENCIA', 'DEBITO', 'CUOTAS'])->nullable();
+            $table->enum('payment_method', ['CUOTAS'])->nullable();
             $table->string('pay')->nullable();
             $table->string('quotas')->nullable();
             $table->string('interest_plan')->nullable();
             $table->string('employee_id');
-
             $table->timestamps();
         });
     }
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('loans');
     }
 };
