@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Attachment;
 use App\Models\Customer;
 use App\Models\OrderquotasDetails;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -63,8 +64,9 @@ class OrderController extends Controller
             $rules = [
                 'customer_id' => 'required|numeric',
                 'payment_method' => 'required|string',
-                'quotas' => 'sometimes|nullable|in:6,9',
+                'quotas' => 'sometimes|nullable|integer|min:1',
                 'estimated_payment_date' => 'sometimes|nullable|string',
+                'interest_rate' => 'sometimes|nullable|numeric|min:0',
             ];
 
             // Generación del número de factura
@@ -76,12 +78,10 @@ class OrderController extends Controller
             DB::beginTransaction();
 
             if ($validatedData['payment_method'] == 'CUOTAS') {
-                // Calcular el total con el interés
+                // Calcular el total con el interés usando el interest_rate proporcionado
                 $totalOriginal = Cart::total();
-                $interesMin = 0.35;
-                $interesMax = 0.70;
-                $interes = $validatedData['quotas'] == 6 ? $interesMin : $interesMax;
-                $totalConInteres = $totalOriginal * (1 + $interes);
+                $interestRate = $validatedData['interest_rate'] ?? 0; // Valor por defecto 0 si no se proporciona
+                $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
                 $montoCuota = $totalConInteres / $validatedData['quotas'];
 
                 $validatedData = array_merge($validatedData, ['pay' => 0]);
@@ -110,8 +110,8 @@ class OrderController extends Controller
                     $quotaDetails[] = [
                         'order_id' => $order_id,
                         'number_quota' => $i,
-                        'estimated_payment' => $montoCuota,
-                        'interest_plan' => $interes,
+                        'estimated_payment' => round($montoCuota),
+                        'interest_plan' => $interestRate,
                         'total_payment' => null,
                         'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
                         'status_payment' => 'Pendiente',
@@ -181,12 +181,28 @@ class OrderController extends Controller
         }
     }
 
+
     public function downloadReceiptVenta(Order $order)
     {
-        $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
+        // Buscar si hay un attachment asociado al pedido
+        $attachment = Attachment::where('order_id', $order->id)->first();
 
-        $valorCuota = OrderquotasDetails::where('order_id', $order->id)->first()->value('estimated_payment');
-        $estimatedPaymentDate = OrderquotasDetails::where('order_id', $order->id)->first()->value('estimated_payment_date');
+
+        if ($attachment) {
+            // Obtener la ruta completa del archivo
+            $filePath = storage_path('app/public/' . $attachment->path);
+
+            // Verificar si el archivo realmente existe
+            if (file_exists($filePath)) {
+                return response()->download($filePath);
+            }
+        }
+
+        // Si no hay attachment, generar el PDF como antes
+        $cliente = Customer::find($order->customer_id);
+
+        $valorCuota = OrderquotasDetails::where('order_id', $order->id)->value('estimated_payment');
+        $estimatedPaymentDate = OrderquotasDetails::where('order_id', $order->id)->value('estimated_payment_date');
 
         $details = OrderDetails::where('order_id', $order->id)->with('product.brand')->get();
 
@@ -201,11 +217,20 @@ class OrderController extends Controller
 
         $pdfFileName = 'Factura_Venta' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
-        $pdf = Pdf::loadView('orders.payment-receipt-venta-quota', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'valorCuota', 'estimatedPaymentDate', 'details'))
-            ->setPaper('cart', 'vertical');
+        $pdf = Pdf::loadView('orders.payment-receipt-venta-quota', compact(
+            'order',
+            'cliente',
+            'htmlLogo',
+            'htmlTitle',
+            'valorCuota',
+            'estimatedPaymentDate',
+            'details'
+        ))->setPaper('cart', 'vertical');
 
-        return $pdf->stream($pdfFileName, array('Attachment' => 0));
+        return $pdf->stream($pdfFileName, ['Attachment' => 0]);
     }
+
+
     public function downloadReceiptVentaNormal(Order $order)
     {
         $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
@@ -264,7 +289,7 @@ class OrderController extends Controller
     public function customerDetails(Int $customer_id)
     {
         $orders = Order::where('customer_id', $customer_id)
-            ->with('orderDetails', 'customer')
+            ->with('orderDetails', 'customer', 'attachments')
             ->orderBy('order_date', 'DESC')
             ->get();
 
@@ -337,7 +362,7 @@ class OrderController extends Controller
                 'interest_due' => $validatedData['interest'] ?? null,
                 'payment_date' => now(),
                 'increment_due' => $increment,
-                'total_payment' => $totalPaid,
+                'total_payment' => round($totalPaid),
                 'invoice_no' => $invoice_no,
                 'status_payment' => 'Pagado',
                 'updated_at' => now()
@@ -347,10 +372,41 @@ class OrderController extends Controller
 
             return redirect()->back()->with('success', 'Pago registrado correctamente.');
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollBack();
         }
     }
+
+    public function attachmentOrderCustomer(Request $request, Order $order)
+    {
+        try {
+            $request->validate([
+                'attachment' => 'required|file|mimes:jpeg,png,jpg,gif,pdf|max:10048',
+            ]);
+
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $filename = $file->getClientOriginalName();
+                $path = $file->storeAs('attachments/orders', $filename, 'public');
+
+                // Eliminar archivo anterior si existe
+                if ($order->attachments->count()) {
+                    Storage::disk('public')->delete($order->attachments->first()->path);
+                    $order->attachments()->delete();
+                }
+
+                // Guardar nuevo archivo
+                $order->attachments()->create([
+                    'path' => $path,
+                    'filename' => $filename,
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Comprobante subido correctamente.');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Error al subir el comprobante.');
+        }
+    }
+
 
 
     public function generateInvoiceNo()

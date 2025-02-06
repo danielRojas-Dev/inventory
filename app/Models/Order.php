@@ -48,6 +48,10 @@ class Order extends Model
     {
         return $this->hasMany(OrderquotasDetails::class, 'order_id', 'id');
     }
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class, 'order_id', 'id');
+    }
 
     public function getCantidadDeudasAttribute()
     {

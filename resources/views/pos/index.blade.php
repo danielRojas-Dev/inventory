@@ -242,9 +242,16 @@
                                 <label for="quotas">Número de Cuotas</label>
                                 <select class="form-control" id="quotas" name="quotas">
                                     <option value="" selected disabled>Seleccione cuotas</option>
-                                    <option value="6">6</option>
-                                    <option value="9">9</option>
+                                    @for ($i = 2; $i <= 18; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
                                 </select>
+                            </div>
+
+                            <div class="col-md-12 mt-3" id="interes_section" hidden>
+                                <label for="interest_rate">Porcentaje de Interés (%)</label>
+                                <input type="number" class="form-control" id="interest_rate" name="interest_rate"
+                                    step="0.01" min="0" placeholder="Ingrese el % de interés">
                             </div>
 
                             <div class="col-md-12 mt-3" id="fecha_pactada" hidden>
@@ -260,9 +267,9 @@
 
                             <div class="col-md-12 mt-3" id="cuotas_info_section" hidden>
                                 <h5>Detalles del Plan de Cuotas</h5>
-                                <p><strong>Total Original:</strong> $<span id="total_original">0.00</span></p>
-                                <p><strong>Total con Interés:</strong> $<span id="total_interes">0.00</span></p>
-                                <p><strong>Cuotas:</strong> $<span id="monto_cuota">0.00</span> cada una</p>
+                                <p><strong>Total Original:</strong> <span id="total_original">0.00</span></p>
+                                <p><strong>Total con Interés:</strong> <span id="total_interes">0.00</span></p>
+                                <p><strong>Cuotas:</strong> <span id="monto_cuota">0.00</span> cada una</p>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -282,49 +289,53 @@
             let cuotasSection = document.getElementById('cuotas_section');
             let cuotasInfoSection = document.getElementById('cuotas_info_section');
             let fechaPactada = document.getElementById('fecha_pactada');
+            let interesSection = document.getElementById('interes_section');
             let selectCuotas = document.getElementById('quotas');
             let day = document.getElementById('estimated_payment_date');
+            let interestInput = document.getElementById('interest_rate');
 
             if (this.value === 'CUOTAS') {
                 cuotasSection.removeAttribute('hidden');
                 cuotasInfoSection.removeAttribute('hidden');
                 fechaPactada.removeAttribute('hidden');
-                selectCuotas.setAttribute('required', true)
-                day.setAttribute('required', true)
-
+                interesSection.removeAttribute('hidden');
+                selectCuotas.setAttribute('required', true);
+                day.setAttribute('required', true);
+                interestInput.setAttribute('required', true);
             } else {
                 cuotasSection.setAttribute('hidden', 'true');
                 cuotasInfoSection.setAttribute('hidden', 'true');
                 fechaPactada.setAttribute('hidden', 'true');
-                selectCuotas.removeAttribute('required', false)
-                day.removeAttribute('required', false)
+                interesSection.setAttribute('hidden', 'true');
+                selectCuotas.removeAttribute('required');
+                day.removeAttribute('required');
+                interestInput.removeAttribute('required');
                 selectCuotas.value = '';
                 day.value = '';
-
+                interestInput.value = '';
             }
         });
 
         document.getElementById('quotas').addEventListener('change', calcularCuotas);
-        document.getElementById('day').addEventListener('input', calcularCuotas);
+        document.getElementById('interest_rate').addEventListener('input', calcularCuotas);
+
+        function formatCurrency(value) {
+            return `$ ${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
+        }
 
         function calcularCuotas() {
             let totalOriginal = parseFloat(document.getElementById('total_compra').value) || 0;
+            let cuotas = parseInt(document.getElementById('quotas').value) || 1;
+            let interestRate = parseFloat(document.getElementById('interest_rate').value) || 0;
 
-            let cuotas = parseInt(document.getElementById('quotas').value);
-            let interes = 0;
-
-            if (cuotas === 9) {
-                interes = 0.70;
-            } else if (cuotas === 6) {
-                interes = 0.35;
-            }
-
-            let totalConInteres = (totalOriginal) * (1 + interes);
+            let totalConInteres = totalOriginal * (1 + (interestRate / 100));
             let montoCuota = totalConInteres / cuotas;
 
-            document.getElementById('total_original').innerText = totalOriginal.toFixed(2);
-            document.getElementById('total_interes').innerText = totalConInteres.toFixed(2);
-            document.getElementById('monto_cuota').innerText = montoCuota.toFixed(2);
+            document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
+            document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
+
+            document.getElementById('monto_cuota').innerText = formatCurrency(montoCuota);
+
         }
     </script>
 @endsection

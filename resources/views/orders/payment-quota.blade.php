@@ -28,7 +28,8 @@
 
             <div class="mb-3">
                 <label class="form-label">Total Estimado a Pagar</label>
-                <input type="text" class="form-control" value="{{ number_format($quota->estimated_payment) }}" disabled>
+                <input type="text" class="form-control"
+                    value="$ {{ number_format($quota->estimated_payment, 0, ',', '.') }}" disabled>
             </div>
 
             <div class="mb-3">
@@ -90,15 +91,19 @@
             const hiddenIncrement = document.getElementById('hidden_increment');
             const hiddenTotalToPay = document.getElementById('hidden_total_to_pay');
 
+            function formatCurrency(value) {
+                return `$ ${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
+            }
+
             function updateTotal() {
                 const dailyInterest = parseFloat(interestSelect.value) / 100;
                 const increment = Math.round(estimatedPayment * dailyInterest * daysOverdue);
                 const totalToPay = Math.round(estimatedPayment + increment);
 
-                incrementInput.value = increment;
-                totalToPayInput.value = totalToPay;
+                incrementInput.value = formatCurrency(increment);
+                totalToPayInput.value = formatCurrency(totalToPay);
 
-                // Actualizar los campos ocultos para que se envíen en el formulario
+                // Actualizar los campos ocultos para enviar valores sin formato en el formulario
                 hiddenIncrement.value = increment;
                 hiddenTotalToPay.value = totalToPay;
             }
@@ -109,8 +114,8 @@
                 interestSelect.addEventListener('change', updateTotal);
                 updateTotal();
             } else {
-                totalToPayInput.value = Math.round(estimatedPayment);
-                hiddenTotalToPay.value = Math.round(estimatedPayment);
+                totalToPayInput.value = formatCurrency(estimatedPayment);
+                hiddenTotalToPay.value = estimatedPayment;
             }
         });
     </script>

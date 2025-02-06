@@ -111,46 +111,50 @@ class PosController extends Controller
 
     public function createInvoice(Request $request)
     {
-        $rules = [
-            'customer_id' => 'required',
-            'payment_method' => 'required',
-            'quotas' => 'sometimes|nullable|in:6,9',
-            'estimated_payment_date' => 'sometimes|nullable',
-        ];
+        try {
+            $rules = [
+                'customer_id' => 'required',
+                'payment_method' => 'required',
+                'quotas' => 'sometimes|nullable|integer|min:1',
+                'interest_rate' => 'sometimes|nullable|numeric|min:0',
+                'estimated_payment_date' => 'sometimes|nullable',
+            ];
+
+            $validatedData = $request->validate($rules);
 
 
-        $validatedData = $request->validate($rules);
+            $customer = Customer::find($validatedData['customer_id']);
+            $content = Cart::content();
+            $totalOriginal = Cart::total(); // Total sin modificaciones
 
-        $customer = Customer::find($validatedData['customer_id']);
-        $content = Cart::content();
-        $totalOriginal = Cart::total(); // Total sin modificaciones
+            $quotas = $validatedData['quotas'] ?? null;
+            $interestRate = $validatedData['interest_rate'] ?? 0; // Interés ingresado por el usuario
 
-        $quotas = $validatedData['quotas'] ?? null;
-
-        $totalConInteres = $totalOriginal; // Se descuenta la entrega
-
-        if ($quotas) {
-            // Aplicar interés según la cantidad de cuotas
-            $interes = $quotas == 6 ? 0.35 : 0.70;
-            $totalConInteres *= (1 + $interes);
-            $montoCuota = $totalConInteres / $quotas;
-        } else {
             $totalConInteres = $totalOriginal;
-            $montoCuota = 0;
+
+            if ($quotas && $interestRate > 0) {
+                $totalConInteres *= (1 + ($interestRate / 100)); // Aplicar el interés ingresado
+                $montoCuota = $totalConInteres / $quotas;
+            } else {
+                $montoCuota = $quotas ? ($totalOriginal / $quotas) : 0;
+            }
+
+            return view('pos.create-invoice', [
+                'customer' => $customer,
+                'content' => $content,
+                'payment_method' => $validatedData['payment_method'],
+                'quotas' => $quotas,
+                'interest_rate' => $interestRate,
+                'estimated_payment_date' => $validatedData['estimated_payment_date'] ?? null,
+                'total_original' => $totalOriginal,
+                'total_con_interes' => $totalConInteres,
+                'monto_cuota' => $montoCuota,
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
         }
-
-
-        return view('pos.create-invoice', [
-            'customer' => $customer,
-            'content' => $content,
-            'payment_method' => $validatedData['payment_method'],
-            'quotas' => $quotas,
-            'estimated_payment_date' => $validatedData['estimated_payment_date'] ?? null,
-            'total_original' => $totalOriginal,
-            'total_con_interes' => $totalConInteres,
-            'monto_cuota' => $montoCuota,
-        ]);
     }
+
 
 
     public function printInvoice(Request $request)

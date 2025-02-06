@@ -117,6 +117,8 @@ Route::middleware(['permission:pos.menu'])->group(function () {
 Route::middleware(['permission:orders.menu'])->group(function () {
     Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order.pendingOrders');
     Route::get('/orders/complete', [OrderController::class, 'completeOrders'])->name('order.completeOrders');
+    Route::post('/customer/attachment/{order}', [OrderController::class, 'attachmentOrderCustomer'])->name('customer.attachmentOrderCustomer');
+
     Route::get('/customer/details/{customer_id}', [OrderController::class, 'customerDetails'])->name('customer.customerDetails');
     Route::get('/quotas/{order_id}', [OrderController::class, 'quotas'])->name('order.quotas');
     Route::get('/payment_quota/{quota}', [OrderController::class, 'paymentQuota'])->name('quota.paymentQuota')->middleware([VerificarCuotaAnteriorPagada::class]);

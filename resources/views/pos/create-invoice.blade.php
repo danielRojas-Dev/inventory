@@ -39,6 +39,7 @@
                                                 <input type="hidden" name="quotas" value="{{ $quotas }}">
                                                 <input type="hidden" name="total_original" value="{{ $total_original }}">
                                                 <input type="hidden" name="payment_method" value="{{ $payment_method }}">
+                                                <input type="hidden" name="interest_rate" value="{{ $interest_rate }}">
 
                                             </div>
                                             <div class="modal-footer">
@@ -120,17 +121,17 @@
                                                             {{ $quotas }}
                                                         </td>
                                                         <td class="text-center">
-                                                            ${{ number_format($monto_cuota, 2, ',', '.') }}
+                                                            ${{ number_format($monto_cuota, 0, ',', '.') }}
                                                         </td>
                                                         <td class="text-center">
-                                                            <b>$ {{ number_format($total_con_interes, 2, ',', '.') }}</b>
+                                                            <b>$ {{ number_format($total_con_interes, 0, ',', '.') }}</b>
                                                         </td>
                                                     @else
                                                         <td class="text-center">
-                                                            ${{ number_format($item->price, 2, ',', '.') }}
+                                                            ${{ number_format($item->price, 0, ',', '.') }}
                                                         </td>
                                                         <td class="text-center">
-                                                            <b>$ {{ number_format($item->subtotal, 2, ',', '.') }}</b>
+                                                            <b>$ {{ number_format($item->subtotal, 0, ',', '.') }}</b>
                                                         </td>
                                                     @endif
                                                 </tr>
@@ -160,25 +161,25 @@
                                         <div class="ttl-amt py-2 px-3 d-flex justify-content-between align-items-center">
                                             <h6>Total Original</h6>
                                             <h6 class="text-primary font-weight-700">
-                                                ${{ number_format($total_original, 2, ',', '.') }}</h6>
+                                                ${{ number_format($total_original, 0, ',', '.') }}</h6>
                                         </div>
 
                                         <div class="ttl-amt py-2 px-3 d-flex justify-content-between align-items-center">
                                             <h6>Total con Intereses</h6>
                                             <h6 class="text-primary font-weight-700">
-                                                ${{ number_format($total_con_interes, 2, ',', '.') }}</h6>
+                                                ${{ number_format($total_con_interes, 0, ',', '.') }}</h6>
                                         </div>
 
                                         <div class="ttl-amt py-2 px-3 d-flex justify-content-between align-items-center">
                                             <h6>Cuotas ({{ $quotas }})</h6>
                                             <h6 class="text-success font-weight-700">
-                                                ${{ number_format($monto_cuota, 2, ',', '.') }} c/u</h6>
+                                                ${{ number_format($monto_cuota, 0, ',', '.') }} c/u</h6>
                                         </div>
                                     @else
                                         <div class="ttl-amt py-2 px-3 d-flex justify-content-between align-items-center">
                                             <h6>Total</h6>
                                             <h6 class="text-primary font-weight-700">
-                                                ${{ number_format($total_original, 2, ',', '.') }}</h6>
+                                                ${{ number_format($total_original, 0, ',', '.') }}</h6>
                                         </div>
                                     @endif
 
