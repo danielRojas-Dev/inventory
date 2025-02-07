@@ -46,21 +46,25 @@
                                         @csrf
                                         <div class="input-group">
                                             <input type="number" class="form-control" name="qty" required
-                                                value="{{ old('qty', $item->qty) }}">
+                                                style="width: 50px; height: 30px;" value="{{ old('qty', $item->qty) }}">
                                             <div class="input-group-append">
-                                                <button type="submit" class="btn btn-success border-none"
-                                                    data-toggle="tooltip" data-placement="top" title=""
-                                                    data-original-title="Enviar"><i class="fas fa-check"></i></button>
+                                                <button style="width: 45px; height: 30px;" type="submit"
+                                                    class="btn btn-success border-none" data-toggle="tooltip"
+                                                    data-placement="top" title="" data-original-title="Enviar"><i
+                                                        style="width: 25px; height: 20px;"
+                                                        class="fas fa-check"></i></button>
                                             </div>
                                         </div>
                                     </form>
                                 </td>
-                                <td> $ {{ number_format($item->price, 0, ',', '.') }}</td>
-                                <td>$ {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                <td> ${{ number_format($item->price, 0, ',', '.') }}</td>
+                                <td>${{ number_format($item->subtotal, 0, ',', '.') }}</td>
                                 <td>
-                                    <a href="{{ route('pos.deleteCart', $item->rowId) }}" class="btn btn-danger border-none"
-                                        data-toggle="tooltip" data-placement="top" title=""
-                                        data-original-title="Eliminar"><i class="fa fa-trash mr-0"></i></a>
+                                    <span class="badge bg-danger" style="width: 30px; height: 25px;">
+                                        <a href="{{ route('pos.deleteCart', $item->rowId) }}" data-toggle="tooltip"
+                                            data-placement="top" title="" data-original-title="Eliminar"><i
+                                                style="width: 15px; height: 15px; font-size: 12px;color: white"class="fa fa-trash mr-0"></i></a>
+                                    </span>
                                 </td>
                             </tr>
                         @endforeach
@@ -83,10 +87,12 @@
                 </div>
 
                 <div class="d-flex flex-wrap align-items-center justify-content-center">
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#paymentModal"
+                        {{ Cart::total() == 0 ? 'disabled' : '' }}>
                         Seleccionar metodo de pago
                     </button>
                 </div>
+
 
             </div>
 
@@ -150,7 +156,7 @@
                                             <td>{{ $product->product_name }}</td>
                                             <td>{{ $product->brand->name }}</td>
                                             <td>$ {{ number_format($product->selling_price, 0, ',', '.') }}</td>
-                                            <td style="padding: 8px !important; font-size: 18px; text-align: center;">
+                                            <td style="padding: 8px; font-size: 18px; text-align: center;">
                                                 @if ($product->product_store == 0)
                                                     <span id="stock-{{ $product->id }}"
                                                         class="badge bg-danger text-white">{{ $product->product_store }}</span>
@@ -177,9 +183,12 @@
                                                                 <i class="fas fa-plus mr-0"></i>
                                                             </button>
                                                         @else
-                                                            <button type="submit" class="btn btn-primary"
+                                                            <button type="submit"
+                                                                style="width: 30px; height: 25px; padding: 0; font-size: 12px;"
+                                                                class="btn btn-primary"
                                                                 data-product-stock="{{ $product->product_store }}">
-                                                                <i class="fas fa-plus mr-0"></i>
+                                                                <i style="width: 15px; height: 15px; font-size: 12px;"
+                                                                    class="fas fa-plus mr-0"></i>
                                                             </button>
                                                         @endif
                                                     </div>
@@ -220,7 +229,7 @@
                             <div class="col-md-12">
                                 <label for="customer_id">Seleccionar Cliente</label>
                                 <select class="form-control" id="customer_id" name="customer_id" required>
-                                    <option selected disabled>-- Seleccionar Cliente --</option>
+                                    <option value="" selected disabled>-- Seleccionar Cliente --</option>
                                     @foreach ($customers as $customer)
                                         <option value="{{ $customer->id }}">{{ $customer->name }}</option>
                                     @endforeach
@@ -230,7 +239,7 @@
                             <div class="col-md-12 mt-3">
                                 <label for="payment_method">Método de Pago</label>
                                 <select class="form-control" id="payment_method" name="payment_method" required>
-                                    <option selected disabled>-- Seleccionar Método --</option>
+                                    <option value="" selected disabled>-- Seleccionar Método --</option>
                                     <option value="EFECTIVO">Efectivo</option>
                                     <option value="TRANSFERENCIA">Transferencia</option>
                                     <option value="DEBITO">Débito</option>

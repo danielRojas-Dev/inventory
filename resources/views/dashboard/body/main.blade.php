@@ -7,6 +7,7 @@
     <title>Electro DR</title>
 
     <!-- Favicon -->
+
     <link rel="shortcut icon" href="{{ asset('assets/images/login/logodr.png') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/backend-plugin.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/backend.css?v=1.0.0') }}">
@@ -19,7 +20,45 @@
 
 
     @yield('specificpagestyles')
+    <style>
+        /* Estilo para pantallas grandes */
+        @media (max-width: 1920px) {
+            body {
+                font-size: 14px !important;
+            }
+        }
+
+        /* Estilo para pantallas medianas (tabletas y pantallas más pequeñas) */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px !important;
+            }
+        }
+
+        /* Estilo para pantallas pequeñas (teléfonos) */
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px !important;
+            }
+        }
+
+        /* Estilo para pantallas de entre 481px y 767px (tabletas en orientación vertical) */
+        @media (min-width: 481px) and (max-width: 767px) {
+            body {
+                font-size: 14px !important;
+            }
+        }
+
+        /* Estilo para pantallas muy grandes (monitores más grandes que 1920px) */
+        @media (min-width: 1921px) {
+            body {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+
 </head>
+
 
 <body>
     <!-- loader Start -->
