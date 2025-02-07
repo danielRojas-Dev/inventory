@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kyslik\ColumnSortable\Sortable;
@@ -34,6 +35,11 @@ class Order extends Model
     protected $guarded = [
         'id',
     ];
+
+    public function getOrderDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d/m/Y H:i');
+    }
 
     public function customer()
     {

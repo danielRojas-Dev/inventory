@@ -13,11 +13,13 @@ use App\Http\Controllers\Dashboard\AttendenceController;
 use App\Http\Controllers\Dashboard\AdvanceSalaryController;
 use App\Http\Controllers\Dashboard\BrandController;
 use App\Http\Controllers\Dashboard\DatabaseBackupController;
+use App\Http\Controllers\Dashboard\LoanController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PosController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Middleware\VerificarCuotaAnteriorPagada;
+use App\Http\Middleware\VerificarCuotaAnteriorPagadaLoans;
 
 /*
 |--------------------------------------------------------------------------
@@ -142,7 +144,17 @@ Route::middleware(['permission:orders.menu'])->group(function () {
 
 Route::middleware(['permission:loans.menu'])->group(function () {
 
-    Route::get('/loans/complete', [OrderController::class, 'completeLoans'])->name('loan.completeLoans');
+    Route::get('/loans/complete', [LoanController::class, 'completeLoans'])->name('loan.completeLoans');
+    Route::get('/customer/loan-details/{customer_id}', [LoanController::class, 'customerLoanDetails'])->name('customer.customerLoanDetails');
+    Route::get('/loans/create', [LoanController::class, 'createLoan'])->name('loan.createLoan');
+    Route::post('/loans/create', [LoanController::class, 'storeLoan'])->name('loan.storeLoan');
+    Route::post('/customer/attachment-loan/{loan}', [LoanController::class, 'attachmentLoanCustomer'])->name('customer.attachmentLoansCustomer');
+    Route::get('/download-receipt-prestamo/{loan}', [LoanController::class, 'downloadReceiptPrestamo'])->name('loan.downloadReceiptLoan');
+    Route::get('/quotas-loan/{loan_id}', [LoanController::class, 'quotasLoan'])->name('loan.quotasLoan');
+    Route::get('/payment-quota-loan/{quota}', [LoanController::class, 'paymentQuotaLoan'])->name('loan.paymentQuotaLoan')->middleware([VerificarCuotaAnteriorPagadaLoans::class]);
+    Route::post('/payment-loan', [LoanController::class, 'paymentLoan'])->name('loan.paymentLoan');
+
+    Route::get('/download-receipt-quota-loan/{quota}', [LoanController::class, 'downloadReceiptQuotaLoan'])->name('loan.downloadReceiptQuotaLoan');
 });
 
 // ====== DATABASE BACKUP ======

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\InvoiceHelper;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\OrderDetails;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Attachment;
 use App\Models\Customer;
+use App\Models\Loan;
+use App\Models\LoanDetail;
 use App\Models\OrderquotasDetails;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Redirect;
@@ -29,163 +32,103 @@ class LoanController extends Controller
             abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
         }
 
-        $customers = Customer::whereHas('orders') // Filtra solo clientes con órdenes
-            ->withCount('orders') // Opcional: cuenta las órdenes de cada cliente
+        $customers = Customer::whereHas('loans')
+            ->withCount('loans')
             ->sortable()
             ->paginate($row);
 
 
-        return view('orders.complete-orders', [
+        return view('loans.complete-loans', [
             'customers' => $customers
         ]);
     }
 
-    public function stockManage()
+    public function createLoan()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
-        return view('stock.index', [
-            'products' => Product::with(['category', 'supplier'])
-                ->filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query()),
+        return view('loans.create', [
+            'customers' => Customer::all()
         ]);
     }
 
-    public function storeOrder(Request $request)
+    public function storeLoan(Request $request)
     {
         try {
             // Validación de los datos
             $rules = [
                 'customer_id' => 'required|numeric',
+                'total_loan' => 'required|numeric',
                 'payment_method' => 'required|string',
                 'quotas' => 'sometimes|nullable|integer|min:1',
-                'estimated_payment_date' => 'sometimes|nullable|string',
                 'interest_rate' => 'sometimes|nullable|numeric|min:0',
+                'estimated_payment_date' => 'sometimes|nullable|string',
             ];
 
             // Generación del número de factura
-            $invoice_no = $this->generateInvoiceNo();
+            $invoice_no = InvoiceHelper::generateInvoiceNo();
 
             // Validación de los datos de entrada
             $validatedData = $request->validate($rules);
 
             DB::beginTransaction();
 
-            if ($validatedData['payment_method'] == 'CUOTAS') {
-                // Calcular el total con el interés usando el interest_rate proporcionado
-                $totalOriginal = Cart::total();
-                $interestRate = $validatedData['interest_rate'] ?? 0; // Valor por defecto 0 si no se proporciona
-                $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
-                $montoCuota = $totalConInteres / $validatedData['quotas'];
+            $totalOriginal = $validatedData['total_loan'];
+            $interestRate = $validatedData['interest_rate'] ?? 0;
+            $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
+            $montoCuota = $totalConInteres / $validatedData['quotas'];
 
-                $validatedData = array_merge($validatedData, ['pay' => 0]);
+            $validatedData = array_merge($validatedData, ['pay' => 0]);
 
-                // Asignación de datos adicionales
-                $orderData = [
-                    'customer_id' => $validatedData['customer_id'],
-                    'payment_method' => $validatedData['payment_method'],
-                    'order_date' => Carbon::now()->format('Y-m-d H:i:s'),
-                    'order_status' => 'Pendiente',
-                    'total_products' => Cart::count(),
-                    'invoice_no' => $invoice_no,
-                    'quotas' => $validatedData['quotas'],
-                    'total' => $totalConInteres,
-                    'pay' => 0,
-                    'employee_id' => auth()->id(),
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ];
+            $loanData = [
+                'customer_id' => $validatedData['customer_id'],
+                'payment_method' => $validatedData['payment_method'],
+                'loan_date' => Carbon::now()->format('Y-m-d H:i:s'),
+                'loan_status' => 'Pendiente',
+                'invoice_no' => $invoice_no,
+                'quotas' => $validatedData['quotas'],
+                'interest_plan' => $interestRate,
+                'total' => $totalConInteres,
+                'pay' => 0,
+                'employee_id' => auth()->id(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
 
-                $order_id = Order::insertGetId($orderData);
+            $loan_id = Loan::insertGetId($loanData);
 
-                // Crear los registros en OrderquotasDetails
-                $quotaDetails = [];
-                for ($i = 1; $i <= $validatedData['quotas']; $i++) {
-                    $quotaDetails[] = [
-                        'order_id' => $order_id,
-                        'number_quota' => $i,
-                        'estimated_payment' => round($montoCuota),
-                        'interest_plan' => $interestRate,
-                        'total_payment' => null,
-                        'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
-                        'status_payment' => 'Pendiente',
-                        'invoice_no' => null,
-                        'payment_method' => null,
-                        'payment_currency' => null,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ];
-                }
 
-                OrderquotasDetails::insert($quotaDetails);
-            } else {
-                $orderData = [
-                    'customer_id' => $validatedData['customer_id'],
-                    'payment_method' => $validatedData['payment_method'],
-                    'order_date' => Carbon::now()->format('Y-m-d H:i:s'),
-                    'order_status' => 'Pagado',
-                    'total_products' => Cart::count(),
-                    'invoice_no' => $invoice_no,
-                    'total' => Cart::total(),
-                    'pay' => Cart::total(),
-                    'employee_id' => auth()->id(),
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ];
-
-                $order_id = Order::insertGetId($orderData);
-            }
-
-            // Crear los detalles del pedido
-            $contents = Cart::content();
-            $orderDetails = [];
-
-            foreach ($contents as $content) {
-                $orderDetails[] = [
-                    'order_id' => $order_id,
-                    'product_id' => $content->id,
-                    'quantity' => $content->qty,
-                    'unitcost' => $content->price,
-                    'total' => $content->total,
+            $quotaDetails = [];
+            for ($i = 1; $i <= $validatedData['quotas']; $i++) {
+                $quotaDetails[] = [
+                    'loan_id' => $loan_id,
+                    'number_quota' => $i,
+                    'estimated_payment' => round($montoCuota),
+                    'total_payment' => null,
+                    'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
+                    'status_payment' => 'Pendiente',
+                    'invoice_no' => null,
+                    'payment_method' => null,
+                    'payment_currency' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ];
             }
 
-            // Insertar todos los detalles de productos en la tabla 'order_details'
-            OrderDetails::insert($orderDetails);
-
-            // **Actualizar el stock de los productos**
-            foreach ($contents as $content) {
-                Product::where('id', $content->id)->decrement('product_store', $content->qty);
-            }
+            LoanDetail::insert($quotaDetails);
 
             DB::commit();
 
-            // Vaciar el carrito
-            Cart::destroy();
 
-            if ($validatedData['payment_method'] == 'CUOTAS') {
-                return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceiptVenta', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
-            }
-            return redirect()->route('order.completeOrders')->with('success', "¡Venta creada con éxito! <a href=" . route('order.downloadReceiptVentaNormal', $order_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante de la Venta.");
+            return redirect()->route('loan.completeLoans')->with('success', "Prestamo creado con éxito! <a href=" . route('order.downloadReceiptVenta', $loan_id) . " target='_blank'>Haga click aqui </a> para descargar el comprobante del Prestamo.");
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Ocurrió un error al procesar la orden.');
+            return redirect()->back()->with('error', 'Ocurrió un error al procesar el prestamo.');
         }
     }
 
-
-    public function downloadReceiptVenta(Order $order)
+    public function downloadReceiptPrestamo(Loan $loan)
     {
         // Buscar si hay un attachment asociado al pedido
-        $attachment = Attachment::where('order_id', $order->id)->first();
+        $attachment = Attachment::where('loan_id', $loan->id)->first();
 
 
         if ($attachment) {
@@ -199,12 +142,10 @@ class LoanController extends Controller
         }
 
         // Si no hay attachment, generar el PDF como antes
-        $cliente = Customer::find($order->customer_id);
+        $cliente = Customer::find($loan->customer_id);
 
-        $valorCuota = OrderquotasDetails::where('order_id', $order->id)->value('estimated_payment');
-        $estimatedPaymentDate = OrderquotasDetails::where('order_id', $order->id)->value('estimated_payment_date');
-
-        $details = OrderDetails::where('order_id', $order->id)->with('product.brand')->get();
+        $valorCuota = LoanDetail::where('loan_id', $loan->id)->value('estimated_payment');
+        $estimatedPaymentDate = LoanDetail::where('loan_id', $loan->id)->value('estimated_payment_date');
 
         $pathLogo = public_path('assets/images/login/electrodr.png');
         $logo = file_get_contents($pathLogo);
@@ -215,105 +156,85 @@ class LoanController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Factura_Venta' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Factura_Venta' . $loan->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
-        $pdf = Pdf::loadView('orders.payment-receipt-venta-quota', compact(
-            'order',
+        $pdf = Pdf::loadView('loans.payment-receipt-loan', compact(
+            'loan',
             'cliente',
             'htmlLogo',
             'htmlTitle',
             'valorCuota',
             'estimatedPaymentDate',
-            'details'
         ))->setPaper('cart', 'vertical');
 
         return $pdf->stream($pdfFileName, ['Attachment' => 0]);
     }
 
-
-    public function downloadReceiptVentaNormal(Order $order)
+    public function downloadReceiptQuotaLoan(LoanDetail $quota)
     {
-        $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
+        $loan = Loan::where('id', $quota->loan_id)->first();
+        $cliente = Customer::where('id', $loan->customer_id)->first();
+        $valorCuota = LoanDetail::where('loan_id', $loan->id)->value('estimated_payment');
 
-        $details = OrderDetails::where('order_id', $order->id)->with('product')->get();
-
+        // Cargar imágenes en base64
         $pathLogo = public_path('assets/images/login/electrodr.png');
         $logo = file_get_contents($pathLogo);
+        $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '" width="100" height="" />';
 
         $pathTitle = public_path('assets/images/login/title.png');
         $title = file_get_contents($pathTitle);
+        $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '" width="300" height="" />';
 
-        $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
-        $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
+        // Cargar imagen de cancelado si la cuota está cancelada
+        $htmlCancelado = '';
+        if ($quota->cancelated) {
+            $pathCancelado = storage_path('app/public/cancelated/cancelado.png'); // Ruta correcta
+            if (file_exists($pathCancelado)) {
+                $cancelado = file_get_contents($pathCancelado);
+                $htmlCancelado = '<img src="data:image/png;base64,' . base64_encode($cancelado) . '" width="150" height="" />';
+            }
+        }
 
-        $pdfFileName = 'Factura_Venta' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        // Generar PDF
+        $pdfFileName = 'Factura_Cuota' . $loan->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
-
-        $pdf = Pdf::loadView('orders.payment-receipt-venta-normal', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
+        $pdf = Pdf::loadView('loans.payment-receipt-quota', compact('quota', 'loan', 'cliente', 'htmlLogo', 'htmlTitle', 'htmlCancelado', 'valorCuota'))
             ->setPaper('cart', 'vertical');
 
-        return $pdf->stream($pdfFileName, array('Attachment' => 0));
-    }
-
-
-
-    public function downloadReceiptQuota(OrderquotasDetails $quota)
-    {
-        $order = Order::all()->where('id', '=', $quota->order_id)->first();
-        $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
-        $details = OrderDetails::where('order_id', $order->id)->with('product')->get();
-        $valorCuota = OrderquotasDetails::where('order_id', $order->id)->first()->value('estimated_payment');
-
-        $pathLogo = public_path('assets/images/login/electrodr.png');
-        $logo = file_get_contents($pathLogo);
-
-        $pathTitle = public_path('assets/images/login/title.png');
-        $title = file_get_contents($pathTitle);
-
-        $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
-        $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
-
-        $pdfFileName = 'Factura_Cuota' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
-
-
-        $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota'))
-            ->setPaper('cart', 'vertical');
-
-        return $pdf->stream(date('d-m-Y') . ".pdf", array('Attachment' => 0));
+        return $pdf->stream($pdfFileName, ['Attachment' => 0]);
     }
 
 
     /**
      * Display the orders for a specific customer.
      */
-    public function customerDetails(Int $customer_id)
+    public function customerLoanDetails(Int $customer_id)
     {
-        $orders = Order::where('customer_id', $customer_id)
-            ->with('orderDetails', 'customer', 'attachments')
-            ->orderBy('order_date', 'DESC')
+        $loans = Loan::where('customer_id', $customer_id)
+            ->with('loanDetails', 'customer', 'attachments')
+            ->orderBy('loan_date', 'DESC')
             ->get();
 
-        return view('orders.customer-orders', compact('orders'));
+        return view('loans.customer-loans', compact('loans'));
     }
 
-    public function quotas(Int $order_id)
+    public function quotasLoan(Int $loan_id)
     {
-        $order = Order::findOrFail($order_id)->load('customer');
-        $quotas = OrderquotasDetails::where('order_id', $order_id)
+        $loan = Loan::findOrFail($loan_id)->load('customer');
+        $quotas = LoanDetail::where('loan_id', $loan_id)
             ->orderByRaw('CAST(number_quota AS UNSIGNED) DESC')
             ->get();
 
-
-        return view('orders.quotas', [
-            'order' => $order,
+        return view('loans.quotas', [
+            'loan' => $loan,
             'quotas' => $quotas,
         ]);
     }
 
-    public function paymentQuota(OrderquotasDetails $quota)
+    public function paymentQuotaLoan(LoanDetail $quota)
     {
         // Obtener la cuota con su orden relacionada
-        $quota = OrderquotasDetails::where('id', $quota->id)->with('order')->first();
+        $quota = LoanDetail::where('id', $quota->id)->with('loan')->first();
 
         // Calcular los días vencidos (si la fecha estimada de pago ya pasó)
         $today = \Carbon\Carbon::now();
@@ -322,11 +243,11 @@ class LoanController extends Controller
         // Si la fecha estimada ya pasó, calcular los días de vencimiento
         $daysOverdue = $today->greaterThan($estimatedDate) ? $estimatedDate->diffInDays($today) : 0;
 
-        return view('orders.payment-quota', compact('quota', 'daysOverdue'));
+        return view('loans.payment-quota', compact('quota', 'daysOverdue'));
     }
 
 
-    public function payment(Request $request)
+    public function paymentLoan(Request $request)
     {
         try {
             $rules = [
@@ -338,21 +259,17 @@ class LoanController extends Controller
             ];
 
             // Generación del número de factura
-            $invoice_no = $this->generateInvoiceNo();
-
+            $invoice_no = InvoiceHelper::generateInvoiceNo();
 
             $validatedData = $request->validate($rules);
 
-
-
             DB::beginTransaction();
 
-
             // Obtener la cuota
-            $quota = OrderquotasDetails::findOrFail($validatedData['quotaId']);
+            $quota = LoanDetail::findOrFail($validatedData['quotaId']);
 
             // Calcular el total a pagar
-            $increment = $validatedData['increment'] ?? null;
+            $increment = $validatedData['increment'] ?? 0;
             $totalPaid = $quota->estimated_payment + $increment;
 
             // Registrar el pago
@@ -368,15 +285,33 @@ class LoanController extends Controller
                 'updated_at' => now()
             ]);
 
+            // Verificar si es la última cuota del préstamo
+            $ultimaCuota = LoanDetail::where('loan_id', $quota->loan_id)
+                ->orderByRaw("CAST(number_quota AS UNSIGNED) DESC")
+                ->first();
+
+            if ($ultimaCuota && $ultimaCuota->id == $quota->id) {
+                // Si es la última cuota, marcarla como cancelada
+                $quota->update(['cancelated' => true]);
+
+                // Actualizar el estado del préstamo
+                $loan = $quota->loan; // Asegúrate de que la relación `loan` está definida en el modelo
+                if ($loan) {
+                    $loan->update(['loan_status' => 'Cancelado']);
+                }
+            }
+
             DB::commit();
 
-            return redirect()->back()->with('success', 'Pago registrado correctamente.');
+            return redirect()->route('loan.quotasLoan', $quota->loan_id)->with('success', 'Pago registrado correctamente.');
         } catch (\Throwable $th) {
             DB::rollBack();
+            throw $th;
         }
     }
 
-    public function attachmentOrderCustomer(Request $request, Order $order)
+
+    public function attachmentLoanCustomer(Request $request, Loan $loan)
     {
         try {
             $request->validate([
@@ -386,16 +321,16 @@ class LoanController extends Controller
             if ($request->hasFile('attachment')) {
                 $file = $request->file('attachment');
                 $filename = $file->getClientOriginalName();
-                $path = $file->storeAs('attachments/orders', $filename, 'public');
+                $path = $file->storeAs('attachments/loans', $filename, 'public');
 
                 // Eliminar archivo anterior si existe
-                if ($order->attachments->count()) {
-                    Storage::disk('public')->delete($order->attachments->first()->path);
-                    $order->attachments()->delete();
+                if ($loan->attachments->count()) {
+                    Storage::disk('public')->delete($loan->attachments->first()->path);
+                    $loan->attachments()->delete();
                 }
 
                 // Guardar nuevo archivo
-                $order->attachments()->create([
+                $loan->attachments()->create([
                     'path' => $path,
                     'filename' => $filename,
                 ]);
@@ -405,134 +340,5 @@ class LoanController extends Controller
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Error al subir el comprobante.');
         }
-    }
-
-
-
-    public function generateInvoiceNo()
-    {
-        // Obtener el último invoice_no de ambas tablas
-        $lastOrderInvoice = Order::whereNotNull('invoice_no')
-            ->orderBy('invoice_no', 'desc')
-            ->limit(1)
-            ->value('invoice_no');
-
-        $lastQuotaInvoice = OrderquotasDetails::whereNotNull('invoice_no')
-            ->orderBy('invoice_no', 'desc')
-            ->limit(1)
-            ->value('invoice_no');
-
-        // Determinar cuál es el último invoice_no
-        $lastInvoice = max($lastOrderInvoice, $lastQuotaInvoice);
-
-        // Extraer el número y generar el siguiente
-        if ($lastInvoice) {
-            preg_match('/INV-(\d+)/', $lastInvoice, $matches);
-            $nextNumber = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
-        } else {
-            $nextNumber = 1; // Si no hay registros, iniciamos en 1
-        }
-
-        // Formatear el nuevo invoice_no
-        return 'INV-' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-    }
-
-
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function updateStatus(Request $request)
-    {
-        $order_id = $request->id;
-
-        // Reduce the stock
-        $products = OrderDetails::where('order_id', $order_id)->get();
-
-        foreach ($products as $product) {
-            Product::where('id', $product->product_id)
-                ->update(['product_store' => DB::raw('product_store-' . $product->quantity)]);
-        }
-
-        Order::findOrFail($order_id)->update(['order_status' => 'complete']);
-
-        return Redirect::route('order.pendingOrders')->with('success', '¡La orden ha sido completada!');
-    }
-
-    public function invoiceDownload(Int $order_id)
-    {
-        $order = Order::where('id', $order_id)->first();
-        $orderDetails = OrderDetails::with('product')
-            ->where('order_id', $order_id)
-            ->orderBy('id', 'DESC')
-            ->get();
-
-        // show data (only for debugging)
-        return view('orders.invoice-order', [
-            'order' => $order,
-            'orderDetails' => $orderDetails,
-        ]);
-    }
-
-    public function pendingDue()
-    {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
-        $orders = Order::where('due', '>', '0')
-            ->sortable()
-            ->paginate($row);
-
-        return view('orders.pending-due', [
-            'orders' => $orders
-        ]);
-    }
-
-    public function orderDueAjax(Int $id)
-    {
-        $order = Order::findOrFail($id);
-
-        return response()->json($order);
-    }
-
-    public function updateDue(Request $request)
-    {
-        // Validaciones
-        $rules = [
-            'order_id' => 'required|numeric',
-            'due' => 'required|numeric',
-        ];
-
-        $validatedData = $request->validate($rules);
-
-        // Buscar la orden
-        $order = Order::findOrFail($request->order_id);
-        $mainPay = $order->pay;
-        $mainDue = $order->due;
-
-        // Calcular el nuevo valor de due y pay
-        $paid_due = $mainDue - $validatedData['due'];
-        $paid_pay = $mainPay + $validatedData['due'];
-
-        // Verificar si el monto pendiente es 0, para actualizar el estado de la orden
-        $order_status = $paid_due <= 0 ? 'complete' : $order->order_status;
-
-        // Actualizar la orden
-        $order->update([
-            'due' => $paid_due,
-            'pay' => $paid_pay,
-            'order_status' => $order_status, // Cambiar el estado si es necesario
-        ]);
-
-        if ($order_status == 'complete') {
-            return Redirect::route('order.completeOrders')->with('success', '¡Pago Completado con éxito!');
-        }
-
-        // Redirigir con un mensaje de éxito
-        return Redirect::route('order.pendingDue')->with('success', '¡Importe adeudado actualizado correctamente!');
     }
 }

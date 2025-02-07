@@ -70,12 +70,6 @@
             padding-right: 20px;
             padding-top: 30px;
         }
-
-        .resumen {
-            margin-top: 10px;
-            text-align: left;
-            font-size: 18px;
-        }
     </style>
 </head>
 
@@ -83,9 +77,9 @@
     <div class="nota-pedido">
         <div class="fecha">
             <div class="content-fecha" style="padding-top: 15px;">
-                <small>N°: <b>{{ $order->invoice_no }}</b></small>
+                <small>N°: <b>{{ $loan->invoice_no }}</b></small>
                 <br>
-                <small>Fecha: <b>{{ date('d-m-Y', strtotime($order->order_date)) }}</b></small>
+                <small>Fecha: <b>{{ date('d-m-Y', strtotime($loan->order_date)) }}</b></small>
                 <br>
                 <small>Tel: <b>3704-590488</b></small>
             </div>
@@ -102,10 +96,9 @@
             </div>
         </div>
 
-        <div>COMPROBANTE DE VENTA</div>
+        <div>COMPROBANTE DE PRESTAMO</div>
 
         <div class="header"></div>
-        <!-- Columna izquierda -->
         <table style="width: 100%;" class="info">
             <tr>
                 <!-- Primera columna -->
@@ -123,38 +116,56 @@
                 </td>
             </tr>
         </table>
-
-
-
-
         <div class="section">
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
                 <tr>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Cantidad</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Precio Unico</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Precio Total</th>
+                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Plan de Cuotas</th>
+                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Monto de Cuotas</th>
                 </tr>
-                @foreach ($details as $detail)
-                    <tr>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
-                            {{ $detail->product->product_name }}</td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">{{ $detail->quantity }}
-                        </td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">$
-                            {{ number_format($detail->unitcost, 0, ',', '.') }}
-                        </td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">$
-                            {{ number_format($detail->quantity * $detail->unitcost, 0, ',', '.') }}
-                        </td>
-
-                    </tr>
-                @endforeach
+                <tr>
+                    <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                        Prestamo</td>
+                    <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                        {{ $loan->quotas }}</td>
+                    <td style="border: 1px solid black; padding: 1px; text-align: center;">$
+                        {{ number_format($valorCuota, 0, ',', '.') }}
+                    </td>
+                </tr>
             </table>
         </div>
-        <div class="resumen">
-            <div><strong>Total:</strong> <b>$ {{ number_format($order->pay, 0, ',', '.') }}</b></div>
+
+
+
+
+        <?php
+        $fecha = $estimatedPaymentDate;
+        [$anio, $mes, $dia] = explode('-', $fecha);
+        ?>
+
+        <?php
+        $fecha = $estimatedPaymentDate;
+        [$anio, $mes, $dia] = explode('-', $fecha);
+        ?>
+
+        <div class="important">
+            <p><strong>Nota Importante:</strong> Por falta de cualquier mensualidad nos reservamos el derecho de
+                cobrar
+                el total del saldo de la venta.
+                <br> En caso de vencimiento de las cuotas, se aplicará un interés del
+                <b>1.5%</b> diario sobre el valor de la cuota hasta su cancelación. <br>Sírvase avisar el cambio de
+                domicilio.
+            </p>
+
+            <p><strong>Compromiso de pago:</strong> Conste por la presente que me comprometo a abonar el Prestamo
+                detallado en <b>{{ $loan->quotas }}</b> cuotas fijas de $
+                <b>{{ number_format($valorCuota, 0, ',', '.') }}</b> a
+                partir del día <b>{{ $dia }}</b> del <b>{{ $mes }}</b>
+                del año <b>{{ $anio }}</b>.
+            </p>
+            <p class="firma"><strong>Firma:</strong> _______________</p>
         </div>
+
 
     </div>
 </body>

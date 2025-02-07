@@ -11,7 +11,7 @@
             </div>
         @endif
 
-        <form action="{{ Route('quota.payment') }}" method="POST">
+        <form action="{{ Route('loan.paymentLoan') }}" method="POST">
             @csrf
             <input type="hidden" name="overdue" value="{{ $daysOverdue }}">
             <input type="hidden" name="quotaId" value="{{ $quota->id }}">

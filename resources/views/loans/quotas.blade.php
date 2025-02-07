@@ -23,8 +23,8 @@
                 @endif
 
                 <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
-                    <h4 class="mb-3">Cuotas de la Venta #{{ $order->invoice_no }}</h4>
-                    <a href="{{ route('customer.customerDetails', $order->customer->id) }}"
+                    <h4 class="mb-3">Cuotas del Prestamo #{{ $loan->invoice_no }}</h4>
+                    <a href="{{ route('customer.customerLoanDetails', $loan->customer->id) }}"
                         class="btn btn-secondary">Volver</a>
                 </div>
                 <p class="text-center mt-3">
@@ -94,13 +94,13 @@
                                     <td class="text-center">
                                         @if ($quota->status_payment != 'Pendiente')
                                             <span class="badge bg-success">
-                                                <a href="{{ Route('order.downloadReceiptQuota', $quota->id) }}"
+                                                <a href="{{ Route('loan.downloadReceiptQuotaLoan', $quota->id) }}"
                                                     target='_blank' class="text-white">
                                                     <i class="fas fa-download"></i>
                                                 </a>
                                             </span>
                                         @else
-                                            <a href="{{ Route('quota.paymentQuota', $quota->id) }}"
+                                            <a href="{{ Route('loan.paymentQuotaLoan', $quota->id) }}"
                                                 class="btn btn-primary btn-sm">
                                                 Pagar
                                             </a>

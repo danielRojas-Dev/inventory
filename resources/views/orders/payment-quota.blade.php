@@ -37,8 +37,8 @@
                 <select class="form-control" name="payment_method" required>
                     <option value="" selected disabled>Seleccione un Método de Pago</option>
                     <option value="EFECTIVO">Efectivo</option>
-                    <option value="TRANSFERENCIA">Tarjeta</option>
-                    <option value="DEBITO">Transferencia</option>
+                    <option value="DEBITO">Debito</option>
+                    <option value="TRANSFERENCIA">Transferencia</option>
                 </select>
             </div>
 

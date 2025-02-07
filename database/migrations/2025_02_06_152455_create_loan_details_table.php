@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('estimated_payment_date')->nullable();
             $table->date('payment_date')->nullable();
             $table->string('status_payment')->default('pendiente');
+            $table->boolean('cancelated')->default(false);
             $table->enum('payment_method', ['EFECTIVO', 'TRANSFERENCIA', 'DEBITO'])->nullable();
             $table->enum('payment_currency', ['PESOS', 'DOLARES'])->nullable();
             $table->timestamps();

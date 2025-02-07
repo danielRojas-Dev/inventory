@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\InvoiceHelper;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\OrderDetails;
@@ -70,7 +71,7 @@ class OrderController extends Controller
             ];
 
             // Generación del número de factura
-            $invoice_no = $this->generateInvoiceNo();
+            $invoice_no = InvoiceHelper::generateInvoiceNo();
 
             // Validación de los datos de entrada
             $validatedData = $request->validate($rules);
@@ -273,10 +274,20 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
+        // Cargar imagen de cancelado si la cuota está cancelada
+        $htmlCancelado = '';
+        if ($quota->cancelated) {
+            $pathCancelado = storage_path('app/public/cancelated/cancelado.png'); // Ruta correcta
+            if (file_exists($pathCancelado)) {
+                $cancelado = file_get_contents($pathCancelado);
+                $htmlCancelado = '<img src="data:image/png;base64,' . base64_encode($cancelado) . '" width="150" height="" />';
+            }
+        }
+
         $pdfFileName = 'Factura_Cuota' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
 
-        $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota'))
+        $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota', 'htmlCancelado'))
             ->setPaper('cart', 'vertical');
 
         return $pdf->stream(date('d-m-Y') . ".pdf", array('Attachment' => 0));
@@ -325,7 +336,6 @@ class OrderController extends Controller
         return view('orders.payment-quota', compact('quota', 'daysOverdue'));
     }
 
-
     public function payment(Request $request)
     {
         try {
@@ -338,17 +348,13 @@ class OrderController extends Controller
             ];
 
             // Generación del número de factura
-            $invoice_no = $this->generateInvoiceNo();
-
+            $invoice_no = InvoiceHelper::generateInvoiceNo();
 
             $validatedData = $request->validate($rules);
 
-
-
             DB::beginTransaction();
 
-
-            // Obtener la cuota
+            // Obtener la cuota actual
             $quota = OrderquotasDetails::findOrFail($validatedData['quotaId']);
 
             // Calcular el total a pagar
@@ -368,13 +374,32 @@ class OrderController extends Controller
                 'updated_at' => now()
             ]);
 
+            // Verificar si es la última cuota del pedido
+            $ultimaCuota = OrderquotasDetails::where('order_id', $quota->order_id)
+                ->orderByRaw("CAST(number_quota AS UNSIGNED) DESC")
+                ->first();
+
+            if ($ultimaCuota && $ultimaCuota->id == $quota->id) {
+                // Si es la última cuota, marcarla como cancelada
+                $quota->update(['cancelated' => true]);
+
+                // Actualizar el estado del pedido
+                $order = $quota->order; // Asegúrate de que la relación `order` está definida en el modelo
+                if ($order) {
+                    $order->update(['order_status' => 'Cancelado']);
+                }
+            }
+
             DB::commit();
 
-            return redirect()->back()->with('success', 'Pago registrado correctamente.');
+            return redirect()->route('order.quotas', $quota->order_id)->with('success', 'Pago registrado correctamente.');
         } catch (\Throwable $th) {
             DB::rollBack();
+            throw $th;
         }
     }
+
+
 
     public function attachmentOrderCustomer(Request $request, Order $order)
     {
@@ -405,134 +430,5 @@ class OrderController extends Controller
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Error al subir el comprobante.');
         }
-    }
-
-
-
-    public function generateInvoiceNo()
-    {
-        // Obtener el último invoice_no de ambas tablas
-        $lastOrderInvoice = Order::whereNotNull('invoice_no')
-            ->orderBy('invoice_no', 'desc')
-            ->limit(1)
-            ->value('invoice_no');
-
-        $lastQuotaInvoice = OrderquotasDetails::whereNotNull('invoice_no')
-            ->orderBy('invoice_no', 'desc')
-            ->limit(1)
-            ->value('invoice_no');
-
-        // Determinar cuál es el último invoice_no
-        $lastInvoice = max($lastOrderInvoice, $lastQuotaInvoice);
-
-        // Extraer el número y generar el siguiente
-        if ($lastInvoice) {
-            preg_match('/INV-(\d+)/', $lastInvoice, $matches);
-            $nextNumber = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
-        } else {
-            $nextNumber = 1; // Si no hay registros, iniciamos en 1
-        }
-
-        // Formatear el nuevo invoice_no
-        return 'INV-' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-    }
-
-
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function updateStatus(Request $request)
-    {
-        $order_id = $request->id;
-
-        // Reduce the stock
-        $products = OrderDetails::where('order_id', $order_id)->get();
-
-        foreach ($products as $product) {
-            Product::where('id', $product->product_id)
-                ->update(['product_store' => DB::raw('product_store-' . $product->quantity)]);
-        }
-
-        Order::findOrFail($order_id)->update(['order_status' => 'complete']);
-
-        return Redirect::route('order.pendingOrders')->with('success', '¡La orden ha sido completada!');
-    }
-
-    public function invoiceDownload(Int $order_id)
-    {
-        $order = Order::where('id', $order_id)->first();
-        $orderDetails = OrderDetails::with('product')
-            ->where('order_id', $order_id)
-            ->orderBy('id', 'DESC')
-            ->get();
-
-        // show data (only for debugging)
-        return view('orders.invoice-order', [
-            'order' => $order,
-            'orderDetails' => $orderDetails,
-        ]);
-    }
-
-    public function pendingDue()
-    {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
-        $orders = Order::where('due', '>', '0')
-            ->sortable()
-            ->paginate($row);
-
-        return view('orders.pending-due', [
-            'orders' => $orders
-        ]);
-    }
-
-    public function orderDueAjax(Int $id)
-    {
-        $order = Order::findOrFail($id);
-
-        return response()->json($order);
-    }
-
-    public function updateDue(Request $request)
-    {
-        // Validaciones
-        $rules = [
-            'order_id' => 'required|numeric',
-            'due' => 'required|numeric',
-        ];
-
-        $validatedData = $request->validate($rules);
-
-        // Buscar la orden
-        $order = Order::findOrFail($request->order_id);
-        $mainPay = $order->pay;
-        $mainDue = $order->due;
-
-        // Calcular el nuevo valor de due y pay
-        $paid_due = $mainDue - $validatedData['due'];
-        $paid_pay = $mainPay + $validatedData['due'];
-
-        // Verificar si el monto pendiente es 0, para actualizar el estado de la orden
-        $order_status = $paid_due <= 0 ? 'complete' : $order->order_status;
-
-        // Actualizar la orden
-        $order->update([
-            'due' => $paid_due,
-            'pay' => $paid_pay,
-            'order_status' => $order_status, // Cambiar el estado si es necesario
-        ]);
-
-        if ($order_status == 'complete') {
-            return Redirect::route('order.completeOrders')->with('success', '¡Pago Completado con éxito!');
-        }
-
-        // Redirigir con un mensaje de éxito
-        return Redirect::route('order.pendingDue')->with('success', '¡Importe adeudado actualizado correctamente!');
     }
 }

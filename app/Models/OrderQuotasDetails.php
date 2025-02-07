@@ -21,6 +21,7 @@ class OrderquotasDetails extends Model
         'total_payment',
         'estimated_payment_date',
         'status_payment',
+        'cancelated',
         'payment_method',
         'payment_date',
         'payment_currency',

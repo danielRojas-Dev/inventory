@@ -23,15 +23,17 @@
 
                 <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                     <div>
-                        <h4 class="mb-3">Listado de Ventas</h4>
+                        <h4 class="mb-3">Listado de Prestamos</h4>
                     </div>
-
+                    <div>
+                        <a href="{{ route('loan.createLoan') }}" class="btn btn-primary add-list">Agregar Prestamo</a>
+                    </div>
                 </div>
             </div>
 
 
             <div class="col-lg-12">
-                <form action="{{ route('order.completeOrders') }}" method="get">
+                <form action="{{ route('loan.completeLoans') }}" method="get">
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
                         <div class="form-group row">
                             <label for="row" class="col-sm-3 align-self-center">Filas:</label>
@@ -59,7 +61,7 @@
                                         <button type="submit" class="input-group-text bg-primary">
                                             <i class="fas fa-search font-size-20"></i>
                                         </button>
-                                        <a href="{{ route('order.completeOrders') }}" class="input-group-text bg-danger">
+                                        <a href="{{ route('loan.completeLoans') }}" class="input-group-text bg-danger">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>
@@ -97,7 +99,7 @@
                                         <div class="d-flex align-items-center list-action">
                                             <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top"
                                                 title="" data-original-title="Detalles"
-                                                href="{{ route('customer.customerDetails', $customer->id) }}">
+                                                href="{{ route('customer.customerLoanDetails', $customer->id) }}">
                                                 Detalles
                                             </a>
                                             {{-- <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"

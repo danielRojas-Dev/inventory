@@ -98,6 +98,12 @@
         </div>
 
         <div>COMPROBANTE DE PAGO</div>
+        @if ($quota->cancelated)
+            <div style="text-align: center; margin-top: 10px;">
+                {!! $htmlCancelado !!}
+            </div>
+        @endif
+
         <div class="header"></div>
         <table style="width: 100%;" class="info">
             <tr>

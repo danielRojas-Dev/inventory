@@ -98,6 +98,12 @@
         </div>
 
         <div>COMPROBANTE DE PAGO</div>
+        @if ($quota->cancelated)
+            <div style="text-align: center; margin-top: 10px;">
+                {!! $htmlCancelado !!}
+            </div>
+        @endif
+
         <div class="header"></div>
         <table style="width: 100%;" class="info">
             <tr>
@@ -122,7 +128,7 @@
                     <strong>Cuota N° :</strong> {{ $quota->number_quota }}
                 </td>
                 <td style="width: 25%;">
-                    <strong>Plan :</strong> {{ $order->quotas }} <strong>cuotas</strong>
+                    <strong>Plan :</strong> {{ $loan->quotas }} <strong>cuotas</strong>
                 </td>
                 <td style="width: 25%;">
                     <strong>Importe Total :</strong> ${{ number_format($quota->total_payment, 0, ',', '.') }}
@@ -138,16 +144,14 @@
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Cuotas Pagadas</th>
                 </tr>
-                @foreach ($details as $detail)
-                    <tr>
-                        </td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
-                            {{ $detail->product->product_name }}</td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
-                            {{ $quota->number_quota }}/{{ $order->quotas }}
-                        </td>
-                    </tr>
-                @endforeach
+                <tr>
+                    </td>
+                    <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                        Prestamo</td>
+                    <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                        {{ $quota->number_quota }}/{{ $loan->quotas }}
+                    </td>
+                </tr>
             </table>
         </div>
     </div>

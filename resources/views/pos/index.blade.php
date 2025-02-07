@@ -242,7 +242,7 @@
                                 <label for="quotas">Número de Cuotas</label>
                                 <select class="form-control" id="quotas" name="quotas">
                                     <option value="" selected disabled>Seleccione cuotas</option>
-                                    @for ($i = 2; $i <= 18; $i++)
+                                    @for ($i = 1; $i <= 18; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
                                 </select>
