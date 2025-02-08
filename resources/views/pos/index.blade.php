@@ -260,7 +260,7 @@
                             <div class="col-md-12 mt-3" id="interes_section" hidden>
                                 <label for="interest_rate">Porcentaje de Interés (%)</label>
                                 <input type="number" class="form-control" id="interest_rate" name="interest_rate"
-                                    min="0" placeholder="Ingrese el % de interés">
+                                    min="0" step="0.0011" placeholder="Ingrese el % de interés">
                             </div>
 
                             <div class="col-md-12 mt-3" id="fecha_pactada" hidden>
