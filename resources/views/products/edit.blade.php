@@ -86,7 +86,7 @@
                                         <option selected="" disabled>-- Seleccionar Marca --</option>
                                         @foreach ($brands as $brand)
                                             <option value="{{ $brand->id }}"
-                                                {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                                {{ old('brand_id', $product->brand_id) == $brand->id ? 'selected' : '' }}>
                                                 {{ $brand->name }}</option>
                                         @endforeach
                                     </select>
