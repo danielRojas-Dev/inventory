@@ -35,6 +35,10 @@ class Order extends Model
     protected $guarded = [
         'id',
     ];
+    protected $casts = [
+        'order_date' => 'datetime', // Laravel convierte automáticamente en Carbon
+    ];
+
     public function getOrderDateFormattedAttribute()
     {
         return $this->order_date instanceof Carbon
