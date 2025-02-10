@@ -37,12 +37,16 @@ class Order extends Model
     ];
     public function getOrderDateFormattedAttribute()
     {
-        return $this->order_date ? $this->order_date->format('d/m/Y H:i') : null;
+        return $this->order_date instanceof Carbon
+            ? $this->order_date->format('d/m/Y H:i')
+            : null;
     }
 
     public function getOrderDateReceiptFormattedAttribute()
     {
-        return $this->order_date ? $this->order_date->format('d-m-Y') : null;
+        return $this->order_date instanceof Carbon
+            ? $this->order_date->format('d-m-Y')
+            : null;
     }
 
     public function customer()
