@@ -267,7 +267,7 @@
                                 <label for="day">Día Pactado a pagar Cuota</label>
                                 <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
                                     <option value="" selected disabled>Seleccione Día</option>
-                                    @for ($i = 1; $i <= 30; $i++)
+                                    @for ($i = 1; $i <= 29; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
                                 </select>

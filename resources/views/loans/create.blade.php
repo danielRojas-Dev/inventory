@@ -64,7 +64,7 @@
                                 <label for="estimated_payment_date">Día Pactado a pagar Cuota</label>
                                 <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
                                     <option value="" selected disabled>Seleccione Día</option>
-                                    @for ($i = 1; $i <= 30; $i++)
+                                    @for ($i = 1; $i <= 29; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
                                 </select>
@@ -113,7 +113,7 @@
         document.getElementById('total_loan').addEventListener('input', calcularCuotas);
 
         function formatCurrency(value) {
-            return `$ ${value.toFixed(2).toLocaleString('es-AR')}`;
+            return `$ ${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
         }
 
         function calcularCuotas() {
