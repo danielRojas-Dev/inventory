@@ -24,22 +24,17 @@ class OrderController extends Controller
 
     public function completeOrders()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
+        // Obtener todos los clientes con órdenes
         $customers = Customer::whereHas('orders') // Filtra solo clientes con órdenes
-            ->withCount('orders') // Opcional: cuenta las órdenes de cada cliente
-            ->sortable()
-            ->paginate($row);
+            ->withCount('orders') // Cuenta las órdenes de cada cliente
+            ->get(); // Obtiene todos los clientes sin paginación
 
-
+        // Retorna la vista con todos los clientes
         return view('orders.complete-orders', [
-            'customers' => $customers
+            'customers' => $customers,
         ]);
     }
+
 
     public function stockManage()
     {

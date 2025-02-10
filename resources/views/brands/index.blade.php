@@ -34,7 +34,7 @@
             <div class="col-lg-12">
                 <form action="{{ route('brands.index') }}" method="get">
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <label for="row" class="col-sm-3 align-self-center">Filas:</label>
                             <div class="col-sm-9">
                                 <select class="form-control" name="row">
@@ -62,18 +62,19 @@
                                             class="fas fa-trash"></i></a>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </form>
             </div>
 
             <div class="col-lg-12">
                 <div class="table-responsive rounded mb-3">
-                    <table class="table mb-0">
+                    <table id="table" class="table nowrap table-hover" cellspacing="0">
+
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
-                                <th>@sortablelink('Nombre')</th>
-                                <th>@sortablelink('slug')</th>
+                                <th>Nombre</th>
+                                <th>slug'</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -114,7 +115,6 @@
                         </tbody>
                     </table>
                 </div>
-                {{ $brands->links() }}
             </div>
         </div>
         <!-- Page end  -->

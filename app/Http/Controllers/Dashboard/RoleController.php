@@ -16,7 +16,7 @@ class RoleController extends Controller
     // Permission Controller
     public function permissionIndex()
     {
-        $permissions = QueryBuilder::for(Permission::class)->paginate();
+        $permissions = QueryBuilder::for(Permission::class);
 
         return view('roles.permission-index', [
             'permissions' => $permissions,
@@ -75,7 +75,7 @@ class RoleController extends Controller
     // Role Controller
     public function roleIndex()
     {
-        $roles = QueryBuilder::for(Role::class)->paginate();
+        $roles = QueryBuilder::for(Role::class);
 
         return view('roles.role-index', [
             'roles' => $roles,
@@ -131,7 +131,7 @@ class RoleController extends Controller
 
     public function rolePermissionIndex()
     {
-        $roles = QueryBuilder::for(Role::class)->paginate();
+        $roles = QueryBuilder::for(Role::class);
 
         return view('roles.role-permission-index', [
             'roles' => $roles,
@@ -187,7 +187,7 @@ class RoleController extends Controller
         $role = Role::findOrFail($id);
         $permissions = $request->permission_id;
 
-        if(!empty($permissions)) {
+        if (!empty($permissions)) {
             $role->syncPermissions($permissions);
         }
 
@@ -198,7 +198,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
 
-        if(!is_null($role)) {
+        if (!is_null($role)) {
             $role->delete();
         }
 

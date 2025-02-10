@@ -101,7 +101,7 @@
                     <div class="card-body">
                         <form action="#" method="get">
                             <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                <div class="form-group row">
+                                {{-- <div class="form-group row">
                                     <label for="row" class="align-self-center mx-2">Filas:</label>
                                     <div>
                                         <select class="form-control" name="row">
@@ -115,9 +115,9 @@
                                                 @if (request('row') == '100') selected="selected" @endif>100</option>
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
-                                <div class="form-group row">
+                                {{-- <div class="form-group row">
                                     <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
                                     <div class="input-group col-sm-8">
                                         <input type="text" id="search" class="form-control" name="search"
@@ -129,20 +129,21 @@
                                                     class="fas fa-trash"></i></a>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </form>
 
 
                         <div class="table-responsive rounded mb-3 border-none">
-                            <table class="table mb-0">
+                            <table id="table" class="table table-hover" cellspacing="0">
+
                                 <thead class="bg-white text-uppercase">
                                     <tr class="ligth ligth-data">
                                         <th>Foto</th>
-                                        <th>@sortablelink('product_name', 'Nombre')</th>
-                                        <th>@sortablelink('brand_name', 'Marca')</th>
-                                        <th>@sortablelink('selling_price', 'Precio')</th>
-                                        <th>@sortablelink('product_store', 'Stock')</th>
+                                        <th>Nombre</th>
+                                        <th>Marca</th>
+                                        <th>Precio</th>
+                                        <th>Stock</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
@@ -208,7 +209,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        {{ $products->links() }}
                     </div>
                 </div>
             </div>

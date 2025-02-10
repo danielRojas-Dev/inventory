@@ -35,7 +35,7 @@
             <div class="col-lg-12">
                 <form action="{{ route('products.index') }}" method="get">
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <label for="row" class="col-sm-3 align-self-center">Filas:</label>
                             <div class="col-sm-9">
                                 <select class="form-control" name="row">
@@ -63,21 +63,22 @@
                                             class="fas fa-trash"></i></a>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </form>
             </div>
 
             <div class="col-lg-12">
                 <div class="table-responsive rounded mb-3">
-                    <table class="table mb-0">
+                    <table id="table" class="table nowrap table-hover" cellspacing="0">
+
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
                                 <th>Foto</th>
-                                <th>@sortablelink('product_name', 'Nombre')</th>
-                                <th>@sortablelink('brand.name', 'Marca')</th>
-                                <th>@sortablelink('category.name', 'Categoría')</th>
-                                <th>@sortablelink('selling_price', 'Precio')</th>
+                                <th>Nombre</th>
+                                <th>Marca</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -129,7 +130,6 @@
                         </tbody>
                     </table>
                 </div>
-                {{ $products->links() }}
             </div>
         </div>
         <!-- Fin de página -->

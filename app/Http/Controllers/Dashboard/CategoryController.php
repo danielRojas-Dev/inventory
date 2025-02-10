@@ -14,19 +14,15 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $row = (int) request('row', 10);
+        // Obtén todas las categorías sin paginación ni filtrado
+        $categories = Category::all();  // Obtiene todas las categorías
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
+        // Devuelve la vista con todas las categorías
         return view('categories.index', [
-            'categories' => Category::filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query()),
+            'categories' => $categories,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

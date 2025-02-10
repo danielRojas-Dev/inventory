@@ -26,22 +26,17 @@ class LoanController extends Controller
 
     public function completeLoans()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
+        // Obtener todos los clientes con préstamos
         $customers = Customer::whereHas('loans')
             ->withCount('loans')
-            ->sortable()
-            ->paginate($row);
+            ->get(); // Obtiene todos los clientes sin paginación
 
-
+        // Retorna la vista con todos los clientes
         return view('loans.complete-loans', [
-            'customers' => $customers
+            'customers' => $customers,
         ]);
     }
+
 
     public function createLoan()
     {

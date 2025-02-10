@@ -35,7 +35,7 @@
             <div class="col-lg-12">
                 <form action="{{ route('loan.completeLoans') }}" method="get">
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <label for="row" class="col-sm-3 align-self-center">Filas:</label>
                             <div class="col-sm-9">
                                 <select class="form-control" name="row">
@@ -49,9 +49,9 @@
                                     </option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
@@ -67,60 +67,56 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </form>
             </div>
 
 
             <div class="col-lg-12">
-                <div class="table-responsive rounded mb-3">
-                    <table class="table mb-0">
-                        <thead class="bg-white text-uppercase">
-                            <tr class="ligth ligth-data">
-                                <th class="ligth-data">No</th>
-                                <th class="ligth-data">Nombre</th>
-                                <th class="ligth-data">Teléfono</th>
-                                <th class="ligth-data">Ciudad</th>
-                                <th class="ligth-data">Dirección</th>
-                                <th class="ligth-data">Acción</th>
+                <table id="table" class="table nowrap table-hover" cellspacing="0">
+                    <thead class="bg-white text-uppercase">
+                        <tr class="ligth ligth-data">
+                            <th class="ligth-data">Nombre</th>
+                            <th class="ligth-data">Teléfono</th>
+                            <th class="ligth-data">Ciudad</th>
+                            <th class="ligth-data">Dirección</th>
+                            <th class="ligth-data">Acción</th>
 
-                            </tr>
-                        </thead>
-                        <tbody class="ligth-body">
-                            @forelse ($customers as $customer)
-                                <tr>
-                                    <td>{{ $customers->currentPage() * 10 - 10 + $loop->iteration }}</td>
-                                    <td>{{ $customer->name }}</td>
-                                    <td>{{ $customer->phone }}</td>
-                                    <td>{{ $customer->city }}</td>
-                                    <td>{{ $customer->address }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center list-action">
-                                            <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top"
-                                                title="" data-original-title="Detalles"
-                                                href="{{ route('customer.customerLoanDetails', $customer->id) }}">
-                                                Detalles
-                                            </a>
-                                            {{-- <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"
+                        </tr>
+                    </thead>
+                    <tbody class="ligth-body">
+                        @forelse ($customers as $customer)
+                            <tr>
+                                <td>{{ $customer->name }}</td>
+                                <td>{{ $customer->phone }}</td>
+                                <td>{{ $customer->city }}</td>
+                                <td>{{ $customer->address }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center list-action">
+                                        <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top"
+                                            title="" data-original-title="Detalles"
+                                            href="{{ route('customer.customerLoanDetails', $customer->id) }}">
+                                            Detalles
+                                        </a>
+                                        {{-- <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"
                                                 title="" data-original-title="Imprimir"
                                                 href="{{ route('order.invoiceDownload', $order->id) }}">
                                                 Imprimir
                                             </a> --}}
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <div class="alert text-white bg-danger" role="alert">
-                                    <div class="iq-alert-text">Datos no encontrados.</div>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <i class="ri-close-line"></i>
-                                    </button>
-                                </div>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <div class="alert text-white bg-danger" role="alert">
+                                <div class="iq-alert-text">Datos no encontrados.</div>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            </div>
+                        @endforelse
+                    </tbody>
+                </table>
                 {{ $customers->links() }}
             </div>
 

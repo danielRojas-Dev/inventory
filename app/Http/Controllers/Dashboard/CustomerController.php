@@ -16,16 +16,15 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $row = (int) request('row', 10);
+        // Obtén todos los clientes sin paginación ni filtrado
+        $customers = Customer::all();  // Obtiene todos los clientes
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
+        // Devuelve la vista con todos los clientes
         return view('customers.index', [
-            'customers' => Customer::filter(request(['search']))->sortable()->paginate($row)->appends(request()->query()),
+            'customers' => $customers,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

@@ -14,19 +14,15 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $row = (int) request('row', 10);
+        // Obtén todas las marcas sin paginación ni filtrado
+        $brands = Brand::all();  // Obtiene todas las marcas
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
+        // Devuelve la vista con todas las marcas
         return view('brands.index', [
-            'brands' => Brand::filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query()),
+            'brands' => $brands,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

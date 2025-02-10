@@ -18,16 +18,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        $row = (int) request('row', 10);
+        // Obtén todos los usuarios sin paginación ni filtrado
+        $users = User::all();  // Obtiene todos los usuarios
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
+        // Devuelve la vista con todos los usuarios
         return view('users.index', [
-            'users' => User::filter(request(['search']))->sortable()->paginate($row)->appends(request()->query()),
+            'users' => $users,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -60,7 +59,7 @@ class UserController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/profile/';
 
             $file->storeAs($path, $fileName);
@@ -69,7 +68,7 @@ class UserController extends Controller
 
         $user = User::create($validatedData);
 
-        if($request->role) {
+        if ($request->role) {
             $user->assignRole($request->role);
         }
 
@@ -103,11 +102,11 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|max:50',
             'photo' => 'image|file|max:1024',
-            'email' => 'required|email|max:50|unique:users,email,'.$user->id,
-            'username' => 'required|min:4|max:25|alpha_dash:ascii|unique:users,username,'.$user->id,
+            'email' => 'required|email|max:50|unique:users,email,' . $user->id,
+            'username' => 'required|min:4|max:25|alpha_dash:ascii|unique:users,username,' . $user->id,
         ];
 
-        if($request->password || $request->confirm_password) {
+        if ($request->password || $request->confirm_password) {
             $rules['password'] = 'min:6|required_with:password_confirmation';
             $rules['password_confirmation'] = 'min:6|same:password';
         }
@@ -119,13 +118,13 @@ class UserController extends Controller
          * Handle upload image with Storage.
          */
         if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
             $path = 'public/profile/';
 
             /**
              * Delete photo if exists.
              */
-            if($user->photo){
+            if ($user->photo) {
                 Storage::delete($path . $user->photo);
             }
 
@@ -136,7 +135,7 @@ class UserController extends Controller
         $userData = User::findOrFail($user->id);
         $userData->update($validatedData);
 
-        if($request->role) {
+        if ($request->role) {
             $userData->syncRoles($request->role);
         }
 
@@ -151,7 +150,7 @@ class UserController extends Controller
         /**
          * Delete photo if exists.
          */
-        if($user->photo){
+        if ($user->photo) {
             Storage::delete('public/profile/' . $user->photo);
         }
 

@@ -26,20 +26,15 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $row = (int) request('row', 10);
+        // Obtén todos los productos sin paginación ni filtrado
+        $products = Product::with(['category', 'brand'])->get();
 
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
+        // Devuelve la vista con todos los productos
         return view('products.index', [
-            'products' => Product::with(['category', 'brand'])
-                ->filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query()),
+            'products' => $products,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

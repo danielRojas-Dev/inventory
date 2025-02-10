@@ -14,21 +14,13 @@ class PosController extends Controller
 {
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'El parámetro por página debe ser un número entero entre 1 y 100.');
-        }
-
         return view('pos.index', [
-            'customers' => Customer::all()->sortBy('name'),
-            'productItem' => Cart::content(),
-            'products' => Product::with('brand')->filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query()),
+            'customers' => Customer::all()->sortBy('name'), // Obtener todos los clientes
+            'productItem' => Cart::content(), // Obtener los productos en el carrito
+            'products' => Product::with('brand')->get(), // Obtener todos los productos sin paginación
         ]);
     }
+
 
     public function addCart(Request $request)
     {

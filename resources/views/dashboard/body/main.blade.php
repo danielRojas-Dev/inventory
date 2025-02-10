@@ -18,6 +18,17 @@
     <!-- Bootstrap Bundle con Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Estilos de DataTables -->
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/b-print-2.2.3/r-2.3.0/rg-1.2.0/datatables.min.css" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script type="text/javascript"
+        src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/b-print-2.2.3/r-2.3.0/rg-1.2.0/datatables.min.js">
+    </script>
 
     @yield('specificpagestyles')
     <style>
@@ -83,8 +94,29 @@
 
     <!-- Backend Bundle JavaScript -->
     <script src="{{ asset('assets/js/backend-bundle.min.js') }}"></script>
-    <script src="https://kit.fontawesome.com/4c897dc313.js" crossorigin="anonymous"></script>
     <script src="{{ asset('assets/vendor/@fortawesome/fontawesome-free/js/all.min.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#table').DataTable({
+                responsive: true,
+                language: {
+
+                    search: "Buscar:", // Texto para la barra de búsqueda
+                    lengthMenu: "Mostrar _MENU_", // Texto para la opción de registros por página
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros", // Texto de información
+                    infoEmpty: "No hay registros disponibles", // Texto cuando no hay resultados
+                    infoFiltered: "(filtrado de _MAX_ registros en total)",
+                    emptyTable: "No hay datos disponibles en la tabla", // Mensaje cuando no hay datos en la tabla
+                    zeroRecords: "No se encontraron registros que coincidan", // Texto de los filtros
+                    paginate: {
+                        previous: "Anterior", // Texto del botón anterior
+                        next: "Siguiente" // Texto del botón siguiente
+                    }
+                }
+            });
+        });
+    </script>
 
     @yield('specificpagescripts')
 
