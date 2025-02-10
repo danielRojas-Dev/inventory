@@ -80,7 +80,7 @@
             <div class="content-fecha" style="padding-top: 15px;">
                 <small>N°: <b>{{ $quota->invoice_no }}</b></small>
                 <br>
-                <small>Fecha: <b>{{ date('d-m-Y', strtotime($quota->payment_date)) }}</b></small>
+                <small>Fecha: <b>{{ $order->order_date_receipt_formatted }}</b></small>
                 <br>
                 <small>Tel: <b>3704-590488</b></small>
             </div>
