@@ -65,7 +65,7 @@ class Order extends Model
 
     public function orderquotaDetails()
     {
-        return $this->hasMany(OrderquotasDetails::class, 'order_id', 'id');
+        return $this->hasMany(OrderQuotasDetails::class, 'order_id', 'id');
     }
     public function attachments()
     {
@@ -77,7 +77,7 @@ class Order extends Model
         $orderId = $this::where('customer_id', '=', $this->customer_id)->value('id');
 
 
-        $debeCuotas = OrderquotasDetails::where('order_id', $orderId)
+        $debeCuotas = OrderQuotasDetails::where('order_id', $orderId)
             ->where('estimated_payment_date', '<', date('Y-m-d'))
             ->where('status_payment', '!=', 'Pagado')
             ->count();

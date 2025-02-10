@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Models\DetalleVenta;
-use App\Models\OrderquotasDetails;
+use App\Models\OrderQuotasDetails;
 
 class VerificarCuotaAnteriorPagada
 {
@@ -22,14 +22,14 @@ class VerificarCuotaAnteriorPagada
     {
         $quota = $request->quota;
 
-        $ultimaCuotaPagada = OrderquotasDetails::where('order_id', $quota->order_id)->where('status_payment', 'pagado')->orderByRaw("CAST(number_quota AS UNSIGNED) DESC")->first();
+        $ultimaCuotaPagada = OrderQuotasDetails::where('order_id', $quota->order_id)->where('status_payment', 'pagado')->orderByRaw("CAST(number_quota AS UNSIGNED) DESC")->first();
 
 
 
-        $cuotaActual = OrderquotasDetails::where('id', $quota->id)->first();
+        $cuotaActual = OrderQuotasDetails::where('id', $quota->id)->first();
 
 
-        $primeraCuota = OrderquotasDetails::where('id', $quota->id)->where('number_quota', '=', '1')->first();
+        $primeraCuota = OrderQuotasDetails::where('id', $quota->id)->where('number_quota', '=', '1')->first();
 
         if ($primeraCuota?->status_payment == 'Pendiente') {
             return $next($request);

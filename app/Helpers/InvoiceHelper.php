@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Order;
-use App\Models\OrderquotasDetails;
+use App\Models\OrderQuotasDetails;
 use App\Models\Loan;
 use App\Models\LoanDetail;
 
@@ -17,7 +17,7 @@ class InvoiceHelper
             ->limit(1)
             ->value('invoice_no');
 
-        $lastQuotaInvoice = OrderquotasDetails::whereNotNull('invoice_no')
+        $lastQuotaInvoice = OrderQuotasDetails::whereNotNull('invoice_no')
             ->orderBy('invoice_no', 'desc')
             ->limit(1)
             ->value('invoice_no');

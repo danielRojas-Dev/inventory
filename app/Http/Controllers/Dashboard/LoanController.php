@@ -14,7 +14,7 @@ use App\Models\Attachment;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoanDetail;
-use App\Models\OrderquotasDetails;
+use App\Models\OrderQuotasDetails;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;

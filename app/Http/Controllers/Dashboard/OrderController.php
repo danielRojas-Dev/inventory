@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Attachment;
 use App\Models\Customer;
-use App\Models\OrderquotasDetails;
+use App\Models\OrderQuotasDetails;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
@@ -106,7 +106,7 @@ class OrderController extends Controller
 
                 $order_id = Order::insertGetId($orderData);
 
-                // Crear los registros en OrderquotasDetails
+                // Crear los registros en OrderQuotasDetails
                 $quotaDetails = [];
                 for ($i = 1; $i <= $validatedData['quotas']; $i++) {
                     $quotaDetails[] = [
@@ -124,7 +124,7 @@ class OrderController extends Controller
                     ];
                 }
 
-                OrderquotasDetails::insert($quotaDetails);
+                OrderQuotasDetails::insert($quotaDetails);
             } else {
                 $orderData = [
                     'customer_id' => $validatedData['customer_id'],
@@ -202,8 +202,8 @@ class OrderController extends Controller
         // Si no hay attachment, generar el PDF como antes
         $cliente = Customer::find($order->customer_id);
 
-        $valorCuota = OrderquotasDetails::where('order_id', $order->id)->value('estimated_payment');
-        $estimatedPaymentDate = OrderquotasDetails::where('order_id', $order->id)->value('estimated_payment_date');
+        $valorCuota = OrderQuotasDetails::where('order_id', $order->id)->value('estimated_payment');
+        $estimatedPaymentDate = OrderQuotasDetails::where('order_id', $order->id)->value('estimated_payment_date');
 
         $details = OrderDetails::where('order_id', $order->id)->with('product.brand')->get();
 
@@ -258,12 +258,12 @@ class OrderController extends Controller
 
 
 
-    public function downloadReceiptQuota(OrderquotasDetails $quota)
+    public function downloadReceiptQuota(OrderQuotasDetails $quota)
     {
         $order = Order::all()->where('id', '=', $quota->order_id)->first();
         $cliente = Customer::all()->where('id', '=', $order->customer_id)->first();
         $details = OrderDetails::where('order_id', $order->id)->with('product')->get();
-        $valorCuota = OrderquotasDetails::where('order_id', $order->id)->first()->value('estimated_payment');
+        $valorCuota = OrderQuotasDetails::where('order_id', $order->id)->first()->value('estimated_payment');
 
         $pathLogo = public_path('assets/images/login/electrodr.png');
         $logo = file_get_contents($pathLogo);
@@ -310,7 +310,7 @@ class OrderController extends Controller
     public function quotas(Int $order_id)
     {
         $order = Order::findOrFail($order_id)->load('customer');
-        $quotas = OrderquotasDetails::where('order_id', $order_id)
+        $quotas = OrderQuotasDetails::where('order_id', $order_id)
             ->orderByRaw('CAST(number_quota AS UNSIGNED) DESC')
             ->get();
 
@@ -321,10 +321,10 @@ class OrderController extends Controller
         ]);
     }
 
-    public function paymentQuota(OrderquotasDetails $quota)
+    public function paymentQuota(OrderQuotasDetails $quota)
     {
         // Obtener la cuota con su orden relacionada
-        $quota = OrderquotasDetails::where('id', $quota->id)->with('order')->first();
+        $quota = OrderQuotasDetails::where('id', $quota->id)->with('order')->first();
 
         // Calcular los días vencidos (si la fecha estimada de pago ya pasó)
         $today = \Carbon\Carbon::now();
@@ -355,7 +355,7 @@ class OrderController extends Controller
             DB::beginTransaction();
 
             // Obtener la cuota actual
-            $quota = OrderquotasDetails::findOrFail($validatedData['quotaId']);
+            $quota = OrderQuotasDetails::findOrFail($validatedData['quotaId']);
 
             // Calcular el total a pagar
             $increment = $validatedData['increment'] ?? null;
@@ -375,7 +375,7 @@ class OrderController extends Controller
             ]);
 
             // Verificar si es la última cuota del pedido
-            $ultimaCuota = OrderquotasDetails::where('order_id', $quota->order_id)
+            $ultimaCuota = OrderQuotasDetails::where('order_id', $quota->order_id)
                 ->orderByRaw("CAST(number_quota AS UNSIGNED) DESC")
                 ->first();
 
