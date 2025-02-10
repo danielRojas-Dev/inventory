@@ -35,15 +35,14 @@ class Order extends Model
     protected $guarded = [
         'id',
     ];
-
-    public function getOrderDateAttribute($value)
+    public function getOrderDateFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d/m/Y H:i');
+        return $this->order_date ? $this->order_date->format('d/m/Y H:i') : null;
     }
 
-    public function getOrderDateReceiptAttribute($value)
+    public function getOrderDateReceiptFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y');
+        return $this->order_date ? $this->order_date->format('d-m-Y') : null;
     }
 
     public function customer()
