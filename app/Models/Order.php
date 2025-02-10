@@ -41,6 +41,11 @@ class Order extends Model
         return Carbon::parse($value)->format('d/m/Y H:i');
     }
 
+    public function getOrderDateReceiptAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
