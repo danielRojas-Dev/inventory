@@ -31,7 +31,7 @@
                     <li class="{{ Request::is('pos*') ? 'active' : '' }}">
                         <a href="{{ route('pos.index') }}" class="svg-icon">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="ml-3">Ventas</span>
+                            <span class="ml-3">Realizar Ventas</span>
                         </a>
                     </li>
                 @endif
