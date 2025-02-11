@@ -20,49 +20,16 @@
                         </button>
                     </div>
                 @endif
-                <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
-                    <div>
-                        <h4 class="mb-3">Listado de Categorias</h4>
-
-                    </div>
-                    <div>
-                        <a href="{{ route('categories.create') }}" class="btn btn-primary add-list">Agregar Categoria</a>
-                    </div>
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+                    <h4 class="mb-3">Listado de Categorias</h4>
+                    <a href="{{ route('categories.create') }}" class="btn btn-primary add-list"><i
+                            class="fas fa-plus mr-3"></i>Agregar Categoria</a>
                 </div>
             </div>
 
             <div class="col-lg-12">
                 <form action="{{ route('categories.index') }}" method="get">
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
-                        {{-- <div class="form-group row">
-                            <label for="row" class="col-sm-3 align-self-center">Filas:</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" name="row">
-                                    <option value="10" @if (request('row') == '10') selected="selected" @endif>10
-                                    </option>
-                                    <option value="25" @if (request('row') == '25') selected="selected" @endif>25
-                                    </option>
-                                    <option value="50" @if (request('row') == '50') selected="selected" @endif>50
-                                    </option>
-                                    <option value="100" @if (request('row') == '100') selected="selected" @endif>100
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
-                            <div class="input-group col-sm-8">
-                                <input type="text" id="search" class="form-control" name="search"
-                                    placeholder="Buscar Categoria" value="{{ request('search') }}">
-                                <div class="input-group-append">
-                                    <button type="submit" class="input-group-text bg-primary"><i
-                                            class="fas fa-search font-size-20"></i></button>
-                                    <a href="{{ Route('categories.index') }}" class="input-group-text bg-danger"><i
-                                            class="fas fa-trash"></i></a>
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                 </form>
             </div>

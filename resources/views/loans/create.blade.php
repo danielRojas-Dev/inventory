@@ -20,63 +20,64 @@
                     <div class="card-body">
                         <form action="{{ route('loan.storeLoan') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="col-md-12">
-                                <label for="customer_id">Seleccionar Cliente</label>
-                                <select class="form-control" id="customer_id" name="customer_id" required>
-                                    <option selected disabled>-- Seleccionar Cliente --</option>
-                                    @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="customer_id">Seleccionar Cliente</label>
+                                    <select class="form-control" id="customer_id" name="customer_id" required>
+                                        <option selected disabled>-- Seleccionar Cliente --</option>
+                                        @foreach ($customers as $customer)
+                                            <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                            <div class="col-md-12 mt-3">
-                                <label for="total_loan">Monto del Prestamo</label>
-                                <input type="number" class="form-control" id="total_loan" name="total_loan" step="0.01"
-                                    min="0" placeholder="Ingrese el monto del Prestamo" required>
-                            </div>
+                                <div class="col-md-12 mt-3">
+                                    <label for="total_loan">Monto del Prestamo</label>
+                                    <input type="number" class="form-control" id="total_loan" name="total_loan"
+                                        step="0.01" min="0" placeholder="Ingrese el monto del Prestamo" required>
+                                </div>
 
-                            <div class="col-md-12 mt-3">
-                                <label for="payment_method">Método de Pago</label>
-                                <select class="form-control" id="payment_method" name="payment_method" required>
-                                    <option selected disabled>-- Seleccionar Método --</option>
-                                    <option value="CUOTAS">Cuotas</option>
-                                </select>
-                            </div>
+                                <div class="col-md-12 mt-3">
+                                    <label for="payment_method">Método de Pago</label>
+                                    <select class="form-control" id="payment_method" name="payment_method" required>
+                                        <option selected disabled>-- Seleccionar Método --</option>
+                                        <option value="CUOTAS">Cuotas</option>
+                                    </select>
+                                </div>
 
-                            <div class="col-md-12 mt-3 d-none" id="cuotas_section">
-                                <label for="quotas">Número de Cuotas</label>
-                                <select class="form-control" id="quotas" name="quotas">
-                                    <option value="" selected disabled>Seleccione cuotas</option>
-                                    @for ($i = 1; $i <= 18; $i++)
-                                        <option value="{{ $i }}">{{ $i }}</option>
-                                    @endfor
-                                </select>
-                            </div>
+                                <div class="col-md-12 mt-3 d-none" id="cuotas_section">
+                                    <label for="quotas">Número de Cuotas</label>
+                                    <select class="form-control" id="quotas" name="quotas">
+                                        <option value="" selected disabled>Seleccione cuotas</option>
+                                        @for ($i = 1; $i <= 18; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
 
-                            <div class="col-md-12 mt-3 d-none" id="interes_section">
-                                <label for="interest_rate">Porcentaje de Interés (%)</label>
-                                <input type="number" class="form-control" id="interest_rate" name="interest_rate"
-                                    step="0.01" min="0" placeholder="Ingrese el % de interés">
-                            </div>
+                                <div class="col-md-12 mt-3 d-none" id="interes_section">
+                                    <label for="interest_rate">Porcentaje de Interés (%)</label>
+                                    <input type="number" class="form-control" id="interest_rate" name="interest_rate"
+                                        step="0.01" min="0" placeholder="Ingrese el % de interés">
+                                </div>
 
-                            <div class="col-md-12 mt-3 d-none" id="fecha_pactada">
-                                <label for="estimated_payment_date">Día Pactado a pagar Cuota</label>
-                                <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
-                                    <option value="" selected disabled>Seleccione Día</option>
-                                    @for ($i = 1; $i <= 29; $i++)
-                                        <option value="{{ $i }}">{{ $i }}</option>
-                                    @endfor
-                                </select>
-                            </div>
+                                <div class="col-md-12 mt-3 d-none" id="fecha_pactada">
+                                    <label for="estimated_payment_date">Día Pactado a pagar Cuota</label>
+                                    <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
+                                        <option value="" selected disabled>Seleccione Día</option>
+                                        @for ($i = 1; $i <= 29; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
 
-                            <div class="col-md-12 mt-3 d-none" id="cuotas_info_section">
-                                <h5>Detalles del Plan de Cuotas</h5>
-                                <p><strong>Total Original:</strong> <span id="total_original">0.00</span></p>
-                                <p><strong>Total con Interés:</strong> <span id="total_interes">0.00</span></p>
-                                <p><strong>Cuotas:</strong> <span id="monto_cuota">0.00</span> cada una</p>
+                                <div class="col-md-12 mt-3 d-none" id="cuotas_info_section">
+                                    <h5>Detalles del Plan de Cuotas</h5>
+                                    <p><strong>Total Original:</strong> <span id="total_original">0.00</span></p>
+                                    <p><strong>Total con Interés:</strong> <span id="total_interes">0.00</span></p>
+                                    <p><strong>Cuotas:</strong> <span id="monto_cuota">0.00</span> cada una</p>
+                                </div>
                             </div>
-
                             <div class="mt-2">
                                 <button type="submit" class="btn btn-primary mr-2">Guardar</button>
                                 <a class="btn bg-danger" href="{{ route('loan.completeLoans') }}">Cancelar</a>

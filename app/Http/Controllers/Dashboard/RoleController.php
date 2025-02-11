@@ -16,7 +16,7 @@ class RoleController extends Controller
     // Permission Controller
     public function permissionIndex()
     {
-        $permissions = QueryBuilder::for(Permission::class);
+        $permissions = Permission::all();
 
         return view('roles.permission-index', [
             'permissions' => $permissions,
@@ -75,7 +75,7 @@ class RoleController extends Controller
     // Role Controller
     public function roleIndex()
     {
-        $roles = QueryBuilder::for(Role::class);
+        $roles = Role::all();
 
         return view('roles.role-index', [
             'roles' => $roles,
@@ -131,7 +131,7 @@ class RoleController extends Controller
 
     public function rolePermissionIndex()
     {
-        $roles = QueryBuilder::for(Role::class);
+        $roles = Role::all();
 
         return view('roles.role-permission-index', [
             'roles' => $roles,

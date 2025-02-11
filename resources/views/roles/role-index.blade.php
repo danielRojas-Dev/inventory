@@ -20,46 +20,12 @@
                         </button>
                     </div>
                 @endif
-                <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
-                    <div>
-                        <h4 class="mb-3">Listado de Roles</h4>
-                    </div>
-                    <div>
-                        <a href="{{ route('role.create') }}" class="btn btn-primary add-list"><i
-                                class="fas fa-plus mr-3"></i>Agregar Rol</a>
-                    </div>
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+                    <h4 class="mb-3">Listado de Roles</h4>
+                    <a href="{{ route('role.create') }}" class="btn btn-primary add-list"><i
+                            class="fas fa-plus mr-3"></i>Agregar Rol</a>
                 </div>
             </div>
-
-            {{-- <div class="col-lg-12">
-            <form action="{{ route('customers.index') }}" method="get">
-                <div class="d-flex flex-wrap align-items-center justify-content-between">
-                    <div class="form-group row">
-                        <label for="row" class="col-sm-3 align-self-center">Row:</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="row">
-                                <option value="10" @if (request('row') == '10')selected="selected"@endif>10</option>
-                                <option value="25" @if (request('row') == '25')selected="selected"@endif>25</option>
-                                <option value="50" @if (request('row') == '50')selected="selected"@endif>50</option>
-                                <option value="100" @if (request('row') == '100')selected="selected"@endif>100</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label class="control-label col-sm-3 align-self-center" for="search">Search:</label>
-                        <div class="col-sm-8">
-                            <div class="input-group">
-                                <input type="text" id="search" class="form-control" name="search" placeholder="Search customer" value="{{ request('search') }}">
-                                <div class="input-group-append">
-                                    <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div> --}}
 
             <div class="col-lg-12">
                 <div class="table-responsive rounded mb-3">
@@ -98,9 +64,7 @@
                         </tbody>
                     </table>
                 </div>
-                {{ $roles->links() }}
             </div>
         </div>
-        <!-- Page end  -->
     </div>
 @endsection
