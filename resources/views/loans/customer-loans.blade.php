@@ -31,32 +31,33 @@
 
                     <div class="d-flex flex-column flex-md-row justify-content-between  align-items-md-center">
                         @if ($loan->attachments->count())
-                            <a href="#" class="btn text-white mb-1 mr-1" style="background: #6e40a3;"
+                            <a href="#" class="btn text-white mb-1 mr-1 btn-sm" style="background: #6e40a3;"
                                 data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal-{{ $loan->id }}">
                                 Reemplazar Comprobante
                             </a>
                             <a href="{{ Route('loan.downloadReceiptLoan', $loan->id) }}" target="_blank"
-                                class="btn btn-primary mb-1 mr-1">
+                                class="btn btn-primary mb-1 mr-1 btn-sm">
                                 Descargar Comprobante
                             </a>
                         @else
-                            <a href="#" class="btn text-white mb-1 mr-1" style="background: #6e40a3;"
+                            <a href="#" class="btn text-white mb-1 mr-1 btn-sm" style="background: #6e40a3;"
                                 data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal-{{ $loan->id }}">
                                 Subir Comprobante
                             </a>
                             <a href="{{ Route('loan.downloadReceiptLoan', $loan->id) }}" target="_blank"
-                                class="btn btn-primary mb-1 mr-1">
+                                class="btn btn-primary mb-1 mr-1 btn-sm">
                                 Descargar Comprobante
                             </a>
                         @endif
-                        <span class="btn bg-{{ $loan->loan_status == 'Pendiente' ? 'warning' : 'success' }} mb-1 mr-1">
+                        <span
+                            class="btn bg-{{ $loan->loan_status == 'Pendiente' ? 'warning' : 'success' }} btn-sm mb-1 mr-1">
                             {{ $loan->loan_status }}
                         </span>
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <h6 class="card-title {{ $loan->cantidadDeudas > 0 ? 'text-danger' : 'text-success' }}">
+                    <h6 class="card-title  {{ $loan->cantidadDeudas > 0 ? 'text-danger' : 'text-success' }}">
                         Estado: {{ $loan->cantidadDeudas > 0 ? 'Hay cuotas vencidas' : 'Cliente al día' }}
                     </h6>
 

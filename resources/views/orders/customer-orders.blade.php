@@ -32,28 +32,29 @@
                     <div class="d-flex flex-column flex-md-row justify-content-between  align-items-md-center">
                         @if ($order->orderquotaDetails->count())
                             @if ($order->attachments->count())
-                                <a href="#" class="btn text-white mb-1 mr-1" style="background: #6e40a3;"
+                                <a href="#" class="btn text-white mb-1 mr-1 btn-sm" style="background: #6e40a3;"
                                     data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
                                     Reemplazar Comprobante
                                 </a>
                             @else
-                                <a href="#" class="btn text-white mb-1 mr-1" style="background: #6e40a3;"
+                                <a href="#" class="btn text-white mb-1 mr-1 btn-sm" style="background: #6e40a3;"
                                     data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
                                     Subir Comprobante
                                 </a>
                             @endif
                             <a href="{{ Route('order.downloadReceiptVenta', $order->id) }}" target="_blank"
-                                class="btn btn-primary mb-1 mr-1">
+                                class="btn btn-primary btn-sm mb-1 mr-1">
                                 Descargar Comprobante
                             </a>
                         @else
                             <a href="{{ Route('order.downloadReceiptVentaNormal', $order->id) }}" target="_blank"
-                                class="btn btn-primary mb-1 mr-1">
+                                class="btn btn-primary  btn-sm mb-1 mr-1">
                                 Descargar Comprobante
                             </a>
                         @endif
 
-                        <span class="btn bg-{{ $order->order_status == 'Pendiente' ? 'warning' : 'success' }} mb-1 mr-1">
+                        <span
+                            class="btn bg-{{ $order->order_status == 'Pendiente' ? 'warning' : 'success' }} btn-sm mb-1 mr-1">
                             {{ $order->order_status }}
                         </span>
                     </div>
