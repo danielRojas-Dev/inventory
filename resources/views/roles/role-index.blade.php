@@ -46,12 +46,12 @@
                                             @method('delete')
                                             @csrf
                                             <div class="d-flex align-items-center list-action">
-                                                <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"
-                                                    title="" data-original-title="Editar"
+                                                <a class="btn btn-success mr-2 btn-sm" data-toggle="tooltip"
+                                                    data-placement="top" title="" data-original-title="Editar"
                                                     href="{{ route('role.edit', $role->id) }}""><i
                                                         class="ri-pencil-line mr-0"></i>
                                                 </a>
-                                                <button type="submit" class="btn btn-warning mr-2 border-none"
+                                                <button type="submit" class="btn btn-warning btn-sm mr-2 border-none"
                                                     onclick="return confirm('¿Esta seguro de eliminar este rol?')"
                                                     data-toggle="tooltip" data-placement="top" title=""
                                                     data-original-title="Eliminar"><i

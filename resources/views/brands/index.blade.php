@@ -36,13 +36,12 @@
 
             <div class="col-lg-12">
                 <div class="table-responsive rounded mb-3">
-                    <table id="table" class="table nowrap table-hover" cellspacing="0">
-
+                    <table id="table" class=" display nowrap" style="width:100%">
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
-                                <th>Nombre</th>
-                                <th>slug'</th>
-                                <th>Acciones</th>
+                                <th data-priority="1">Nombre</th>
+                                <th>slug</th>
+                                <th data-priority="2">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="ligth-body">

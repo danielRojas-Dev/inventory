@@ -19,16 +19,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Estilos de DataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
     <link rel="stylesheet" type="text/css"
-        href="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/b-print-2.2.3/r-2.3.0/rg-1.2.0/datatables.min.css" />
+        href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.css" />
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- DataTables JS -->
-    <script type="text/javascript"
-        src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/b-print-2.2.3/r-2.3.0/rg-1.2.0/datatables.min.js">
-    </script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.dataTables.js"></script>
 
     @yield('specificpagestyles')
     <style>
@@ -98,8 +100,20 @@
 
     <script>
         $(document).ready(function() {
-            $('#table').DataTable({
+            new DataTable('table', {
                 responsive: true,
+                columnDefs: [{
+                        responsivePriority: 1,
+                        targets: 0
+                    },
+                    {
+                        responsivePriority: 2,
+                        targets: -1
+                    }, {
+                        responsivePriority: 3,
+                        targets: -2
+                    }
+                ],
                 language: {
 
                     search: "Buscar:", // Texto para la barra de búsqueda

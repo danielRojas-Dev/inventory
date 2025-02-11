@@ -19,6 +19,9 @@
             </div>
         @endif
         <h3 class="mb-4">Prestamos del Cliente: <b> {{ $loans[0]->customer->name }}</b></h3>
+        <div class="text-right mb-3">
+            <a href="{{ route('loan.completeLoans') }}" class="btn bg-secondary btn-sm">Volver</a>
+        </div>
 
         @foreach ($loans as $loan)
             <div class="card mb-4">

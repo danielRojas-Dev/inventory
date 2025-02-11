@@ -19,7 +19,9 @@
             </div>
         @endif
         <h3 class="mb-4">Ventas del Cliente: <b> {{ $orders[0]->customer->name }}</b></h3>
-
+        <div class="text-right mb-3">
+            <a href="{{ route('order.completeOrders') }}" class="btn bg-secondary btn-sm">Volver</a>
+        </div>
         @foreach ($orders as $order)
             <div class="card mb-4">
                 <div

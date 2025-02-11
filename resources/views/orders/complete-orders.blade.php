@@ -33,53 +33,20 @@
             <div class="col-lg-12">
                 <form action="{{ route('order.completeOrders') }}" method="get">
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
-                        {{-- <div class="form-group row">
-                            <label for="row" class="col-sm-3 align-self-center">Filas:</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" name="row">
-                                    <option value="10" @if (request('row') == '10') selected="selected" @endif>10
-                                    </option>
-                                    <option value="25" @if (request('row') == '25') selected="selected" @endif>25
-                                    </option>
-                                    <option value="50" @if (request('row') == '50') selected="selected" @endif>50
-                                    </option>
-                                    <option value="100" @if (request('row') == '100') selected="selected" @endif>100
-                                    </option>
-                                </select>
-                            </div>
-                        </div> --}}
-
-                        {{-- <div class="form-group row">
-                            <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
-                            <div class="col-sm-8">
-                                <div class="input-group">
-                                    <input type="text" id="search" class="form-control" name="search"
-                                        placeholder="Buscar Cliente" value="{{ request('search') }}">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="input-group-text bg-primary">
-                                            <i class="fas fa-search font-size-20"></i>
-                                        </button>
-                                        <a href="{{ route('order.completeOrders') }}" class="input-group-text bg-danger">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                 </form>
             </div>
 
 
             <div class="col-lg-12">
-                <table id="table" class="table nowrap table-hover" cellspacing="0">
+                <table id="table" class=" display nowrap" style="width:100%">
                     <thead class="bg-white text-uppercase">
                         <tr class="ligth ligth-data">
-                            <th class="ligth-data">Nombre</th>
+                            <th class="ligth-data" data-priority="1">Nombre</th>
                             <th class="ligth-data">Teléfono</th>
                             <th class="ligth-data">Ciudad</th>
                             <th class="ligth-data">Dirección</th>
-                            <th class="ligth-data">Acción</th>
+                            <th class="ligth-data" data-priority="2">Acción</th>
 
                         </tr>
                     </thead>
@@ -97,11 +64,6 @@
                                             href="{{ route('customer.customerDetails', $customer->id) }}">
                                             Detalles
                                         </a>
-                                        {{-- <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"
-                                                title="" data-original-title="Imprimir"
-                                                href="{{ route('order.invoiceDownload', $order->id) }}">
-                                                Imprimir
-                                            </a> --}}
                                     </div>
                                 </td>
                             </tr>

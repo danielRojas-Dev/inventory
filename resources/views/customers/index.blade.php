@@ -36,15 +36,15 @@
 
             <div class="col-lg-12">
                 <div class="table-responsive rounded mb-3">
-                    <table id="table" class="table nowrap table-hover" cellspacing="0">
+                    <table id="table" class=" display nowrap" style="width:100%">
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
                                 <th>Photo</th>
-                                <th>Nombre</th>
-                                <th>phone</th>
+                                <th data-priority="1">Nombre</th>
+                                <th data-priority="2">phone</th>
                                 <th>Direccion</th>
                                 <th>Ciudad</th>
-                                <th>Acciones</th>
+                                <th data-priority="3">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="ligth-body">

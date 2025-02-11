@@ -28,12 +28,12 @@
 
             <div class="col-lg-12">
                 <div class="table-responsive rounded mb-3">
-                    <table id="table" class="table nowrap table-hover" cellspacing="0">
+                    <table id="table" class=" display nowrap" style="width:100%">
 
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
                                 <th>Foto</th>
-                                <th>Nombre</th>
+                                <th data-priority="1">Nombre</th>
                                 <th>Nombre de Usuario</th>
                                 <th>Gmail</th>
                                 <th>Rol</th>
@@ -61,16 +61,16 @@
                                             @method('delete')
                                             @csrf
                                             <div class="d-flex align-items-center list-action">
-                                                <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"
-                                                    title="" data-original-title="Editar"
+                                                <a class="btn bg-success mr-2 btn-sm" data-toggle="tooltip"
+                                                    data-placement="top" title="" data-original-title="Editar"
                                                     href="{{ route('users.edit', $item->username) }}"><i
                                                         class="ri-pencil-line mr-0"></i>
                                                 </a>
-                                                <button type="submit" class="btn btn-warning mr-2 border-none"
+                                                <button type="submit" class="btn bg-warning btn-sm mr-2 border-none"
                                                     onclick="return confirm('¿Desea eliminar este usuario?')"
                                                     data-toggle="tooltip" data-placement="top" title=""
                                                     data-original-title="Eliminar"><i
-                                                        class="ri-delete-bin-line mr-0"></i></button>
+                                                        class="ri-delete-bin-line mr-0 "></i></button>
                                             </div>
                                         </form>
                                     </td>

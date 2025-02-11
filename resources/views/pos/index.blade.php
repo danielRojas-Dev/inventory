@@ -27,7 +27,7 @@
             </div>
 
             <div class="col-lg-6 col-md-12 mb-3">
-                <table class="table">
+                <table id="table" class=" display nowrap" style="width:100%">
                     <thead>
                         <tr class="ligth">
                             <th scope="col">Nombre</th>
@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="d-flex flex-wrap align-items-center justify-content-center">
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#paymentModal"
+                    <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#paymentModal"
                         {{ Cart::total() == 0 ? 'disabled' : '' }}>
                         Seleccionar metodo de pago
                     </button>
@@ -101,50 +101,21 @@
                     <div class="card-body">
                         <form action="#" method="get">
                             <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                {{-- <div class="form-group row">
-                                    <label for="row" class="align-self-center mx-2">Filas:</label>
-                                    <div>
-                                        <select class="form-control" name="row">
-                                            <option value="10"
-                                                @if (request('row') == '10') selected="selected" @endif>10</option>
-                                            <option value="25"
-                                                @if (request('row') == '25') selected="selected" @endif>25</option>
-                                            <option value="50"
-                                                @if (request('row') == '50') selected="selected" @endif>50</option>
-                                            <option value="100"
-                                                @if (request('row') == '100') selected="selected" @endif>100</option>
-                                        </select>
-                                    </div>
-                                </div> --}}
-
-                                {{-- <div class="form-group row">
-                                    <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
-                                    <div class="input-group col-sm-8">
-                                        <input type="text" id="search" class="form-control" name="search"
-                                            placeholder="Buscar Producto" value="{{ request('search') }}">
-                                        <div class="input-group-append">
-                                            <button type="submit" class="input-group-text bg-primary"><i
-                                                    class="fas fa-search font-size-20"></i></button>
-                                            <a href="{{ route('pos.index') }}" class="input-group-text bg-danger"><i
-                                                    class="fas fa-trash"></i></a>
-                                        </div>
-                                    </div>
-                                </div> --}}
                             </div>
                         </form>
 
 
                         <div class="table-responsive rounded mb-3 border-none">
-                            <table id="table" class="table table-hover" cellspacing="0">
+                            <table id="table" class=" display nowrap" style="width:100%">
 
                                 <thead class="bg-white text-uppercase">
                                     <tr class="ligth ligth-data">
-                                        <th>Foto</th>
+                                        <th data-priority="1">Foto</th>
                                         <th>Nombre</th>
                                         <th>Marca</th>
                                         <th>Precio</th>
-                                        <th>Stock</th>
-                                        <th>Acción</th>
+                                        <th data-priority="2">Stock</th>
+                                        <th data-priority="3">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody class="ligth-body">
@@ -160,10 +131,10 @@
                                             <td style="padding: 8px; font-size: 18px; text-align: center;">
                                                 @if ($product->product_store == 0)
                                                     <span id="stock-{{ $product->id }}"
-                                                        class="badge bg-danger text-white">{{ $product->product_store }}</span>
+                                                        class="badge bg-danger btn-sm text-white">{{ $product->product_store }}</span>
                                                 @else
                                                     <span id="stock-{{ $product->id }}"
-                                                        class="badge bg-success text-white">{{ $product->product_store }}</span>
+                                                        class="badge bg-success btn-sm text-white">{{ $product->product_store }}</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -178,15 +149,15 @@
 
                                                     <div class="product-options">
                                                         @if ($product->product_store == 0)
-                                                            <button type="submit" disabled class="btn btn-primary "
-                                                                data-toggle="tooltip" data-placement="top"
-                                                                title="Agregar">
+                                                            <button type="submit" disabled
+                                                                class="btn btn-primary btn-sm " data-toggle="tooltip"
+                                                                data-placement="top" title="Agregar">
                                                                 <i class="fas fa-plus mr-0"></i>
                                                             </button>
                                                         @else
                                                             <button type="submit"
                                                                 style="width: 30px; height: 25px; padding: 0; font-size: 12px;"
-                                                                class="btn btn-primary"
+                                                                class="btn btn-primary btn-sm"
                                                                 data-product-stock="{{ $product->product_store }}">
                                                                 <i style="width: 15px; height: 15px; font-size: 12px;"
                                                                     class="fas fa-plus mr-0"></i>

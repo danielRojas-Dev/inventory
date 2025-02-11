@@ -33,9 +33,9 @@
 
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
-                                <th>Rol</th>
+                                <th data-priority="1">Rol</th>
                                 <th>Permisos</th>
-                                <th>acciones</th>
+                                <th data-priority="2">acciones</th>
                             </tr>
                         </thead>
                         <tbody class="ligth-body">
@@ -55,12 +55,12 @@
                                             @method('delete')
                                             @csrf
                                             <div class="d-flex align-items-center list-action">
-                                                <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top"
-                                                    title="" data-original-title="Editar"
+                                                <a class="btn btn-success btn-sm mr-2" data-toggle="tooltip"
+                                                    data-placement="top" title="" data-original-title="Editar"
                                                     href="{{ route('rolePermission.edit', $role->id) }}"><i
                                                         class="ri-pencil-line mr-0"></i>
                                                 </a>
-                                                <button type="submit" class="btn btn-warning mr-2 border-none"
+                                                <button type="submit" class="btn btn-warning btn-sm mr-2 border-none"
                                                     onclick="return confirm('¿Esta seguro de eliminar estos roles y permisos')"
                                                     data-toggle="tooltip" data-placement="top" title=""
                                                     data-original-title="Eliminar"><i

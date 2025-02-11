@@ -38,14 +38,14 @@
 
 
             <div class="col-lg-12">
-                <table id="table" class="table nowrap table-hover" cellspacing="0">
+                <table id="table" class=" display nowrap" style="width:100%">
                     <thead class="bg-white text-uppercase">
                         <tr class="ligth ligth-data">
-                            <th class="ligth-data">Nombre</th>
+                            <th class="ligth-data"data-priority="1">Nombre</th>
                             <th class="ligth-data">Teléfono</th>
                             <th class="ligth-data">Ciudad</th>
                             <th class="ligth-data">Dirección</th>
-                            <th class="ligth-data">Acción</th>
+                            <th class="ligth-data"data-priority="2">Acción</th>
 
                         </tr>
                     </thead>
