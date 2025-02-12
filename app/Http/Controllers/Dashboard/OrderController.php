@@ -295,7 +295,7 @@ class OrderController extends Controller
     public function customerDetails(Int $customer_id)
     {
         $orders = Order::where('customer_id', $customer_id)
-            ->with('orderDetails', 'customer', 'attachments')
+            ->with('orderDetails.product', 'customer', 'attachments')
             ->orderBy('order_date', 'DESC')
             ->get();
 

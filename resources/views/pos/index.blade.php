@@ -233,6 +233,11 @@
                                 <input type="number" class="form-control" id="interest_rate" name="interest_rate"
                                     min="0" step="0.001" placeholder="Ingrese el % de interés">
                             </div>
+                            <div class="col-md-12 mt-3" id="cuota_section" hidden>
+                                <label for="monto_cuota">Monto de Cuota</label>
+                                <input type="number" class="form-control" id="monto_cuota" name="monto_cuota"
+                                    min="0" step="0.001" placeholder="Ingrese el monto de la cuota">
+                            </div>
 
                             <div class="col-md-12 mt-3" id="fecha_pactada" hidden>
                                 <label for="day">Día Pactado a pagar Cuota</label>
@@ -249,7 +254,7 @@
                                 <h5>Detalles del Plan de Cuotas</h5>
                                 <p><strong>Total Original:</strong> <span id="total_original">0.00</span></p>
                                 <p><strong>Total con Interés:</strong> <span id="total_interes">0.00</span></p>
-                                <p><strong>Cuotas:</strong> <span id="monto_cuota">0.00</span> cada una</p>
+                                <p><strong>Cuotas:</strong> <span id="monto_cuota_info">0.00</span> cada una</p>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -270,6 +275,7 @@
             let cuotasInfoSection = document.getElementById('cuotas_info_section');
             let fechaPactada = document.getElementById('fecha_pactada');
             let interesSection = document.getElementById('interes_section');
+            let montoCuota = document.getElementById('cuota_section');
             let selectCuotas = document.getElementById('quotas');
             let day = document.getElementById('estimated_payment_date');
             let interestInput = document.getElementById('interest_rate');
@@ -279,6 +285,7 @@
                 cuotasInfoSection.removeAttribute('hidden');
                 fechaPactada.removeAttribute('hidden');
                 interesSection.removeAttribute('hidden');
+                montoCuota.removeAttribute('hidden');
                 selectCuotas.setAttribute('required', true);
                 day.setAttribute('required', true);
                 interestInput.setAttribute('required', true);
@@ -287,6 +294,7 @@
                 cuotasInfoSection.setAttribute('hidden', 'true');
                 fechaPactada.setAttribute('hidden', 'true');
                 interesSection.setAttribute('hidden', 'true');
+                montoCuota.setAttribute('hidden', 'true');
                 selectCuotas.removeAttribute('required');
                 day.removeAttribute('required');
                 interestInput.removeAttribute('required');
@@ -298,6 +306,7 @@
 
         document.getElementById('quotas').addEventListener('change', calcularCuotas);
         document.getElementById('interest_rate').addEventListener('input', calcularCuotas);
+        document.getElementById('monto_cuota').addEventListener('input', calcularInteres);
 
         function formatCurrency(value) {
             return `$ ${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
@@ -313,9 +322,22 @@
 
             document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
             document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
+            document.getElementById('monto_cuota_info').innerText = formatCurrency(montoCuota);
+            document.getElementById('monto_cuota').value = montoCuota.toFixed();
+        }
 
-            document.getElementById('monto_cuota').innerText = formatCurrency(montoCuota);
+        function calcularInteres() {
+            let totalOriginal = parseFloat(document.getElementById('total_compra').value) || 0;
+            let cuotas = parseInt(document.getElementById('quotas').value) || 1;
+            let montoCuota = parseFloat(document.getElementById('monto_cuota').value) || 0;
 
+            let totalConInteres = montoCuota * cuotas;
+            let interestRate = ((totalConInteres / totalOriginal) - 1) * 100;
+
+            document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
+            document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
+            document.getElementById('monto_cuota_info').innerText = formatCurrency(montoCuota);
+            document.getElementById('interest_rate').value = interestRate.toFixed(3);
         }
     </script>
 @endsection

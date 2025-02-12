@@ -27,9 +27,16 @@
                 <div
                     class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
                     <h5 class="mb-2 mb-md-0 text-break">
-                        Factura No: {{ $order->invoice_no }} <br>
+                        Factura No: {{ $order->invoice_no }}
+
+                        @if ($order->orderquotaDetails->count() && isset($order->orderDetails[0]->product->product_name))
+                            ({{ $order->orderDetails[0]->product->product_name }})
+                        @endif
+
+                        <br>
                         <small class="text-muted">Fecha: {{ $order->order_date_formatted }}</small>
                     </h5>
+
 
                     <div class="d-flex flex-column flex-md-row justify-content-between  align-items-md-center">
                         @if ($order->orderquotaDetails->count())

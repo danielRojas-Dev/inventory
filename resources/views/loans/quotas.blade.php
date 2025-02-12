@@ -37,7 +37,7 @@
 
             <div class="col-lg-12">
                 <div class="table-responsive rounded mb-3">
-                    <table class="table mb-0 text-center">
+                    <table id="table" class=" display nowrap" style="width:100%">
                         <thead class="bg-white text-uppercase">
                             <tr class="ligth ligth-data">
                                 <th class="text-center">No</th>
