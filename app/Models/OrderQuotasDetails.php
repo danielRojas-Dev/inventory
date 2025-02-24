@@ -25,6 +25,7 @@ class OrderQuotasDetails extends Model
         'payment_method',
         'payment_date',
         'payment_currency',
+        'amount_difference',
     ];
 
     public function order()

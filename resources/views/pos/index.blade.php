@@ -249,12 +249,18 @@
                                 </select>
                             </div>
 
+                            <div class="col-md-12 mt-3" id="entrega_section" hidden>
+                                <label for="entrega">Monto de Entrega</label>
+                                <input type="number" class="form-control" id="entrega" name="entrega" min="0"
+                                    step="0.001" placeholder="Ingrese el monto de la entrega">
+                            </div>
 
                             <div class="col-md-12 mt-3" id="cuotas_info_section" hidden>
                                 <h5>Detalles del Plan de Cuotas</h5>
                                 <p><strong>Total Original:</strong> <span id="total_original">0.00</span></p>
                                 <p><strong>Total con Interés:</strong> <span id="total_interes">0.00</span></p>
                                 <p><strong>Cuotas:</strong> <span id="monto_cuota_info">0.00</span> cada una</p>
+                                <p><strong>Entrega:</strong> <span id="entrega_info">0.00</span></p>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -276,6 +282,7 @@
             let fechaPactada = document.getElementById('fecha_pactada');
             let interesSection = document.getElementById('interes_section');
             let montoCuota = document.getElementById('cuota_section');
+            let entrega = document.getElementById('entrega_section');
             let selectCuotas = document.getElementById('quotas');
             let day = document.getElementById('estimated_payment_date');
             let interestInput = document.getElementById('interest_rate');
@@ -286,6 +293,7 @@
                 fechaPactada.removeAttribute('hidden');
                 interesSection.removeAttribute('hidden');
                 montoCuota.removeAttribute('hidden');
+                entrega.removeAttribute('hidden');
                 selectCuotas.setAttribute('required', true);
                 day.setAttribute('required', true);
                 interestInput.setAttribute('required', true);
@@ -294,8 +302,8 @@
                 cuotasInfoSection.setAttribute('hidden', 'true');
                 fechaPactada.setAttribute('hidden', 'true');
                 interesSection.setAttribute('hidden', 'true');
-                montoCuota.setAttribute('hidden', 'true');
                 selectCuotas.removeAttribute('required');
+                entrega.setAttribute('hidden', 'true');
                 day.removeAttribute('required');
                 interestInput.removeAttribute('required');
                 selectCuotas.value = '';
@@ -311,6 +319,12 @@
         function formatCurrency(value) {
             return `$ ${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`;
         }
+
+        document.getElementById('entrega').addEventListener('input', function() {
+            let entrega = parseFloat(document.getElementById('entrega').value) || 0;
+            document.getElementById('entrega_info').innerText = formatCurrency(entrega);
+        });
+
 
         function calcularCuotas() {
             let totalOriginal = parseFloat(document.getElementById('total_compra').value) || 0;

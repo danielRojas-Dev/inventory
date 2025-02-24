@@ -110,6 +110,7 @@ class PosController extends Controller
                 'quotas' => 'sometimes|nullable|integer|min:1',
                 'interest_rate' => 'sometimes|nullable|numeric|min:0',
                 'estimated_payment_date' => 'sometimes|nullable',
+                'entrega' => 'sometimes|nullable',
             ];
 
             $validatedData = $request->validate($rules);
@@ -141,6 +142,7 @@ class PosController extends Controller
                 'total_original' => $totalOriginal,
                 'total_con_interes' => $totalConInteres,
                 'monto_cuota' => $montoCuota,
+                'entrega' => $validatedData['entrega'] ?? null,
             ]);
         } catch (\Throwable $th) {
             //throw $th;

@@ -63,6 +63,7 @@ class OrderController extends Controller
                 'quotas' => 'sometimes|nullable|integer|min:1',
                 'estimated_payment_date' => 'sometimes|nullable|string',
                 'interest_rate' => 'sometimes|nullable|numeric|min:0',
+                'entrega' => 'sometimes|nullable|numeric|min:0',
             ];
 
             // Generación del número de factura
@@ -78,6 +79,8 @@ class OrderController extends Controller
                 $totalOriginal = Cart::total();
                 $interestRate = $validatedData['interest_rate'] ?? 0; // Valor por defecto 0 si no se proporciona
                 $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
+
+                $entrega = $validatedData['entrega'] ?? 0; // Si no se proporciona, es 0
                 $montoCuota = $totalConInteres / $validatedData['quotas'];
 
                 $validatedData = array_merge($validatedData, ['pay' => 0]);
@@ -104,10 +107,12 @@ class OrderController extends Controller
                 // Crear los registros en OrderQuotasDetails
                 $quotaDetails = [];
                 for ($i = 1; $i <= $validatedData['quotas']; $i++) {
+                    $montoFinal = ($i == 1 && $entrega > 0) ? $entrega : round($montoCuota);
+
                     $quotaDetails[] = [
                         'order_id' => $order_id,
                         'number_quota' => $i,
-                        'estimated_payment' => round($montoCuota),
+                        'estimated_payment' => $montoFinal,
                         'total_payment' => null,
                         'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
                         'status_payment' => 'Pendiente',
@@ -178,6 +183,7 @@ class OrderController extends Controller
     }
 
 
+
     public function downloadReceiptVenta(Order $order)
     {
         // Buscar si hay un attachment asociado al pedido
@@ -223,7 +229,7 @@ class OrderController extends Controller
             'details'
         ))->setPaper('cart', 'vertical');
 
-        return $pdf->stream($pdfFileName, ['Attachment' => 0]);
+        return $pdf->download($pdfFileName, ['Attachment' => 0]);
     }
 
 
@@ -248,7 +254,7 @@ class OrderController extends Controller
         $pdf = Pdf::loadView('orders.payment-receipt-venta-normal', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
             ->setPaper('cart', 'vertical');
 
-        return $pdf->stream($pdfFileName, array('Attachment' => 0));
+        return $pdf->download($pdfFileName, array('Attachment' => 0));
     }
 
 
@@ -285,7 +291,7 @@ class OrderController extends Controller
         $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota', 'htmlCancelado'))
             ->setPaper('cart', 'vertical');
 
-        return $pdf->stream(date('d-m-Y') . ".pdf", array('Attachment' => 0));
+        return $pdf->download($pdfFileName . ".pdf", array('Attachment' => 0));
     }
 
 
@@ -321,14 +327,24 @@ class OrderController extends Controller
         // Obtener la cuota con su orden relacionada
         $quota = OrderQuotasDetails::where('id', $quota->id)->with('order')->first();
 
-        // Calcular los días vencidos (si la fecha estimada de pago ya pasó)
-        $today = \Carbon\Carbon::now();
-        $estimatedDate = \Carbon\Carbon::parse($quota->estimated_payment_date);
+        if (!$quota) {
+            return redirect()->back()->with('error', 'Cuota no encontrada.');
+        }
 
-        // Si la fecha estimada ya pasó, calcular los días de vencimiento
+        // Calcular los días vencidos (si la fecha estimada de pago ya pasó)
+        $today = Carbon::now();
+        $estimatedDate = Carbon::parse($quota->estimated_payment_date);
         $daysOverdue = $today->greaterThan($estimatedDate) ? $estimatedDate->diffInDays($today) : 0;
 
-        return view('orders.payment-quota', compact('quota', 'daysOverdue'));
+        // Obtener todas las cuotas anteriores
+        $previousQuotas = OrderQuotasDetails::where('order_id', $quota->order_id)
+            ->where('number_quota', '<', $quota->number_quota)
+            ->get();
+
+        // Calcular la suma de amount_difference de todas las cuotas anteriores
+        $totalPreviousAmountDifference = $previousQuotas->sum('amount_difference');
+
+        return view('orders.payment-quota', compact('quota', 'daysOverdue', 'totalPreviousAmountDifference'));
     }
 
     public function payment(Request $request)
@@ -340,6 +356,7 @@ class OrderController extends Controller
                 'currency' => 'required|nullable|string',
                 'interest' => 'sometimes|nullable|string',
                 'increment' => 'sometimes|nullable|string',
+                'total_to_pay' => 'required|numeric',
             ];
 
             // Generación del número de factura
@@ -351,35 +368,75 @@ class OrderController extends Controller
 
             // Obtener la cuota actual
             $quota = OrderQuotasDetails::findOrFail($validatedData['quotaId']);
+            $totalPayment = round($validatedData['total_to_pay']);
+            $estimatedPayment = round($quota->estimated_payment) ?? 0;
+            // Obtener todas las cuotas anteriores con amount_difference pendiente
+            $previousQuotas = OrderQuotasDetails::where('order_id', $quota->order_id)
+                ->where('number_quota', '<', $quota->number_quota)
+                ->where(function ($query) {
+                    $query->where('amount_difference', '<>', 0)
+                        ->orWhere('increment_due', '<>', 0); // Considerar también increment_due
+                })
+                ->orderByRaw("CAST(number_quota AS UNSIGNED) ASC") // Ordenar de la más antigua a la más reciente
+                ->get();
 
-            // Calcular el total a pagar
-            $increment = $validatedData['increment'] ?? null;
-            $totalPaid = $quota->estimated_payment + $increment;
+            // Sumar el total de amount_difference y increment_due de las cuotas anteriores (deuda acumulada)
+            $totalPreviousAmount = $previousQuotas->sum('amount_difference') + (-$validatedData['increment'] ?? 0);
 
-            // Registrar el pago
+
+            // **Verificar si hay saldo a favor o deuda acumulada**
+            if ($totalPreviousAmount > 0) {
+                // Si hay saldo a favor, restar de la cuota actual
+                $estimatedPayment -= $totalPreviousAmount;
+            } else if ($totalPreviousAmount < 0) {
+                // Si hay deuda acumulada, sumar a la cuota actual
+                $estimatedPayment += abs($totalPreviousAmount);
+            }
+
+            // Determinar cuánto se pagó de más o menos
+            $amountDifference = $totalPayment - $estimatedPayment;
+
+            // **Distribuir el pago primero en las cuotas anteriores**
+            $remainingPayment = $totalPayment;
+
+            if ($remainingPayment == $estimatedPayment) {
+
+                if ($remainingPayment <= 0) return;
+
+                // Si el pago es exactamente igual al total esperado, marcar todas las cuotas anteriores como pagadas
+                foreach ($previousQuotas as $previousQuota) {
+                    $previousQuota->amount_difference = 0;
+                    $previousQuota->save();
+                }
+            }
+
+            // dd($totalPayment, $estimatedPayment, $amountDifference, $previousQuotas);
+
+
+            // **Actualizar la cuota actual con la diferencia final**
             $quota->update([
                 'payment_method' => $validatedData['payment_method'],
                 'payment_currency' => $validatedData['currency'],
                 'interest_due' => $validatedData['interest'] ?? null,
                 'payment_date' => now(),
-                'increment_due' => $increment,
-                'total_payment' => round($totalPaid),
+                'increment_due' => $validatedData['increment'] ?? 0,
+                'total_payment' => $totalPayment,
                 'invoice_no' => $invoice_no,
                 'status_payment' => 'Pagado',
-                'updated_at' => now()
+                'updated_at' => now(),
+                'amount_difference' => $amountDifference,
             ]);
 
-            // Verificar si es la última cuota del pedido
+            // Si es la última cuota del pedido, marcarla como cancelada
             $ultimaCuota = OrderQuotasDetails::where('order_id', $quota->order_id)
                 ->orderByRaw("CAST(number_quota AS UNSIGNED) DESC")
                 ->first();
 
             if ($ultimaCuota && $ultimaCuota->id == $quota->id) {
-                // Si es la última cuota, marcarla como cancelada
                 $quota->update(['cancelated' => true]);
 
                 // Actualizar el estado del pedido
-                $order = $quota->order; // Asegúrate de que la relación `order` está definida en el modelo
+                $order = $quota->order;
                 if ($order) {
                     $order->update(['order_status' => 'Cancelado']);
                 }
@@ -393,6 +450,12 @@ class OrderController extends Controller
             throw $th;
         }
     }
+
+
+
+
+
+
 
 
 

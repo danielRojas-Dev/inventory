@@ -40,6 +40,7 @@
                                                 <input type="hidden" name="total_original" value="{{ $total_original }}">
                                                 <input type="hidden" name="payment_method" value="{{ $payment_method }}">
                                                 <input type="hidden" name="interest_rate" value="{{ $interest_rate }}">
+                                                <input type="hidden" name="entrega" value="{{ $entrega }}">
 
                                             </div>
                                             <div class="modal-footer">
@@ -67,7 +68,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="table-responsive-sm">
-                                    <table class="table">
+                                    <table>
                                         <thead>
                                             <tr>
                                                 <th scope="col">Fecha del Pedido</th>
@@ -89,7 +90,7 @@
                             <div class="col-sm-12">
                                 <h5 class="mb-3">Resumen del Pedido</h5>
                                 <div class="table-responsive-lg">
-                                    <table class="table">
+                                    <table>
                                         <thead>
                                             <tr>
                                                 <th class="text-center" scope="col">#</th>
@@ -174,6 +175,11 @@
                                             <h6>Cuotas ({{ $quotas }})</h6>
                                             <h6 class="text-success font-weight-700">
                                                 ${{ number_format($monto_cuota, 0, ',', '.') }} c/u</h6>
+                                        </div>
+                                        <div class="ttl-amt py-2 px-3 d-flex justify-content-between align-items-center">
+                                            <h6>Entrega</h6>
+                                            <h6 class="text-success font-weight-700">
+                                                ${{ number_format($entrega, 0, ',', '.') }}</h6>
                                         </div>
                                     @else
                                         <div class="ttl-amt py-2 px-3 d-flex justify-content-between align-items-center">
