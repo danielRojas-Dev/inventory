@@ -203,7 +203,7 @@ class OrderController extends Controller
         // Si no hay attachment, generar el PDF como antes
         $cliente = Customer::find($order->customer_id);
 
-        $valorCuota = OrderQuotasDetails::where('order_id', $order->id)->value('estimated_payment');
+        $valorCuota = OrderQuotasDetails::where('order_id', $order->id)->where('number_quota', '2')->value('estimated_payment');
         $estimatedPaymentDate = OrderQuotasDetails::where('order_id', $order->id)->value('estimated_payment_date');
 
         $details = OrderDetails::where('order_id', $order->id)->with('product.brand')->get();
@@ -217,7 +217,7 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Factura_Venta' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Venta_' . $details[0]->product->name . '_' . $cliente->name . '.pdf';
 
         $pdf = Pdf::loadView('orders.payment-receipt-venta-quota', compact(
             'order',
@@ -248,7 +248,7 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Factura_Venta' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Venta_normal_' . $order->invoice_no . '_' . $cliente->name . '.pdf';
 
 
         $pdf = Pdf::loadView('orders.payment-receipt-venta-normal', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
@@ -285,7 +285,7 @@ class OrderController extends Controller
             }
         }
 
-        $pdfFileName = 'Factura_Cuota' . $order->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Cuota_' . $quota->number_quota . '_' . $details[0]->product->name . '_' . $cliente->name . '.pdf';
 
 
         $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota', 'htmlCancelado'))
