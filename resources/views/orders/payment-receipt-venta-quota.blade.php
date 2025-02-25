@@ -182,7 +182,13 @@
             </p>
 
             <p><strong>Compromiso de pago:</strong> Conste por la presente que me comprometo a abonar la Mercadería
-                detallada en <b>{{ $order->quotas }}</b> cuotas fijas de $
+                detallada en <b>
+                    @if ($isEntregaInicial)
+                        {{ $order->quotas - 1 }}
+                    @else
+                        {{ $order->quotas }}
+                    @endif
+                </b> cuotas fijas de $
                 <b>{{ number_format($valorCuota, 0, ',', '.') }}</b> a
                 partir del día <b>{{ $dia }}</b> del <b>{{ $mes }}</b>
                 del año <b>{{ $anio }}</b>.
