@@ -189,25 +189,37 @@ class OrderController extends Controller
         // Buscar si hay un attachment asociado al pedido
         $attachment = Attachment::where('order_id', $order->id)->first();
 
-
         if ($attachment) {
-            // Obtener la ruta completa del archivo
             $filePath = storage_path('app/public/' . $attachment->path);
-
-            // Verificar si el archivo realmente existe
             if (file_exists($filePath)) {
                 return response()->download($filePath);
             }
         }
 
-        // Si no hay attachment, generar el PDF como antes
+        // Obtener detalles del cliente y orden
         $cliente = Customer::find($order->customer_id);
 
-        $valorCuota = OrderQuotasDetails::where('order_id', $order->id)->where('number_quota', '2')->value('estimated_payment');
-        $estimatedPaymentDate = OrderQuotasDetails::where('order_id', $order->id)->value('estimated_payment_date');
+        // Obtener pagos de cuotas
+        $primerCuota = OrderQuotasDetails::where('order_id', $order->id)
+            ->where('number_quota', '1')
+            ->value('estimated_payment');
+
+        $otrasCuotas = OrderQuotasDetails::where('order_id', $order->id)
+            ->where('number_quota', '>', '1')
+            ->pluck('estimated_payment')->unique();
+
+        $isEntregaInicial = $otrasCuotas->count() > 0 && !$otrasCuotas->contains($primerCuota);
+
+        $valorCuota = OrderQuotasDetails::where('order_id', $order->id)
+            ->where('number_quota', '2')
+            ->value('estimated_payment');
+
+        $estimatedPaymentDate = OrderQuotasDetails::where('order_id', $order->id)
+            ->value('estimated_payment_date');
 
         $details = OrderDetails::where('order_id', $order->id)->with('product.brand')->get();
 
+        // Cargar logos
         $pathLogo = public_path('assets/images/login/electrodr.png');
         $logo = file_get_contents($pathLogo);
 
@@ -217,8 +229,9 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Venta_' . $details[0]->product->name . '_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Venta_' . $details[0]->product->product_name . '_' . $cliente->name . '.pdf';
 
+        // Generar PDF
         $pdf = Pdf::loadView('orders.payment-receipt-venta-quota', compact(
             'order',
             'cliente',
@@ -226,10 +239,12 @@ class OrderController extends Controller
             'htmlTitle',
             'valorCuota',
             'estimatedPaymentDate',
-            'details'
+            'details',
+            'isEntregaInicial',
+            'primerCuota',
         ))->setPaper('cart', 'vertical');
 
-        return $pdf->download($pdfFileName, ['Attachment' => 0]);
+        return $pdf->stream($pdfFileName, ['Attachment' => 0]);
     }
 
 
@@ -254,7 +269,7 @@ class OrderController extends Controller
         $pdf = Pdf::loadView('orders.payment-receipt-venta-normal', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
             ->setPaper('cart', 'vertical');
 
-        return $pdf->download($pdfFileName, array('Attachment' => 0));
+        return $pdf->stream($pdfFileName, array('Attachment' => 0));
     }
 
 
@@ -285,13 +300,13 @@ class OrderController extends Controller
             }
         }
 
-        $pdfFileName = 'Cuota_' . $quota->number_quota . '_' . $details[0]->product->name . '_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Cuota_' . $quota->number_quota . '_' . $details[0]->product->product_name . '_' . $cliente->name . '.pdf';
 
 
         $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota', 'htmlCancelado'))
             ->setPaper('cart', 'vertical');
 
-        return $pdf->download($pdfFileName . ".pdf", array('Attachment' => 0));
+        return $pdf->stream($pdfFileName . ".pdf", array('Attachment' => 0));
     }
 
 

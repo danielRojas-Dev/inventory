@@ -117,6 +117,17 @@
             </tr>
         </table>
         <div class="section">
+            @if ($isEntregaInicial)
+                <table style="width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 5px;">
+                    <tr>
+                        <td><strong>Entrega Inicial: </strong>
+                            <strong>${{ number_format($primerCuota, 0, ',', '.') }}</strong>
+                        </td>
+                    </tr>
+                </table>
+            @endif
+
+
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
                 <tr>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Cantidad</th>
@@ -133,7 +144,12 @@
                             {{ $detail->product->product_name }}</td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">
                             {{ $detail->product->brand->name }}</td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">{{ $order->quotas }}
+                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                            @if ($isEntregaInicial)
+                                {{ $order->quotas - 1 }}
+                            @else
+                                {{ $order->quotas }}
+                            @endif
                         </td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">$
                             {{ number_format($valorCuota, 0, ',', '.') }}
@@ -177,7 +193,7 @@
 
     </div>
     -----------------------------------------------------------------------------------------------------------------------------------------------
-    <div class="nota-pedido">
+    {{-- <div class="nota-pedido">
         <div class="fecha">
             <div class="content-fecha" style="padding-top: 15px;">
                 <small>N°: <b>{{ $order->invoice_no }}</b></small>
@@ -219,6 +235,18 @@
                 </td>
             </tr>
         </table>
+
+        @if ($isEntregaInicial)
+            <table style="width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 5px;">
+                <tr>
+                    <td><strong>Entrega Inicial: </strong>
+                        <strong>${{ number_format($primerCuota, 0, ',', '.') }}</strong>
+                    </td>
+                </tr>
+            </table>
+        @endif
+
+
         <div class="section">
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
                 <tr>
@@ -236,7 +264,12 @@
                             {{ $detail->product->product_name }}</td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">
                             {{ $detail->product->brand->name }}</td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">{{ $order->quotas }}
+                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                            @if ($isEntregaInicial)
+                                {{ $order->quotas - 1 }}
+                            @else
+                                {{ $order->quotas }}
+                            @endif
                         </td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">$
                             {{ number_format($valorCuota, 0, ',', '.') }}
@@ -278,7 +311,7 @@
         </div>
 
 
-    </div>
+    </div> --}}
 </body>
 
 </html>
