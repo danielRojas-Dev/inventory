@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,6 +28,13 @@ class OrderQuotasDetails extends Model
         'payment_currency',
         'amount_difference',
     ];
+
+    public function getQuotaDateFormattedAttribute()
+    {
+        return $this->payment_date instanceof Carbon
+            ? $this->payment_date->format('d/m/Y H:i')
+            : null;
+    }
 
     public function order()
     {
