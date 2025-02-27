@@ -29,6 +29,11 @@ class OrderQuotasDetails extends Model
         'amount_difference',
     ];
 
+    protected $casts = [
+        'payment_date' => 'datetime',
+    ];
+
+
     public function getQuotaDateReceiptFormattedAttribute()
     {
         return $this->payment_date instanceof Carbon
