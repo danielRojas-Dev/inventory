@@ -29,12 +29,13 @@ class OrderQuotasDetails extends Model
         'amount_difference',
     ];
 
-    public function getQuotaDateFormattedAttribute()
+    public function getOrderDateReceiptFormattedAttribute()
     {
         return $this->payment_date instanceof Carbon
-            ? $this->payment_date->format('d/m/Y H:i')
+            ? $this->payment_date->format('d-m-Y')
             : null;
     }
+
 
     public function order()
     {
