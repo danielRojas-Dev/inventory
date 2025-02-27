@@ -302,7 +302,7 @@ class OrderController extends Controller
 
         $pdfFileName = 'Cuota_' . $quota->number_quota . '_' . $details[0]->product->product_name . '_' . $cliente->name . '.pdf';
 
-        dd($quota->quota_date_receipt_formatted);
+        dd($quota->payment_date);
 
         $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota', 'htmlCancelado'))
             ->setPaper('cart', 'vertical');
