@@ -69,6 +69,7 @@
                 <label class="form-label">Interés (%)</label>
                 <select class="form-control" name="interest" id="interest" required>
                     <option value="0" disabled selected>Seleccione un % de interés</option>
+                    <option value="0">0%</option>
                     <option value="0.5">0.5%</option>
                     <option value="1">1%</option>
                     <option value="1.5">1.5%</option>
