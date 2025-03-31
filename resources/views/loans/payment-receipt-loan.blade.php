@@ -79,7 +79,7 @@
             <div class="content-fecha" style="padding-top: 15px;">
                 <small>N°: <b>{{ $loan->invoice_no }}</b></small>
                 <br>
-                <small>Fecha: <b>{{ date('d-m-Y', strtotime($loan->order_date)) }}</b></small>
+                <small>Fecha: <b>{{ $loan_date }}</b></small>
                 <br>
                 <small>Tel: <b>3704-590488</b></small>
             </div>
