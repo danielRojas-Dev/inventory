@@ -64,6 +64,7 @@ class OrderController extends Controller
                 'estimated_payment_date' => 'sometimes|nullable|string',
                 'interest_rate' => 'sometimes|nullable|numeric|min:0',
                 'entrega' => 'sometimes|nullable|numeric|min:0',
+                'payment_month' => 'sometimes|nullable|string',
             ];
 
             // Generación del número de factura
@@ -114,7 +115,11 @@ class OrderController extends Controller
                         'number_quota' => $i,
                         'estimated_payment' => $montoFinal,
                         'total_payment' => null,
-                        'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
+                        'estimated_payment_date' => Carbon::now()
+                            ->month($validatedData['payment_month'])
+                            ->day($validatedData['estimated_payment_date'])
+                            ->addMonths($i - 1)
+                            ->format('Y-m-d'),
                         'status_payment' => 'Pendiente',
                         'invoice_no' => null,
                         'payment_method' => null,

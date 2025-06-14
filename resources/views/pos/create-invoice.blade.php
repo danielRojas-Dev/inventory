@@ -41,6 +41,7 @@
                                                 <input type="hidden" name="payment_method" value="{{ $payment_method }}">
                                                 <input type="hidden" name="interest_rate" value="{{ $interest_rate }}">
                                                 <input type="hidden" name="entrega" value="{{ $entrega }}">
+                                                <input type="hidden" name="payment_month" value="{{ $payment_month }}">
 
                                             </div>
                                             <div class="modal-footer">

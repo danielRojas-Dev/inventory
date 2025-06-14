@@ -74,10 +74,8 @@ class Order extends Model
 
     public function getCantidadDeudasAttribute()
     {
-        $orderId = $this::where('customer_id', '=', $this->customer_id)->value('id');
 
-
-        $debeCuotas = OrderQuotasDetails::where('order_id', $orderId)
+        $debeCuotas = OrderQuotasDetails::where('order_id', $this->id)
             ->where('estimated_payment_date', '<', date('Y-m-d'))
             ->where('status_payment', '!=', 'Pagado')
             ->count();

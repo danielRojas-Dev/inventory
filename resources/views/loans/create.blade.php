@@ -66,6 +66,25 @@
                                         min="0" step="0.001" placeholder="Ingrese el monto de la cuota">
                                 </div>
 
+                                <div class="col-md-12 mt-3 d-none" id="mes_inicio">
+                                    <label for="start_month">Mes de Inicio</label>
+                                    <select class="form-control" id="start_month" name="start_month">
+                                        <option value="" selected disabled>Seleccione Mes</option>
+                                        <option value="1">Enero</option>
+                                        <option value="2">Febrero</option>
+                                        <option value="3">Marzo</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Mayo</option>
+                                        <option value="6">Junio</option>
+                                        <option value="7">Julio</option>
+                                        <option value="8">Agosto</option>
+                                        <option value="9">Septiembre</option>
+                                        <option value="10">Octubre</option>
+                                        <option value="11">Noviembre</option>
+                                        <option value="12">Diciembre</option>
+                                    </select>
+                                </div>
+
                                 <div class="col-md-12 mt-3 d-none" id="fecha_pactada">
                                     <label for="estimated_payment_date">Día Pactado a pagar Cuota</label>
                                     <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
@@ -75,6 +94,8 @@
                                         @endfor
                                     </select>
                                 </div>
+
+
 
                                 <div class="col-md-12 mt-3 d-none" id="cuotas_info_section">
                                     <h5>Detalles del Plan de Cuotas</h5>
@@ -104,6 +125,8 @@
             let selectCuotas = document.getElementById('quotas');
             let day = document.getElementById('estimated_payment_date');
             let interestInput = document.getElementById('interest_rate');
+            let mesInicio = document.getElementById('mes_inicio');
+            let startMonth = document.getElementById('start_month');
 
             if (this.value === 'CUOTAS') {
                 cuotasSection.classList.remove('d-none');
@@ -111,21 +134,26 @@
                 fechaPactada.classList.remove('d-none');
                 interesSection.classList.remove('d-none');
                 montoCuota.classList.remove('d-none');
+                mesInicio.classList.remove('d-none');
                 selectCuotas.setAttribute('required', true);
                 day.setAttribute('required', true);
                 interestInput.setAttribute('required', true);
+                startMonth.setAttribute('required', true);
             } else {
                 cuotasSection.classList.add('d-none');
                 cuotasInfoSection.classList.add('d-none');
                 fechaPactada.classList.add('d-none');
                 interesSection.classList.add('d-none');
                 montoCuota.classList.add('d-none');
+                mesInicio.classList.add('d-none');
                 selectCuotas.removeAttribute('required');
                 day.removeAttribute('required');
                 interestInput.removeAttribute('required');
+                startMonth.removeAttribute('required');
                 selectCuotas.value = '';
                 day.value = '';
                 interestInput.value = '';
+                startMonth.value = '';
             }
         });
 

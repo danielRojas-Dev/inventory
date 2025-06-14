@@ -240,13 +240,36 @@
                             </div>
 
                             <div class="col-md-12 mt-3" id="fecha_pactada" hidden>
-                                <label for="day">Día Pactado a pagar Cuota</label>
-                                <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
-                                    <option value="" selected disabled>Seleccione Día</option>
-                                    @for ($i = 1; $i <= 29; $i++)
-                                        <option value="{{ $i }}">{{ $i }}</option>
-                                    @endfor
-                                </select>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="month">Mes Pactado</label>
+                                        <select class="form-control" id="payment_month" name="payment_month">
+                                            <option value="" selected disabled>Seleccione Mes</option>
+                                            <option value="1">Enero</option>
+                                            <option value="2">Febrero</option>
+                                            <option value="3">Marzo</option>
+                                            <option value="4">Abril</option>
+                                            <option value="5">Mayo</option>
+                                            <option value="6">Junio</option>
+                                            <option value="7">Julio</option>
+                                            <option value="8">Agosto</option>
+                                            <option value="9">Septiembre</option>
+                                            <option value="10">Octubre</option>
+                                            <option value="11">Noviembre</option>
+                                            <option value="12">Diciembre</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="day">Día Pactado</label>
+                                        <select class="form-control" id="estimated_payment_date"
+                                            name="estimated_payment_date">
+                                            <option value="" selected disabled>Seleccione Día</option>
+                                            @for ($i = 1; $i <= 29; $i++)
+                                                <option value="{{ $i }}">{{ $i }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="col-md-12 mt-3" id="entrega_section" hidden>
@@ -286,6 +309,7 @@
             let selectCuotas = document.getElementById('quotas');
             let day = document.getElementById('estimated_payment_date');
             let interestInput = document.getElementById('interest_rate');
+            let paymentMonth = document.getElementById('payment_month');
 
             if (this.value === 'CUOTAS') {
                 cuotasSection.removeAttribute('hidden');
@@ -296,6 +320,7 @@
                 entrega.removeAttribute('hidden');
                 selectCuotas.setAttribute('required', true);
                 day.setAttribute('required', true);
+                paymentMonth.setAttribute('required', true);
                 interestInput.setAttribute('required', true);
             } else {
                 cuotasSection.setAttribute('hidden', 'true');
@@ -305,9 +330,11 @@
                 selectCuotas.removeAttribute('required');
                 entrega.setAttribute('hidden', 'true');
                 day.removeAttribute('required');
+                paymentMonth.removeAttribute('required');
                 interestInput.removeAttribute('required');
                 selectCuotas.value = '';
                 day.value = '';
+                paymentMonth.value = '';
                 interestInput.value = '';
             }
         });

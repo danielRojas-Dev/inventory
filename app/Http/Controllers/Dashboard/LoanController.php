@@ -56,6 +56,7 @@ class LoanController extends Controller
                 'quotas' => 'sometimes|nullable|integer|min:1',
                 'interest_rate' => 'sometimes|nullable|numeric|min:0',
                 'estimated_payment_date' => 'sometimes|nullable|string',
+                'start_month' => 'sometimes|nullable|string',
             ];
 
             // Generación del número de factura
@@ -98,7 +99,11 @@ class LoanController extends Controller
                     'number_quota' => $i,
                     'estimated_payment' => round($montoCuota),
                     'total_payment' => null,
-                    'estimated_payment_date' => Carbon::now()->day($validatedData['estimated_payment_date'])->addMonths($i)->format('Y-m-d'),
+                    'estimated_payment_date' => Carbon::now()
+                        ->month($validatedData['start_month'])
+                        ->day($validatedData['estimated_payment_date'])
+                        ->addMonths($i - 1)
+                        ->format('Y-m-d'),
                     'status_payment' => 'Pendiente',
                     'invoice_no' => null,
                     'payment_method' => null,
@@ -209,6 +214,7 @@ class LoanController extends Controller
             ->with('loanDetails', 'customer', 'attachments')
             ->orderBy('loan_date', 'DESC')
             ->get();
+
 
         return view('loans.customer-loans', compact('loans'));
     }

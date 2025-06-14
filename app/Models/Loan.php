@@ -61,14 +61,10 @@ class Loan extends Model
 
     public function getCantidadDeudasAttribute()
     {
-        $loanId = $this::where('customer_id', '=', $this->customer_id)->value('id');
-
-
-        $debeCuotas = LoanDetail::where('loan_id', $loanId)
+        $debeCuotas = LoanDetail::where('loan_id', $this->id)
             ->where('estimated_payment_date', '<', date('Y-m-d'))
             ->where('status_payment', '!=', 'Pagado')
             ->count();
-
 
         return $debeCuotas;
     }
