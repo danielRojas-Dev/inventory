@@ -36,14 +36,7 @@
                     </li>
                 @endif
 
-                @if (auth()->user()->can('budgets.menu'))
-                    <li class="{{ Request::is('budgets*') ? 'active' : '' }}">
-                        <a href="{{ route('budgets.index') }}" class="svg-icon">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span class="ml-3">Presupuestos</span>
-                        </a>
-                    </li>
-                @endif
+
 
                 <hr>
 
@@ -95,6 +88,29 @@
                             <li class="{{ Request::is('loans/complete*') ? 'active' : '' }}">
                                 <a href="{{ route('loan.completeLoans') }}">
                                     <i class="fas fa-arrow-right"></i><span>Prestamos Realizados</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+                @if (auth()->user()->can('budgets.menu'))
+                    <li>
+                        <a href="#budgets" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span class="ml-3">Presupuestos</span>
+                            <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="10 15 15 20 20 15"></polyline>
+                                <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
+                            </svg>
+                        </a>
+                        <ul id="budgets" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle"
+                            style="">
+                            <li class="{{ Request::is('budgets/realized*') ? 'active' : '' }}">
+                                <a href="{{ route('budgets.index') }}">
+                                    <i class="fas fa-arrow-right"></i><span>Presupuestos Realizados</span>
                                 </a>
                             </li>
                         </ul>
