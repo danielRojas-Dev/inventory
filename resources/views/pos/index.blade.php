@@ -27,7 +27,7 @@
             </div>
 
             <div class="col-lg-6 col-md-12 mb-3">
-                <table id="table" class=" display nowrap" style="width:100%">
+                <table id="cart-table" class=" display nowrap" style="width:100%">
                     <thead>
                         <tr class="ligth">
                             <th scope="col">Nombre</th>
@@ -106,7 +106,7 @@
 
 
                         <div class="table-responsive rounded mb-3 border-none">
-                            <table id="table" class=" display nowrap" style="width:100%">
+                            <table id="products-table" class=" display nowrap" style="width:100%">
 
                                 <thead class="bg-white text-uppercase">
                                     <tr class="ligth ligth-data">
