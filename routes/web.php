@@ -115,6 +115,17 @@ Route::middleware(['permission:pos.menu'])->group(function () {
     Route::post('/pos/order', [OrderController::class, 'storeOrder'])->name('pos.storeOrder');
 });
 
+// ====== BUDGETS ======
+Route::middleware(['permission:budgets.menu'])->group(function () {
+    Route::get('/budgets', [App\Http\Controllers\Dashboard\BudgetController::class, 'index'])->name('budgets.index');
+    Route::get('/budgets/{budget}', [App\Http\Controllers\Dashboard\BudgetController::class, 'show'])->name('budgets.show');
+    Route::post('/budgets/create', [App\Http\Controllers\Dashboard\BudgetController::class, 'createBudget'])->name('budgets.create');
+    Route::post('/budgets/store', [App\Http\Controllers\Dashboard\BudgetController::class, 'storeBudget'])->name('budgets.store');
+    Route::post('/budgets/{budget}/convert', [App\Http\Controllers\Dashboard\BudgetController::class, 'convertToSale'])->name('budgets.convert');
+    Route::post('/budgets/{budget}/cancel', [App\Http\Controllers\Dashboard\BudgetController::class, 'cancel'])->name('budgets.cancel');
+    Route::get('/budgets/{budget}/print', [App\Http\Controllers\Dashboard\BudgetController::class, 'printBudget'])->name('budgets.print');
+});
+
 // ====== ORDERS ======
 Route::middleware(['permission:orders.menu'])->group(function () {
     Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order.pendingOrders');

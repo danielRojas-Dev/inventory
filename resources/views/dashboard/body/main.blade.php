@@ -100,35 +100,37 @@
 
     <script>
         $(document).ready(function() {
-            new DataTable('table', {
-                responsive: true,
-                columnDefs: [{
-                        responsivePriority: 1,
-                        targets: 0
-                    },
-                    {
-                        responsivePriority: 2,
-                        targets: -1
-                    }, {
-                        responsivePriority: 3,
-                        targets: -2
+            // Solo aplicar DataTable a tablas con ID específico "table"
+            if ($('#table').length > 0) {
+                new DataTable('#table', {
+                    responsive: true,
+                    columnDefs: [{
+                            responsivePriority: 1,
+                            targets: 0
+                        },
+                        {
+                            responsivePriority: 2,
+                            targets: -1
+                        }, {
+                            responsivePriority: 3,
+                            targets: -2
+                        }
+                    ],
+                    language: {
+                        search: "Buscar:", // Texto para la barra de búsqueda
+                        lengthMenu: "Mostrar _MENU_", // Texto para la opción de registros por página
+                        info: "Mostrando _START_ a _END_ de _TOTAL_ registros", // Texto de información
+                        infoEmpty: "No hay registros disponibles", // Texto cuando no hay resultados
+                        infoFiltered: "(filtrado de _MAX_ registros en total)",
+                        emptyTable: "No hay datos disponibles en la tabla", // Mensaje cuando no hay datos en la tabla
+                        zeroRecords: "No se encontraron registros que coincidan", // Texto de los filtros
+                        paginate: {
+                            previous: "Anterior", // Texto del botón anterior
+                            next: "Siguiente" // Texto del botón siguiente
+                        }
                     }
-                ],
-                language: {
-
-                    search: "Buscar:", // Texto para la barra de búsqueda
-                    lengthMenu: "Mostrar _MENU_", // Texto para la opción de registros por página
-                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros", // Texto de información
-                    infoEmpty: "No hay registros disponibles", // Texto cuando no hay resultados
-                    infoFiltered: "(filtrado de _MAX_ registros en total)",
-                    emptyTable: "No hay datos disponibles en la tabla", // Mensaje cuando no hay datos en la tabla
-                    zeroRecords: "No se encontraron registros que coincidan", // Texto de los filtros
-                    paginate: {
-                        previous: "Anterior", // Texto del botón anterior
-                        next: "Siguiente" // Texto del botón siguiente
-                    }
-                }
-            });
+                });
+            }
         });
     </script>
 

@@ -36,6 +36,14 @@
                     </li>
                 @endif
 
+                @if (auth()->user()->can('budgets.menu'))
+                    <li class="{{ Request::is('budgets*') ? 'active' : '' }}">
+                        <a href="{{ route('budgets.index') }}" class="svg-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span class="ml-3">Presupuestos</span>
+                        </a>
+                    </li>
+                @endif
 
                 <hr>
 

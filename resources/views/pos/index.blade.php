@@ -278,6 +278,22 @@
                                     step="0.001" placeholder="Ingrese el monto de la entrega">
                             </div>
 
+                            <div class="col-md-12 mt-3" id="presupuesto_section" hidden>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="valid_days">Días de Validez del Presupuesto</label>
+                                        <input type="number" class="form-control" id="valid_days" name="valid_days"
+                                            min="1" max="90" value="30" placeholder="30">
+                                        <small class="text-muted">El presupuesto será válido por estos días</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="notes">Notas del Presupuesto (Opcional)</label>
+                                        <textarea class="form-control" id="notes" name="notes" rows="2"
+                                            placeholder="Agregar notas sobre el presupuesto..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-md-12 mt-3" id="cuotas_info_section" hidden>
                                 <h5>Detalles del Plan de Cuotas</h5>
                                 <p><strong>Total Original:</strong> <span id="total_original">0.00</span></p>
@@ -288,7 +304,10 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-success">Crear Factura</button>
+                            <button type="submit" class="btn btn-success" name="action" value="invoice">Crear
+                                Factura</button>
+                            <button type="submit" class="btn btn-primary" name="action" value="budget"
+                                formaction="{{ route('budgets.create') }}">Generar Presupuesto</button>
                         </div>
                     </form>
                 </div>
@@ -298,6 +317,63 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Mostrar sección de presupuesto cuando se hace click en el botón
+        const budgetBtn = document.querySelector('button[value="budget"]');
+        const invoiceBtn = document.querySelector('button[value="invoice"]');
+        const presupuestoSection = document.getElementById('presupuesto_section');
+        let budgetFieldsShown = false;
+
+        if (budgetBtn && invoiceBtn && presupuestoSection) {
+            budgetBtn.addEventListener('click', function(e) {
+                if (!budgetFieldsShown) {
+                    // Prevenir el envío del formulario la primera vez
+                    e.preventDefault();
+
+                    // Mostrar campos específicos del presupuesto
+                    presupuestoSection.removeAttribute('hidden');
+
+                    // Cambiar el texto del botón para indicar que ya se pueden completar los campos
+                    budgetBtn.innerHTML = '<i class="fas fa-check"></i> Crear Presupuesto';
+                    budgetBtn.classList.remove('btn-primary');
+                    budgetBtn.classList.add('btn-success');
+
+                    budgetFieldsShown = true;
+                } else {
+                    // Ya se mostraron los campos, permitir el envío del formulario
+                    // Validar que se haya seleccionado cliente
+                    const customerId = document.getElementById('customer_id').value;
+                    const paymentMethod = document.getElementById('payment_method').value;
+
+                    if (!customerId) {
+                        e.preventDefault();
+                        alert('Por favor seleccione un cliente');
+                        return;
+                    }
+
+                    if (!paymentMethod) {
+                        e.preventDefault();
+                        alert('Por favor seleccione un método de pago');
+                        return;
+                    }
+
+                    // Si todo está bien, el formulario se enviará normalmente
+                }
+            });
+
+            invoiceBtn.addEventListener('click', function(e) {
+                // Ocultar campos específicos del presupuesto
+                presupuestoSection.setAttribute('hidden', true);
+
+                // Resetear el botón de presupuesto
+                budgetBtn.innerHTML = 'Generar Presupuesto';
+                budgetBtn.classList.remove('btn-success');
+                budgetBtn.classList.add('btn-primary');
+                budgetFieldsShown = false;
+            });
+        }
+    </script>
     <script>
         document.getElementById('payment_method').addEventListener('change', function() {
             let cuotasSection = document.getElementById('cuotas_section');

@@ -44,4 +44,8 @@ class Customer extends Model
     {
         return $this->hasMany(Loan::class);
     }
+    public function budgets()
+    {
+        return $this->hasMany(Budget::class);
+    }
 }
