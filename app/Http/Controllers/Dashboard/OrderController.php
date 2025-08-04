@@ -189,6 +189,13 @@ class OrderController extends Controller
 
 
 
+    function sanitizeFilename($string)
+    {
+        return preg_replace('/[\/\\\\?%*:|"<>]/', '-', $string);
+    }
+
+
+
     public function downloadReceiptVenta(Order $order)
     {
         // Buscar si hay un attachment asociado al pedido
@@ -234,7 +241,11 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Venta_' . $details[0]->product->product_name . '_' . $cliente->name . '.pdf';
+        $productName = $this->sanitizeFilename($details[0]->product->product_name ?? 'Producto');
+        $clienteName = $this->sanitizeFilename($cliente->name ?? 'Cliente');
+
+        $pdfFileName = 'Venta_' . $productName . '_' . $clienteName . '.pdf';
+
 
         // Generar PDF
         $pdf = Pdf::loadView('orders.payment-receipt-venta-quota', compact(
