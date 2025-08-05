@@ -82,7 +82,9 @@ class OrderController extends Controller
                 $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
 
                 $entrega = $validatedData['entrega'] ?? 0; // Si no se proporciona, es 0
-                $montoCuota = $totalConInteres / $validatedData['quotas'];
+                $totalAFinanciar = $totalConInteres - $entrega;
+                $montoCuota = $totalAFinanciar / $validatedData['quotas'];
+
 
                 $validatedData = array_merge($validatedData, ['pay' => 0]);
 
@@ -109,6 +111,7 @@ class OrderController extends Controller
                 $quotaDetails = [];
                 for ($i = 1; $i <= $validatedData['quotas']; $i++) {
                     $montoFinal = ($i == 1 && $entrega > 0) ? $entrega : round($montoCuota);
+
 
                     $quotaDetails[] = [
                         'order_id' => $order_id,
@@ -279,7 +282,7 @@ class OrderController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Venta_normal_' . $order->invoice_no . '_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Venta_normal_' . $order->invoice_no . '_' . $this->sanitizeFilename($cliente->name) . '.pdf';
 
 
         $pdf = Pdf::loadView('orders.payment-receipt-venta-normal', compact('order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details'))
@@ -316,7 +319,7 @@ class OrderController extends Controller
             }
         }
 
-        $pdfFileName = 'Cuota_' . $quota->number_quota . '_' . $details[0]->product->product_name . '_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Cuota_' . $quota->number_quota . '_' . $this->sanitizeFilename($details[0]->product->product_name) . '_' . $this->sanitizeFilename($cliente->name) . '.pdf';
 
         $pdf = Pdf::loadView('orders.payment-receipt-quota', compact('quota', 'order', 'cliente', 'pathLogo', 'htmlLogo', 'htmlTitle', 'details', 'valorCuota', 'htmlCancelado'))
             ->setPaper('cart', 'vertical');
