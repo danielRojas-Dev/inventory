@@ -18,7 +18,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('loan.storeLoan') }}" method="POST" enctype="multipart/form-data">
+                        <form id="loanForm" action="{{ route('loan.storeLoan') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-md-12">
@@ -33,8 +33,8 @@
 
                                 <div class="col-md-12 mt-3">
                                     <label for="total_loan">Monto del Prestamo</label>
-                                    <input type="number" class="form-control" id="total_loan" name="total_loan"
-                                        step="0.01" min="0" placeholder="Ingrese el monto del Prestamo" required>
+                                    <input type="text" class="form-control" id="total_loan" name="total_loan"
+                                        placeholder="Ingrese el monto del Prestamo" required>
                                 </div>
 
                                 <div class="col-md-12 mt-3">
@@ -57,42 +57,20 @@
 
                                 <div class="col-md-12 mt-3 d-none" id="interes_section">
                                     <label for="interest_rate">Porcentaje de Interés (%)</label>
-                                    <input type="number" class="form-control" id="interest_rate" name="interest_rate"
-                                        step="0.01" min="0" placeholder="Ingrese el % de interés">
+                                    <input type="text" class="form-control" id="interest_rate" name="interest_rate"
+                                        placeholder="Ingrese el % de interés">
                                 </div>
                                 <div class="col-md-12 mt-3 d-none" id="cuota_section">
                                     <label for="monto_cuota">Monto de Cuota</label>
-                                    <input type="number" class="form-control" id="monto_cuota" name="monto_cuota"
-                                        min="0" step="0.001" placeholder="Ingrese el monto de la cuota">
-                                </div>
-
-                                <div class="col-md-12 mt-3 d-none" id="mes_inicio">
-                                    <label for="start_month">Mes de Inicio</label>
-                                    <select class="form-control" id="start_month" name="start_month">
-                                        <option value="" selected disabled>Seleccione Mes</option>
-                                        <option value="1">Enero</option>
-                                        <option value="2">Febrero</option>
-                                        <option value="3">Marzo</option>
-                                        <option value="4">Abril</option>
-                                        <option value="5">Mayo</option>
-                                        <option value="6">Junio</option>
-                                        <option value="7">Julio</option>
-                                        <option value="8">Agosto</option>
-                                        <option value="9">Septiembre</option>
-                                        <option value="10">Octubre</option>
-                                        <option value="11">Noviembre</option>
-                                        <option value="12">Diciembre</option>
-                                    </select>
+                                    <input type="text" class="form-control" id="monto_cuota" name="monto_cuota"
+                                        placeholder="Ingrese el monto de la cuota">
                                 </div>
 
                                 <div class="col-md-12 mt-3 d-none" id="fecha_pactada">
-                                    <label for="estimated_payment_date">Día Pactado a pagar Cuota</label>
-                                    <select class="form-control" id="estimated_payment_date" name="estimated_payment_date">
-                                        <option value="" selected disabled>Seleccione Día</option>
-                                        @for ($i = 1; $i <= 29; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
-                                        @endfor
-                                    </select>
+                                    <label for="payment_date">Fecha de Inicio y Día Pactado de Pago</label>
+                                    <input type="date" class="form-control" id="payment_date" name="payment_date">
+                                    <input type="hidden" id="start_month" name="start_month">
+                                    <input type="hidden" id="estimated_payment_date" name="estimated_payment_date">
                                 </div>
 
 
@@ -116,6 +94,93 @@
     </div>
 
     <script>
+        // Función para formatear números con puntos
+        function formatNumberWithDots(value) {
+            // Eliminar todo excepto números
+            let number = value.replace(/[^\d]/g, '');
+            // Agregar puntos como separadores de miles
+            return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // Función para remover formato de puntos
+        function removeDotsFormat(value) {
+            return value.replace(/\./g, '');
+        }
+
+        // Actualizar campos hidden cuando cambia la fecha
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentDateInput = document.getElementById('payment_date');
+            if (paymentDateInput) {
+                paymentDateInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const date = new Date(this.value + 'T00:00:00');
+                        document.getElementById('start_month').value = date.getMonth() + 1;
+                        document.getElementById('estimated_payment_date').value = date.getDate();
+                    }
+                });
+            }
+
+            // Aplicar formato a los inputs numéricos
+            const numericInputs = ['total_loan', 'interest_rate', 'monto_cuota'];
+            numericInputs.forEach(function(inputId) {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    // Formatear mientras se escribe
+                    input.addEventListener('input', function(e) {
+                        let cursorPosition = this.selectionStart;
+                        let oldLength = this.value.length;
+                        let value = this.value;
+                        
+                        // Si es el campo de interés, permitir decimales
+                        if (inputId === 'interest_rate') {
+                            // Permitir solo números y un punto decimal
+                            value = value.replace(/[^\d.]/g, '');
+                            // Asegurar solo un punto decimal
+                            let parts = value.split('.');
+                            if (parts.length > 2) {
+                                value = parts[0] + '.' + parts.slice(1).join('');
+                            }
+                            // Formatear la parte entera con puntos de miles
+                            if (parts.length > 1) {
+                                parts[0] = formatNumberWithDots(parts[0]);
+                                this.value = parts.join('.');
+                            } else {
+                                this.value = formatNumberWithDots(value);
+                            }
+                        } else {
+                            // Para otros campos, solo números enteros
+                            this.value = formatNumberWithDots(value);
+                        }
+                        
+                        // Ajustar posición del cursor
+                        let newLength = this.value.length;
+                        cursorPosition += (newLength - oldLength);
+                        this.setSelectionRange(cursorPosition, cursorPosition);
+                    });
+
+                    // Al salir del campo, disparar evento change para cálculos
+                    input.addEventListener('blur', function() {
+                        if (this.value) {
+                            this.dispatchEvent(new Event('change'));
+                        }
+                    });
+                }
+            });
+
+            // Remover formato antes de enviar el formulario
+            const form = document.getElementById('loanForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    numericInputs.forEach(function(inputId) {
+                        const input = document.getElementById(inputId);
+                        if (input && input.value) {
+                            input.value = removeDotsFormat(input.value);
+                        }
+                    });
+                });
+            }
+        });
+
         document.getElementById('payment_method').addEventListener('change', function() {
             let cuotasSection = document.getElementById('cuotas_section');
             let cuotasInfoSection = document.getElementById('cuotas_info_section');
@@ -123,10 +188,8 @@
             let interesSection = document.getElementById('interes_section');
             let montoCuota = document.getElementById('cuota_section');
             let selectCuotas = document.getElementById('quotas');
-            let day = document.getElementById('estimated_payment_date');
+            let paymentDate = document.getElementById('payment_date');
             let interestInput = document.getElementById('interest_rate');
-            let mesInicio = document.getElementById('mes_inicio');
-            let startMonth = document.getElementById('start_month');
 
             if (this.value === 'CUOTAS') {
                 cuotasSection.classList.remove('d-none');
@@ -134,29 +197,33 @@
                 fechaPactada.classList.remove('d-none');
                 interesSection.classList.remove('d-none');
                 montoCuota.classList.remove('d-none');
-                mesInicio.classList.remove('d-none');
                 selectCuotas.setAttribute('required', true);
-                day.setAttribute('required', true);
+                paymentDate.setAttribute('required', true);
                 interestInput.setAttribute('required', true);
-                startMonth.setAttribute('required', true);
             } else {
                 cuotasSection.classList.add('d-none');
                 cuotasInfoSection.classList.add('d-none');
                 fechaPactada.classList.add('d-none');
                 interesSection.classList.add('d-none');
                 montoCuota.classList.add('d-none');
-                mesInicio.classList.add('d-none');
                 selectCuotas.removeAttribute('required');
-                day.removeAttribute('required');
+                paymentDate.removeAttribute('required');
                 interestInput.removeAttribute('required');
-                startMonth.removeAttribute('required');
                 selectCuotas.value = '';
-                day.value = '';
+                paymentDate.value = '';
+                document.getElementById('start_month').value = '';
+                document.getElementById('estimated_payment_date').value = '';
                 interestInput.value = '';
-                startMonth.value = '';
             }
         });
 
+        document.getElementById('total_loan').addEventListener('input', function() {
+            // Disparar cálculo si hay cuotas seleccionadas
+            if (document.getElementById('quotas').value) {
+                calcularCuotas();
+            }
+        });
+        document.getElementById('quotas').addEventListener('change', calcularCuotas);
         document.getElementById('interest_rate').addEventListener('input', calcularCuotas);
         document.getElementById('monto_cuota').addEventListener('input', calcularInteres);
 
@@ -165,23 +232,30 @@
         }
 
         function calcularCuotas() {
-            let totalOriginal = parseFloat(document.getElementById('total_loan').value) || 0;
+            let totalLoanValue = removeDotsFormat(document.getElementById('total_loan').value);
+            let totalOriginal = parseFloat(totalLoanValue) || 0;
             let cuotas = parseInt(document.getElementById('quotas').value) || 1;
-            let interestRate = parseFloat(document.getElementById('interest_rate').value) || 0;
+            let interestRateValue = removeDotsFormat(document.getElementById('interest_rate').value.replace(',', '.'));
+            let interestRate = parseFloat(interestRateValue) || 0;
 
             let totalConInteres = totalOriginal * (1 + (interestRate / 100));
             let montoCuota = totalConInteres / cuotas;
 
             document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
             document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
-            document.getElementById('monto_cuota').value = montoCuota.toFixed();
+            
+            // Formatear el monto de cuota con puntos
+            let montoCuotaFormateado = Math.round(montoCuota);
+            document.getElementById('monto_cuota').value = formatNumberWithDots(montoCuotaFormateado.toString());
             document.getElementById('monto_cuota_info').innerText = formatCurrency(montoCuota);
         }
 
         function calcularInteres() {
-            let totalOriginal = parseFloat(document.getElementById('total_loan').value) || 0;
+            let totalLoanValue = removeDotsFormat(document.getElementById('total_loan').value);
+            let totalOriginal = parseFloat(totalLoanValue) || 0;
             let cuotas = parseInt(document.getElementById('quotas').value) || 1;
-            let montoCuota = parseFloat(document.getElementById('monto_cuota').value) || 0;
+            let montoCuotaValue = removeDotsFormat(document.getElementById('monto_cuota').value);
+            let montoCuota = parseFloat(montoCuotaValue) || 0;
 
             if (montoCuota <= 0 || isNaN(montoCuota)) {
                 document.getElementById('interest_rate').value = '';
@@ -194,6 +268,8 @@
             document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
             document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
             document.getElementById('monto_cuota_info').innerText = formatCurrency(montoCuota);
+            
+            // Formatear el porcentaje de interés
             document.getElementById('interest_rate').value = interestRate.toFixed(3);
         }
     </script>
