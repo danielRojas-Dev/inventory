@@ -40,7 +40,7 @@ class Loan extends Model
     }
     public function getLoanDateReceiptAttribute()
     {
-        return Carbon::parse($this->loan_date)->format('d/m/Y');
+        return Carbon::parse($this->attributes['loan_date'])->format('d/m/Y');
     }
 
     public function customer()
