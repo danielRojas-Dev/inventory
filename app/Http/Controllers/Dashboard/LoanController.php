@@ -156,7 +156,7 @@ class LoanController extends Controller
         $htmlLogo = '<img src="data:image/svg+xml;base64,' . base64_encode($logo) . '"  width="100" height="" />';
         $htmlTitle = '<img src="data:image/svg+xml;base64,' . base64_encode($title) . '"  width="300" height="" />';
 
-        $pdfFileName = 'Factura_Venta' . $loan->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Factura_Prestamo_' . $loan->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
         $pdf = Pdf::loadView('loans.payment-receipt-loan', compact(
             'loan',
@@ -196,7 +196,7 @@ class LoanController extends Controller
         }
 
         // Generar PDF
-        $pdfFileName = 'Factura_Cuota' . $loan->invoice_no . '_cliente_' . $cliente->name . '.pdf';
+        $pdfFileName = 'Factura_Cuota_Prestamo_' . $loan->invoice_no . '_cliente_' . $cliente->name . '.pdf';
 
         $pdf = Pdf::loadView('loans.payment-receipt-quota', compact('quota', 'loan', 'cliente', 'htmlLogo', 'htmlTitle', 'htmlCancelado', 'valorCuota'))
             ->setPaper('cart', 'vertical');
