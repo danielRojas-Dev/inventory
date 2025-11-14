@@ -18,7 +18,8 @@
                     </div>
 
                     <div class="card-body">
-                        <form id="loanForm" action="{{ route('loan.storeLoan') }}" method="POST" enctype="multipart/form-data">
+                        <form id="loanForm" action="{{ route('loan.storeLoan') }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-md-12">
@@ -69,8 +70,6 @@
                                 <div class="col-md-12 mt-3 d-none" id="fecha_pactada">
                                     <label for="payment_date">Fecha de Inicio y Día Pactado de Pago</label>
                                     <input type="date" class="form-control" id="payment_date" name="payment_date">
-                                    <input type="hidden" id="start_month" name="start_month">
-                                    <input type="hidden" id="estimated_payment_date" name="estimated_payment_date">
                                 </div>
 
 
@@ -107,18 +106,7 @@
             return value.replace(/\./g, '');
         }
 
-        // Actualizar campos hidden cuando cambia la fecha
         document.addEventListener('DOMContentLoaded', function() {
-            const paymentDateInput = document.getElementById('payment_date');
-            if (paymentDateInput) {
-                paymentDateInput.addEventListener('change', function() {
-                    if (this.value) {
-                        const date = new Date(this.value + 'T00:00:00');
-                        document.getElementById('start_month').value = date.getMonth() + 1;
-                        document.getElementById('estimated_payment_date').value = date.getDate();
-                    }
-                });
-            }
 
             // Aplicar formato a los inputs numéricos
             const numericInputs = ['total_loan', 'interest_rate', 'monto_cuota'];
@@ -130,7 +118,7 @@
                         let cursorPosition = this.selectionStart;
                         let oldLength = this.value.length;
                         let value = this.value;
-                        
+
                         // Si es el campo de interés, permitir decimales
                         if (inputId === 'interest_rate') {
                             // Permitir solo números y un punto decimal
@@ -151,7 +139,7 @@
                             // Para otros campos, solo números enteros
                             this.value = formatNumberWithDots(value);
                         }
-                        
+
                         // Ajustar posición del cursor
                         let newLength = this.value.length;
                         cursorPosition += (newLength - oldLength);
@@ -211,8 +199,6 @@
                 interestInput.removeAttribute('required');
                 selectCuotas.value = '';
                 paymentDate.value = '';
-                document.getElementById('start_month').value = '';
-                document.getElementById('estimated_payment_date').value = '';
                 interestInput.value = '';
             }
         });
@@ -243,7 +229,7 @@
 
             document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
             document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
-            
+
             // Formatear el monto de cuota con puntos
             let montoCuotaFormateado = Math.round(montoCuota);
             document.getElementById('monto_cuota').value = formatNumberWithDots(montoCuotaFormateado.toString());
@@ -268,7 +254,7 @@
             document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
             document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
             document.getElementById('monto_cuota_info').innerText = formatCurrency(montoCuota);
-            
+
             // Formatear el porcentaje de interés
             document.getElementById('interest_rate').value = interestRate.toFixed(3);
         }
