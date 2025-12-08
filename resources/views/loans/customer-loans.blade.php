@@ -64,6 +64,22 @@
                         Estado: {{ $loan->cantidadDeudas > 0 ? 'Hay cuotas vencidas' : 'Cliente al día' }}
                     </h6>
 
+                    @php
+                        $interestRate = $loan->interest_plan ?? 0;
+                        $originalAmount = $interestRate > 0 ? $loan->total / (1 + $interestRate / 100) : $loan->total;
+                    @endphp
+
+                    <div class="mb-2 d-flex flex-wrap">
+                        <div class="mr-3 mb-1">
+                            <small class="text-muted">Monto original del préstamo</small><br>
+                            <span class="font-weight-bold">${{ number_format($originalAmount, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="mb-1">
+                            <small class="text-muted">Interés aplicado</small><br>
+                            <span class="font-weight-bold">{{ number_format($interestRate, 0, ',', '.') }} %</span>
+                        </div>
+                    </div>
+
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <h6 class="mb-0">Tiene cuotas Asociadas:</h6>
                         <a href="{{ Route('loan.quotasLoan', $loan->id) }}" class="btn btn-success btn-sm">
