@@ -67,7 +67,17 @@ class LoanController extends Controller
             DB::beginTransaction();
 
             $totalOriginal = $validatedData['total_loan'];
-            $interestRate = $validatedData['interest_rate'] ?? 0;
+
+            // Normalizar tasa de interés cuando viene escalada desde el formulario
+            $interestRateRaw = $validatedData['interest_rate'] ?? 0;
+            $interestRate = $interestRateRaw;
+
+            // Si la tasa viene en formato escalado (por ejemplo 71200 en lugar de 71.2)
+            // la convertimos a porcentaje real dividiendo por 1000.
+            if ($interestRateRaw > 100) {
+                $interestRate = $interestRateRaw / 1000;
+            }
+
             $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
             $montoCuota = $totalConInteres / $validatedData['quotas'];
 

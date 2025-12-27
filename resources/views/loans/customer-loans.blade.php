@@ -76,7 +76,7 @@
                         </div>
                         <div class="mb-1">
                             <small class="text-muted">Interés aplicado</small><br>
-                            <span class="font-weight-bold">{{ number_format($interestRate, 0, ',', '.') }} %</span>
+                            <span class="font-weight-bold">{{ number_format($interestRate, 1, ',', '.') }} %</span>
                         </div>
                     </div>
 
