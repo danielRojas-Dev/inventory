@@ -75,6 +75,23 @@
                             Estado: {{ $order->cantidadDeudas > 0 ? 'Hay cuotas vencidas' : 'Cliente al día' }}
                         </h6>
 
+                        @php
+                            $interestRate = $order->interest_plan ?? 0;
+                            $originalAmount =
+                                $interestRate > 0 ? $order->total / (1 + $interestRate / 100) : $order->total;
+                        @endphp
+
+                        <div class="mb-2 d-flex flex-wrap">
+                            <div class="mr-3 mb-1">
+                                <small class="text-muted">Monto original de la venta</small><br>
+                                <span class="font-weight-bold">${{ number_format($originalAmount, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="mb-1">
+                                <small class="text-muted">Interés aplicado</small><br>
+                                <span class="font-weight-bold">{{ number_format($interestRate, 1, ',', '.') }} %</span>
+                            </div>
+                        </div>
+
                         <div class="d-flex flex-wrap align-items-center gap-2">
                             <h6 class="mb-0">Tiene cuotas Asociadas:</h6>
                             <a href="{{ Route('order.quotas', $order->id) }}" class="btn btn-success btn-sm">

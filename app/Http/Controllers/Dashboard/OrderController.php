@@ -78,7 +78,16 @@ class OrderController extends Controller
             if ($validatedData['payment_method'] == 'CUOTAS') {
                 // Calcular el total con el interés usando el interest_rate proporcionado
                 $totalOriginal = Cart::total();
-                $interestRate = $validatedData['interest_rate'] ?? 0; // Valor por defecto 0 si no se proporciona
+
+                // Normalizar tasa de interés cuando viene escalada desde el formulario
+                $interestRateRaw = $validatedData['interest_rate'] ?? 0;
+                $interestRate = $interestRateRaw;
+
+                // Si la tasa viene en formato escalado (por ejemplo 71200 en lugar de 71.2)
+                if ($interestRateRaw > 100) {
+                    $interestRate = $interestRateRaw / 1000;
+                }
+
                 $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
 
                 $entrega = $validatedData['entrega'] ?? 0; // Si no se proporciona, es 0

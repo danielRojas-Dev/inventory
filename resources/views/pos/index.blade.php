@@ -375,8 +375,8 @@
                 });
             }
 
-            // Aplicar formato a los inputs numéricos
-            const numericInputs = ['interest_rate', 'monto_cuota', 'entrega'];
+            // Aplicar formato a los inputs numéricos (solo montos de dinero)
+            const numericInputs = ['monto_cuota', 'entrega'];
             numericInputs.forEach(function(inputId) {
                 const input = document.getElementById(inputId);
                 if (input) {
@@ -385,28 +385,10 @@
                         let cursorPosition = this.selectionStart;
                         let oldLength = this.value.length;
                         let value = this.value;
-                        
-                        // Si es el campo de interés, permitir decimales
-                        if (inputId === 'interest_rate') {
-                            // Permitir solo números y un punto decimal
-                            value = value.replace(/[^\d.]/g, '');
-                            // Asegurar solo un punto decimal
-                            let parts = value.split('.');
-                            if (parts.length > 2) {
-                                value = parts[0] + '.' + parts.slice(1).join('');
-                            }
-                            // Formatear la parte entera con puntos de miles
-                            if (parts.length > 1) {
-                                parts[0] = formatNumberWithDots(parts[0]);
-                                this.value = parts.join('.');
-                            } else {
-                                this.value = formatNumberWithDots(value);
-                            }
-                        } else {
-                            // Para otros campos, solo números enteros
-                            this.value = formatNumberWithDots(value);
-                        }
-                        
+
+                        // Para estos campos, solo números enteros con puntos de miles
+                        this.value = formatNumberWithDots(value);
+
                         // Ajustar posición del cursor
                         let newLength = this.value.length;
                         cursorPosition += (newLength - oldLength);
@@ -426,12 +408,25 @@
             const form = document.getElementById('paymentForm');
             if (form) {
                 form.addEventListener('submit', function(e) {
+                    // Quitar puntos de miles de los campos de monto
                     numericInputs.forEach(function(inputId) {
                         const input = document.getElementById(inputId);
                         if (input && input.value) {
                             input.value = removeDotsFormat(input.value);
                         }
                     });
+
+                    // Normalizar el porcentaje de interés a formato numerico con punto decimal
+                    const interestInput = document.getElementById('interest_rate');
+                    if (interestInput && interestInput.value) {
+                        let value = interestInput.value.replace(',', '.');
+                        value = value.replace(/[^\\d.]/g, '');
+                        const parts = value.split('.');
+                        if (parts.length > 2) {
+                            value = parts[0] + '.' + parts.slice(1).join('');
+                        }
+                        interestInput.value = value;
+                    }
                 });
             }
         });
@@ -492,8 +487,9 @@
         function calcularCuotas() {
             let totalOriginal = parseFloat(document.getElementById('total_compra').value) || 0;
             let cuotas = parseInt(document.getElementById('quotas').value) || 1;
-            let interestRateValue = removeDotsFormat(document.getElementById('interest_rate').value.replace(',', '.'));
-            let interestRate = parseFloat(interestRateValue) || 0;
+            // El porcentaje ya viene sin puntos de miles, solo reemplazamos coma por punto
+            let interestRateRaw = document.getElementById('interest_rate').value.replace(',', '.');
+            let interestRate = parseFloat(interestRateRaw) || 0;
 
             let totalConInteres = totalOriginal * (1 + (interestRate / 100));
             let montoCuota = totalConInteres / cuotas;
@@ -501,7 +497,6 @@
             document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
             document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
             document.getElementById('monto_cuota_info').innerText = formatCurrency(montoCuota);
-            
             // Formatear el monto de cuota con puntos
             let montoCuotaFormateado = Math.round(montoCuota);
             document.getElementById('monto_cuota').value = formatNumberWithDots(montoCuotaFormateado.toString());
@@ -519,9 +514,8 @@
             document.getElementById('total_original').innerText = formatCurrency(totalOriginal);
             document.getElementById('total_interes').innerText = formatCurrency(totalConInteres);
             document.getElementById('monto_cuota_info').innerText = formatCurrency(montoCuota);
-            
-            // Formatear el porcentaje de interés
-            document.getElementById('interest_rate').value = interestRate.toFixed(3);
+            // Mostrar el porcentaje de interés con una precisión razonable
+            document.getElementById('interest_rate').value = interestRate.toFixed(1);
         }
     </script>
 @endsection
