@@ -108,9 +108,11 @@ class PosController extends Controller
                 'customer_id' => 'required',
                 'payment_method' => 'required',
                 'quotas' => 'sometimes|nullable|integer|min:1',
-                'interest_rate' => 'sometimes|nullable|numeric|min:0',
+                // Aceptamos cualquier cadena y luego la normalizamos manualmente (reemplazo de coma/puntos, etc.)
+                'interest_rate' => 'sometimes|nullable|string',
                 'estimated_payment_date' => 'sometimes|nullable',
-                'entrega' => 'sometimes|nullable',
+                'entrega' => 'sometimes|nullable|numeric|min:0',
+                'monto_cuota' => 'sometimes|nullable|numeric|min:0',
                 'payment_month' => 'sometimes|nullable|string',
             ];
 
@@ -122,15 +124,46 @@ class PosController extends Controller
             $totalOriginal = Cart::total(); // Total sin modificaciones
 
             $quotas = $validatedData['quotas'] ?? null;
-            $interestRate = $validatedData['interest_rate'] ?? 0; // Interés ingresado por el usuario
+            $entrega = $validatedData['entrega'] ?? 0;
 
-            $totalConInteres = $totalOriginal;
+            // Si el usuario envió un monto de cuota, lo tomamos como fuente de verdad
+            if ($quotas && !empty($validatedData['monto_cuota'])) {
+                $montoCuota = $validatedData['monto_cuota'];
+                $totalConInteres = ($montoCuota * $quotas) + $entrega;
 
-            if ($quotas && $interestRate > 0) {
-                $totalConInteres *= (1 + ($interestRate / 100)); // Aplicar el interés ingresado
-                $montoCuota = $totalConInteres / $quotas;
+                // Recalcular el porcentaje de interés a partir del total con interés
+                if ($totalOriginal > 0) {
+                    $interestRate = (($totalConInteres / $totalOriginal) - 1) * 100;
+                } else {
+                    $interestRate = 0;
+                }
             } else {
-                $montoCuota = $quotas ? ($totalOriginal / $quotas) : 0;
+                // Caso normal: usar el porcentaje de interés como fuente de verdad
+                // Normalizar tasa de interés cuando viene escalada desde el formulario
+                $interestRateRaw = $validatedData['interest_rate'] ?? 0; // Interés ingresado por el usuario
+                $interestRate = $interestRateRaw;
+
+                // Si la tasa viene en un formato claramente escalado (por ejemplo 71200),
+                // la convertimos a porcentaje real dividiendo por 1000. Para valores dentro
+                // de un rango razonable (0-1000%) la dejamos tal cual.
+                if ($interestRateRaw > 1000) {
+                    $interestRate = $interestRateRaw / 1000;
+                }
+
+                $totalConInteres = $totalOriginal;
+
+                if ($quotas) {
+                    // Aplicar interés si corresponde
+                    if ($interestRate > 0) {
+                        $totalConInteres = $totalOriginal * (1 + ($interestRate / 100));
+                    }
+
+                    // Calcular total a financiar restando la entrega
+                    $totalAFinanciar = $totalConInteres - $entrega;
+                    $montoCuota = $totalAFinanciar / $quotas;
+                } else {
+                    $montoCuota = 0;
+                }
             }
 
             return view('pos.create-invoice', [
@@ -143,11 +176,11 @@ class PosController extends Controller
                 'total_original' => $totalOriginal,
                 'total_con_interes' => $totalConInteres,
                 'monto_cuota' => $montoCuota,
-                'entrega' => $validatedData['entrega'] ?? null,
+                'entrega' => $entrega,
                 'payment_month' => $validatedData['payment_month'] ?? null,
             ]);
         } catch (\Throwable $th) {
-            //throw $th;
+            return Redirect::back()->with('error', 'Ocurrió un error al generar la factura preliminar.');
         }
     }
 

@@ -72,9 +72,10 @@ class LoanController extends Controller
             $interestRateRaw = $validatedData['interest_rate'] ?? 0;
             $interestRate = $interestRateRaw;
 
-            // Si la tasa viene en formato escalado (por ejemplo 71200 en lugar de 71.2)
-            // la convertimos a porcentaje real dividiendo por 1000.
-            if ($interestRateRaw > 100) {
+            // Si la tasa viene en formato claramente escalado (por ejemplo 71200 en lugar de 71.2)
+            // la convertimos a porcentaje real dividiendo por 1000. Para valores razonables (0-1000%)
+            // la dejamos sin modificar.
+            if ($interestRateRaw > 1000) {
                 $interestRate = $interestRateRaw / 1000;
             }
 
