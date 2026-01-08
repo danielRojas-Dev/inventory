@@ -104,6 +104,7 @@
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th>Cliente</th>
+                                                    <th>Producto</th>
                                                     <th class="text-center">Cuotas</th>
                                                     <th class="text-right">Total estimado</th>
                                                     <th class="text-center">Acción</th>
@@ -116,6 +117,7 @@
                                                     @endphp
                                                     <tr>
                                                         <td>{{ $customer->name ?? 'N/A' }}</td>
+                                                        <td>{{ $debtor['product_name'] ?? 'N/A' }}</td>
                                                         <td class="text-center">{{ $debtor['quotas_count'] }}</td>
                                                         <td class="text-right">
                                                             ${{ number_format($debtor['total_estimated'], 0, ',', '.') }}
@@ -139,12 +141,17 @@
                                     @foreach ($salesDebtors as $debtor)
                                         @php
                                             $customer = $debtor['customer'];
+                                            $productName = $debtor['product_name'] ?? 'N/A';
                                         @endphp
                                         <div class="card mb-2">
                                             <div class="card-body p-2">
                                                 <div class="d-flex justify-content-between">
                                                     <span class="font-weight-bold">{{ $customer->name ?? 'N/A' }}</span>
                                                     <span>Cuotas: {{ $debtor['quotas_count'] }}</span>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Producto</small>
+                                                    <div>{{ $productName }}</div>
                                                 </div>
                                                 <div class="mt-1">
                                                     <small class="text-muted">Total vencido</small>

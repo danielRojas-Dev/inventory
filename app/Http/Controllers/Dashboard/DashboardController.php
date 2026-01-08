@@ -39,7 +39,7 @@ class DashboardController extends Controller
         // Límite para considerar cuotas vencidas: más de 1 mes antes de hoy
         $overdueLimitDate = Carbon::now()->subMonth()->toDateString();
 
-        $salesOverdueQuotas = OrderQuotasDetails::with(['order.customer'])
+        $salesOverdueQuotas = OrderQuotasDetails::with(['order.customer', 'order.orderDetails.product'])
             ->whereHas('order', function ($q) use ($userId) {
                 $q->where('employee_id', $userId);
             })
@@ -66,9 +66,15 @@ class DashboardController extends Controller
                 return !is_null($customerId);
             })
             ->map(function ($group) {
-                $customer = $group->first()->order->customer;
+                $firstQuota = $group->first();
+                $order = $firstQuota->order;
+                $customer = $order->customer;
+                $firstDetail = $order->orderDetails[0] ?? null;
+                $productName = $firstDetail && $firstDetail->product ? $firstDetail->product->product_name : null;
+
                 return [
                     'customer' => $customer,
+                    'product_name' => $productName,
                     'quotas_count' => $group->count(),
                     'total_estimated' => $group->sum('estimated_payment'),
                 ];
