@@ -14,15 +14,262 @@
                 @endif
             </div>
 
-            <div class="col-lg-8 mt-3 mt-lg-0">
+            {{-- Tarjeta clientes con cuotas de ventas vencidas (+1 mes) --}}
+            <div class="col-lg-6 col-md-6 mb-3">
+                <div class="card card-block card-stretch card-height" style="background: #e74c3c;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1 text-white font-weight-bold" style="text-transform: uppercase;">
+                                    VENTAS - CLIENTES CON CUOTAS MUY ATRASADAS
+                                </h5>
+                                <p class="mb-0 text-white-50">Cuotas de ventas vencidas hace más de 1 mes</p>
+                                <h4 class="mb-0 text-white font-weight-bold">
+                                    {{ isset($salesDebtors) ? $salesDebtors->count() : 0 }}
+                                </h4>
+                            </div>
+                            <div class="icon iq-icon-box-2 bg-white text-success rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px;">
+                                <i class="ri-user-3-line"></i>
+                            </div>
+                        </div>
+                        @php
+                            $totalSalesDebtors = isset($salesDebtors) ? $salesDebtors->sum('total_estimated') : 0;
+                        @endphp
+                        <p class="mb-1 text-white-50 font-weight-bold">Total vencido a cobrar</p>
+                        <h5 class="text-white mb-3 font-weight-bold">
+                            ${{ number_format($totalSalesDebtors, 0, ',', '.') }}</h5>
+                        <button type="button" class="btn btn-light btn-sm" data-toggle="modal"
+                            data-target="#modalSalesDebtors">
+                            Ver clientes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Tarjeta clientes con cuotas de préstamos vencidas (+1 mes) --}}
+            <div class="col-lg-6 col-md-6 mb-3">
+                <div class="card card-block card-stretch card-height" style="background: #ff9f1a;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1 font-weight-bold"
+                                    style="color: rgba(0, 0, 0, 0.9); text-transform: uppercase;">
+                                    PRÉSTAMOS - CLIENTES CON CUOTAS MUY ATRASADAS
+                                </h5>
+                                <p class="mb-0" style="color: rgba(0, 0, 0, 0.7);">Cuotas de préstamos vencidas hace más
+                                    de 1 mes</p>
+                                <h4 class="mb-0 text-dark font-weight-bold">
+                                    {{ isset($loanDebtors) ? $loanDebtors->count() : 0 }}
+                                </h4>
+                            </div>
+                            <div class="icon iq-icon-box-2 bg-white text-warning rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px;">
+                                <i class="ri-user-star-line"></i>
+                            </div>
+                        </div>
+                        @php
+                            $totalLoanDebtors = isset($loanDebtors) ? $loanDebtors->sum('total_estimated') : 0;
+                        @endphp
+                        <p class="mb-1 font-weight-bold" style="color: rgba(0, 0, 0, 0.75);">Total vencido a cobrar</p>
+                        <h5 class="mb-3 font-weight-bold text-dark">
+                            ${{ number_format($totalLoanDebtors, 0, ',', '.') }}</h5>
+                        <button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal"
+                            data-target="#modalLoanDebtors">
+                            Ver clientes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Modal detalle clientes con cuotas de ventas vencidas (+1 mes) --}}
+            <div class="modal fade" id="modalSalesDebtors" tabindex="-1" role="dialog"
+                aria-labelledby="modalSalesDebtorsLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalSalesDebtorsLabel">Ventas: clientes con cuotas vencidas hace
+                                más de 1 mes</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @if (isset($salesDebtors) && $salesDebtors->count())
+                                {{-- Vista de tabla para desktop/tablet --}}
+                                <div class="d-none d-md-block">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped table-hover table-bordered mb-0">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Cliente</th>
+                                                    <th class="text-center">Cuotas</th>
+                                                    <th class="text-right">Total estimado</th>
+                                                    <th class="text-center">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($salesDebtors as $debtor)
+                                                    @php
+                                                        $customer = $debtor['customer'];
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $customer->name ?? 'N/A' }}</td>
+                                                        <td class="text-center">{{ $debtor['quotas_count'] }}</td>
+                                                        <td class="text-right">
+                                                            ${{ number_format($debtor['total_estimated'], 0, ',', '.') }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if ($customer)
+                                                                <a href="{{ route('customer.customerDetails', $customer->id) }}"
+                                                                    class="btn btn-sm btn-primary" target="_blank">Ver
+                                                                    ventas</a>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {{-- Vista tipo tarjetas para móvil --}}
+                                <div class="d-block d-md-none">
+                                    @foreach ($salesDebtors as $debtor)
+                                        @php
+                                            $customer = $debtor['customer'];
+                                        @endphp
+                                        <div class="card mb-2">
+                                            <div class="card-body p-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="font-weight-bold">{{ $customer->name ?? 'N/A' }}</span>
+                                                    <span>Cuotas: {{ $debtor['quotas_count'] }}</span>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Total vencido</small>
+                                                    <div class="font-weight-bold">
+                                                        ${{ number_format($debtor['total_estimated'], 0, ',', '.') }}
+                                                    </div>
+                                                </div>
+                                                @if ($customer)
+                                                    <div class="mt-2 text-right">
+                                                        <a href="{{ route('customer.customerDetails', $customer->id) }}"
+                                                            class="btn btn-sm btn-primary" target="_blank">Ver ventas</a>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p>No tienes clientes con cuotas de ventas pendientes para este mes.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Modal detalle clientes con cuotas de préstamos vencidas (+1 mes) --}}
+            <div class="modal fade" id="modalLoanDebtors" tabindex="-1" role="dialog"
+                aria-labelledby="modalLoanDebtorsLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLoanDebtorsLabel">Préstamos: clientes con cuotas vencidas
+                                hace más de 1 mes</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @if (isset($loanDebtors) && $loanDebtors->count())
+                                {{-- Vista de tabla para desktop/tablet --}}
+                                <div class="d-none d-md-block">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped table-hover table-bordered mb-0">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Cliente</th>
+                                                    <th class="text-center">Cuotas</th>
+                                                    <th class="text-right">Total estimado</th>
+                                                    <th class="text-center">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($loanDebtors as $debtor)
+                                                    @php
+                                                        $customer = $debtor['customer'];
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $customer->name ?? 'N/A' }}</td>
+                                                        <td class="text-center">{{ $debtor['quotas_count'] }}</td>
+                                                        <td class="text-right">
+                                                            ${{ number_format($debtor['total_estimated'], 0, ',', '.') }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if ($customer)
+                                                                <a href="{{ route('customer.customerLoanDetails', $customer->id) }}"
+                                                                    class="btn btn-sm btn-primary" target="_blank">Ver
+                                                                    préstamos</a>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {{-- Vista tipo tarjetas para móvil --}}
+                                <div class="d-block d-md-none">
+                                    @foreach ($loanDebtors as $debtor)
+                                        @php
+                                            $customer = $debtor['customer'];
+                                        @endphp
+                                        <div class="card mb-2">
+                                            <div class="card-body p-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="font-weight-bold">{{ $customer->name ?? 'N/A' }}</span>
+                                                    <span>Cuotas: {{ $debtor['quotas_count'] }}</span>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Total vencido</small>
+                                                    <div class="font-weight-bold">
+                                                        ${{ number_format($debtor['total_estimated'], 0, ',', '.') }}
+                                                    </div>
+                                                </div>
+                                                @if ($customer)
+                                                    <div class="mt-2 text-right">
+                                                        <a href="{{ route('customer.customerLoanDetails', $customer->id) }}"
+                                                            class="btn btn-sm btn-primary" target="_blank">Ver
+                                                            préstamos</a>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p>No tienes clientes con cuotas de préstamos pendientes para este mes.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12 mt-3 mt-lg-0">
                 <div class="row">
-                    {{-- Tarjeta resumen cuotas de ventas --}}
+                    {{-- Tarjeta resumen cuotas de ventas (mes actual) --}}
                     <div class="col-lg-6 col-md-6 mb-3">
                         <div class="card card-block card-stretch card-height bg-primary">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
-                                        <p class="mb-1 text-white-50">Cuotas de Ventas (mes actual)</p>
+                                        <h5 class="mb-1 text-white font-weight-bold" style="text-transform: uppercase;">
+                                            VENTAS - CUOTAS A COBRAR ESTE MES
+                                        </h5>
+                                        <p class="mb-0 text-white-50">Todas las cuotas de ventas con vencimiento este mes
+                                        </p>
                                         <h4 class="mb-0 text-white font-weight-bold">
                                             {{ isset($salesQuotas) ? $salesQuotas->count() : 0 }}
                                         </h4>
@@ -37,7 +284,7 @@
                                         ? $salesQuotas->sum('estimated_payment')
                                         : 0;
                                 @endphp
-                                <p class="mb-1 text-white-50">Total estimado a cobrar</p>
+                                <p class="mb-1 text-white-50 font-weight-bold">Total estimado a cobrar este mes</p>
                                 <h5 class="text-white mb-3 font-weight-bold">
                                     ${{ number_format($totalSalesQuotas, 0, ',', '.') }}</h5>
                                 <button type="button" class="btn btn-light btn-sm" data-toggle="modal"
@@ -48,15 +295,19 @@
                         </div>
                     </div>
 
-                    {{-- Tarjeta resumen cuotas de préstamos --}}
+                    {{-- Tarjeta resumen cuotas de préstamos (mes actual) --}}
                     <div class="col-lg-6 col-md-6 mb-3">
                         <div class="card card-block card-stretch card-height"
                             style="background: linear-gradient(135deg, #ffb347 0%, #ffcc33 100%);">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
-                                        <p class="mb-1 text-dark-50" style="color: rgba(0, 0, 0, 0.55);">Cuotas de
-                                            Préstamos (mes actual)</p>
+                                        <h5 class="mb-1 font-weight-bold"
+                                            style="color: rgba(0, 0, 0, 0.9); text-transform: uppercase;">
+                                            PRÉSTAMOS - CUOTAS A COBRAR ESTE MES
+                                        </h5>
+                                        <p class="mb-0" style="color: rgba(0, 0, 0, 0.55);">Todas las cuotas de
+                                            préstamos con vencimiento este mes</p>
                                         <h4 class="mb-0 text-dark font-weight-bold">
                                             {{ isset($loanQuotas) ? $loanQuotas->count() : 0 }}
                                         </h4>
@@ -69,7 +320,8 @@
                                 @php
                                     $totalLoanQuotas = isset($loanQuotas) ? $loanQuotas->sum('estimated_payment') : 0;
                                 @endphp
-                                <p class="mb-1" style="color: rgba(0, 0, 0, 0.55);">Total estimado a cobrar</p>
+                                <p class="mb-1 font-weight-bold" style="color: rgba(0, 0, 0, 0.7);">Total estimado a
+                                    cobrar este mes</p>
                                 <h5 class="mb-3 font-weight-bold text-dark">
                                     ${{ number_format($totalLoanQuotas, 0, ',', '.') }}</h5>
                                 <button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal"
@@ -282,7 +534,8 @@
                 <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalSalesQuotasLabel">Detalle de cuotas de ventas - Mes actual</h5>
+                            <h5 class="modal-title" id="modalSalesQuotasLabel">Detalle de cuotas de ventas - Mes actual
+                            </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>

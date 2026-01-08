@@ -36,9 +36,69 @@ class DashboardController extends Controller
             ->orderBy('estimated_payment_date')
             ->get();
 
+        // Límite para considerar cuotas vencidas: más de 1 mes antes de hoy
+        $overdueLimitDate = Carbon::now()->subMonth()->toDateString();
+
+        $salesOverdueQuotas = OrderQuotasDetails::with(['order.customer'])
+            ->whereHas('order', function ($q) use ($userId) {
+                $q->where('employee_id', $userId);
+            })
+            ->where('estimated_payment_date', '<', $overdueLimitDate)
+            ->where('status_payment', '!=', 'Pagado')
+            ->orderBy('estimated_payment_date')
+            ->get();
+
+        $loanOverdueQuotas = LoanDetail::with(['loan.customer'])
+            ->whereHas('loan', function ($q) use ($userId) {
+                $q->where('employee_id', $userId);
+            })
+            ->where('estimated_payment_date', '<', $overdueLimitDate)
+            ->where('status_payment', '!=', 'Pagado')
+            ->orderBy('estimated_payment_date')
+            ->get();
+
+        // Agrupar por cliente para obtener resumen de deudores de cuotas de ventas
+        $salesDebtors = $salesOverdueQuotas
+            ->groupBy(function ($quota) {
+                return optional(optional($quota->order)->customer)->id;
+            })
+            ->filter(function ($group, $customerId) {
+                return !is_null($customerId);
+            })
+            ->map(function ($group) {
+                $customer = $group->first()->order->customer;
+                return [
+                    'customer' => $customer,
+                    'quotas_count' => $group->count(),
+                    'total_estimated' => $group->sum('estimated_payment'),
+                ];
+            })
+            ->values();
+
+        // Agrupar por cliente para obtener resumen de deudores de cuotas de préstamos
+        $loanDebtors = $loanOverdueQuotas
+            ->groupBy(function ($quota) {
+                return optional(optional($quota->loan)->customer)->id;
+            })
+            ->filter(function ($group, $customerId) {
+                return !is_null($customerId);
+            })
+            ->map(function ($group) {
+                $loan = $group->first()->loan;
+                $customer = $loan->customer;
+                return [
+                    'customer' => $customer,
+                    'quotas_count' => $group->count(),
+                    'total_estimated' => $group->sum('estimated_payment'),
+                ];
+            })
+            ->values();
+
         return view('dashboard.index', [
             'salesQuotas' => $salesQuotas,
             'loanQuotas' => $loanQuotas,
+            'salesDebtors' => $salesDebtors,
+            'loanDebtors' => $loanDebtors,
             'startOfMonth' => $startOfMonth,
             'endOfMonth' => $endOfMonth,
         ]);
