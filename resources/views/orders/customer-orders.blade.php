@@ -22,126 +22,296 @@
         <div class="text-right mb-3">
             <a href="{{ route('order.completeOrders') }}" class="btn bg-secondary btn-sm">Volver</a>
         </div>
-        @foreach ($orders as $order)
-            <div class="card mb-4">
-                <div
-                    class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <h5 class="mb-2 mb-md-0 text-break">
-                        Factura No: {{ $order->invoice_no }}
 
-                        @if ($order->orderquotaDetails->count() && isset($order->orderDetails[0]->product->product_name))
-                            ({{ $order->orderDetails[0]->product->product_name }})
-                        @endif
+        @php
+            $activeOrders = $orders->filter(function ($order) {
+                return $order->order_status == 'Pendiente';
+            });
+            $canceledOrders = $orders->filter(function ($order) {
+                return $order->order_status != 'Pendiente';
+            });
+        @endphp
 
-                        <br>
-                        <small class="text-muted">Fecha: {{ $order->order_date_formatted }}</small>
-                    </h5>
+        <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="orders-active-tab" data-toggle="tab" href="#orders-active" role="tab"
+                    aria-controls="orders-active" aria-selected="true">Ventas Activas</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="orders-canceled-tab" data-toggle="tab" href="#orders-canceled" role="tab"
+                    aria-controls="orders-canceled" aria-selected="false">Ventas Canceladas</a>
+            </li>
+        </ul>
 
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="orders-active" role="tabpanel" aria-labelledby="orders-active-tab">
+                @forelse ($activeOrders as $order)
+                    <div class="card mb-4">
+                        <div
+                            class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                            <h5 class="mb-2 mb-md-0 text-break">
+                                Factura No: {{ $order->invoice_no }}
 
-                    <div class="d-flex flex-column flex-md-row justify-content-between  align-items-md-center">
-                        @if ($order->orderquotaDetails->count())
-                            @if ($order->attachments->count())
-                                <a href="#" class="btn text-white mb-1 mr-1 btn-sm" style="background: #6e40a3;"
-                                    data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
-                                    Reemplazar Comprobante
-                                </a>
-                            @else
-                                <a href="#" class="btn text-white mb-1 mr-1 btn-sm" style="background: #6e40a3;"
-                                    data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
-                                    Subir Comprobante
-                                </a>
-                            @endif
-                            <a href="{{ Route('order.downloadReceiptVenta', $order->id) }}" target="_blank"
-                                class="btn btn-primary btn-sm mb-1 mr-1">
-                                Descargar Comprobante
-                            </a>
-                        @else
-                            <a href="{{ Route('order.downloadReceiptVentaNormal', $order->id) }}" target="_blank"
-                                class="btn btn-primary  btn-sm mb-1 mr-1">
-                                Descargar Comprobante
-                            </a>
-                        @endif
-
-                        <span
-                            class="btn bg-{{ $order->order_status == 'Pendiente' ? 'warning' : 'success' }} btn-sm mb-1 mr-1">
-                            {{ $order->order_status }}
-                        </span>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    @if ($order->orderquotaDetails->count())
-                        <h6 class="card-title {{ $order->cantidadDeudas > 0 ? 'text-danger' : 'text-success' }}">
-                            Estado: {{ $order->cantidadDeudas > 0 ? 'Hay cuotas vencidas' : 'Cliente al día' }}
-                        </h6>
-
-                        @php
-                            $interestRate = $order->interest_plan ?? 0;
-                            $originalAmount =
-                                $interestRate > 0 ? $order->total / (1 + $interestRate / 100) : $order->total;
-                        @endphp
-
-                        <div class="mb-2 d-flex flex-wrap">
-                            <div class="mr-3 mb-1">
-                                <small class="text-muted">Monto original de la venta</small><br>
-                                <span class="font-weight-bold">${{ number_format($originalAmount, 0, ',', '.') }}</span>
-                            </div>
-                            <div class="mb-1">
-                                <small class="text-muted">Interés aplicado</small><br>
-                                <span class="font-weight-bold">{{ number_format($interestRate, 1, ',', '.') }} %</span>
-                            </div>
-                        </div>
-
-                        <div class="d-flex flex-wrap align-items-center gap-2">
-                            <h6 class="mb-0">Tiene cuotas Asociadas:</h6>
-                            <a href="{{ Route('order.quotas', $order->id) }}" class="btn btn-success btn-sm">
-                                Pagar Cuotas
-                            </a>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Modal para subir/reemplazar archivos (Modal único por pedido) -->
-            <div class="modal fade" id="uploadAttachmentModal-{{ $order->id }}" tabindex="-1"
-                aria-labelledby="uploadAttachmentLabel-{{ $order->id }}" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="uploadAttachmentLabel-{{ $order->id }}">Subir/Reemplazar
-                                Comprobante</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="attachmentForm-{{ $order->id }}"
-                                action="{{ route('customer.attachmentOrderCustomer', $order->id) }}" method="POST"
-                                enctype="multipart/form-data">
-                                @csrf
-                                <input type="hidden" name="order_id" value="{{ $order->id }}">
-
-                                <label for="attachment-{{ $order->id }}" class="form-label">Seleccione un archivo (PDF o
-                                    imagen)</label>
-                                <div class="mb-2">
-                                    <input type="file" id="attachment-{{ $order->id }}" name="attachment"
-                                        accept="image/*,application/pdf" required>
-                                </div>
-
-                                @if ($order->attachments->count())
-                                    <p class="text-muted">
-                                        Actualmente hay un comprobante subido: <b style="color: red">
-                                            {{ basename($order->attachments[0]->path) }}</b>. Puede reemplazarlo con uno
-                                        nuevo.
-                                    </p>
+                                @if ($order->orderquotaDetails->count() && isset($order->orderDetails[0]->product->product_name))
+                                    ({{ $order->orderDetails[0]->product->product_name }})
                                 @endif
 
-                                <button type="submit" class="btn btn-primary w-100" style="background: #6e40a3;">
-                                    Subir / Reemplazar
-                                </button>
-                            </form>
+                                <br>
+                                <small class="text-muted">Fecha: {{ $order->order_date_formatted }}</small>
+                            </h5>
+
+
+                            <div class="d-flex flex-column flex-md-row justify-content-between  align-items-md-center">
+                                @if ($order->orderquotaDetails->count())
+                                    @if ($order->attachments->count())
+                                        <a href="#" class="btn text-white mb-1 mr-1 btn-sm"
+                                            style="background: #6e40a3;" data-bs-toggle="modal"
+                                            data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
+                                            Reemplazar Comprobante
+                                        </a>
+                                    @else
+                                        <a href="#" class="btn text-white mb-1 mr-1 btn-sm"
+                                            style="background: #6e40a3;" data-bs-toggle="modal"
+                                            data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
+                                            Subir Comprobante
+                                        </a>
+                                    @endif
+                                    <a href="{{ Route('order.downloadReceiptVenta', $order->id) }}" target="_blank"
+                                        class="btn btn-primary btn-sm mb-1 mr-1">
+                                        Descargar Comprobante
+                                    </a>
+                                @else
+                                    <a href="{{ Route('order.downloadReceiptVentaNormal', $order->id) }}" target="_blank"
+                                        class="btn btn-primary  btn-sm mb-1 mr-1">
+                                        Descargar Comprobante
+                                    </a>
+                                @endif
+
+                                <span
+                                    class="btn bg-{{ $order->order_status == 'Pendiente' ? 'warning' : 'success' }} btn-sm mb-1 mr-1">
+                                    {{ $order->order_status }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            @if ($order->orderquotaDetails->count())
+                                <h6 class="card-title {{ $order->cantidadDeudas > 0 ? 'text-danger' : 'text-success' }}">
+                                    Estado: {{ $order->cantidadDeudas > 0 ? 'Hay cuotas vencidas' : 'Cliente al día' }}
+                                </h6>
+
+                                @php
+                                    $interestRate = $order->interest_plan ?? 0;
+                                    $originalAmount =
+                                        $interestRate > 0 ? $order->total / (1 + $interestRate / 100) : $order->total;
+                                @endphp
+
+                                <div class="mb-2 d-flex flex-wrap">
+                                    <div class="mr-3 mb-1">
+                                        <small class="text-muted">Monto original de la venta</small><br>
+                                        <span
+                                            class="font-weight-bold">${{ number_format($originalAmount, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="mb-1">
+                                        <small class="text-muted">Interés aplicado</small><br>
+                                        <span class="font-weight-bold">{{ number_format($interestRate, 1, ',', '.') }}
+                                            %</span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <h6 class="mb-0">Tiene cuotas Asociadas:</h6>
+                                    <a href="{{ Route('order.quotas', $order->id) }}" class="btn btn-success btn-sm">
+                                        Pagar Cuotas
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
-                </div>
+
+                    <!-- Modal para subir/reemplazar archivos (Modal único por pedido) -->
+                    <div class="modal fade" id="uploadAttachmentModal-{{ $order->id }}" tabindex="-1"
+                        aria-labelledby="uploadAttachmentLabel-{{ $order->id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="uploadAttachmentLabel-{{ $order->id }}">Subir/Reemplazar
+                                        Comprobante</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="attachmentForm-{{ $order->id }}"
+                                        action="{{ route('customer.attachmentOrderCustomer', $order->id) }}" method="POST"
+                                        enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="hidden" name="order_id" value="{{ $order->id }}">
+
+                                        <label for="attachment-{{ $order->id }}" class="form-label">Seleccione un
+                                            archivo (PDF o
+                                            imagen)</label>
+                                        <div class="mb-2">
+                                            <input type="file" id="attachment-{{ $order->id }}" name="attachment"
+                                                accept="image/*,application/pdf" required>
+                                        </div>
+
+                                        @if ($order->attachments->count())
+                                            <p class="text-muted">
+                                                Actualmente hay un comprobante subido: <b style="color: red">
+                                                    {{ basename($order->attachments[0]->path) }}</b>. Puede reemplazarlo
+                                                con uno
+                                                nuevo.
+                                            </p>
+                                        @endif
+
+                                        <button type="submit" class="btn btn-primary w-100"
+                                            style="background: #6e40a3;">
+                                            Subir / Reemplazar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <p>No hay ventas activas para este cliente.</p>
+                @endforelse
             </div>
-        @endforeach
+
+            <div class="tab-pane fade" id="orders-canceled" role="tabpanel" aria-labelledby="orders-canceled-tab">
+                @forelse ($canceledOrders as $order)
+                    <div class="card mb-4">
+                        <div
+                            class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                            <h5 class="mb-2 mb-md-0 text-break">
+                                Factura No: {{ $order->invoice_no }}
+
+                                @if ($order->orderquotaDetails->count() && isset($order->orderDetails[0]->product->product_name))
+                                    ({{ $order->orderDetails[0]->product->product_name }})
+                                @endif
+
+                                <br>
+                                <small class="text-muted">Fecha: {{ $order->order_date_formatted }}</small>
+                            </h5>
+
+
+                            <div class="d-flex flex-column flex-md-row justify-content-between  align-items-md-center">
+                                @if ($order->orderquotaDetails->count())
+                                    @if ($order->attachments->count())
+                                        <a href="#" class="btn text-white mb-1 mr-1 btn-sm"
+                                            style="background: #6e40a3;" data-bs-toggle="modal"
+                                            data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
+                                            Reemplazar Comprobante
+                                        </a>
+                                    @else
+                                        <a href="#" class="btn text-white mb-1 mr-1 btn-sm"
+                                            style="background: #6e40a3;" data-bs-toggle="modal"
+                                            data-bs-target="#uploadAttachmentModal-{{ $order->id }}">
+                                            Subir Comprobante
+                                        </a>
+                                    @endif
+                                    <a href="{{ Route('order.downloadReceiptVenta', $order->id) }}" target="_blank"
+                                        class="btn btn-primary btn-sm mb-1 mr-1">
+                                        Descargar Comprobante
+                                    </a>
+                                @else
+                                    <a href="{{ Route('order.downloadReceiptVentaNormal', $order->id) }}" target="_blank"
+                                        class="btn btn-primary  btn-sm mb-1 mr-1">
+                                        Descargar Comprobante
+                                    </a>
+                                @endif
+
+                                <span
+                                    class="btn bg-{{ $order->order_status == 'Pendiente' ? 'warning' : 'success' }} btn-sm mb-1 mr-1">
+                                    {{ $order->order_status }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            @if ($order->orderquotaDetails->count())
+                                <h6 class="card-title {{ $order->cantidadDeudas > 0 ? 'text-danger' : 'text-success' }}">
+                                    Estado: {{ $order->cantidadDeudas > 0 ? 'Hay cuotas vencidas' : 'Cliente al día' }}
+                                </h6>
+
+                                @php
+                                    $interestRate = $order->interest_plan ?? 0;
+                                    $originalAmount =
+                                        $interestRate > 0 ? $order->total / (1 + $interestRate / 100) : $order->total;
+                                @endphp
+
+                                <div class="mb-2 d-flex flex-wrap">
+                                    <div class="mr-3 mb-1">
+                                        <small class="text-muted">Monto original de la venta</small><br>
+                                        <span
+                                            class="font-weight-bold">${{ number_format($originalAmount, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="mb-1">
+                                        <small class="text-muted">Interés aplicado</small><br>
+                                        <span class="font-weight-bold">{{ number_format($interestRate, 1, ',', '.') }}
+                                            %</span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <h6 class="mb-0">Tiene cuotas Asociadas:</h6>
+                                    <a href="{{ Route('order.quotas', $order->id) }}" class="btn btn-success btn-sm">
+                                        Pagar Cuotas
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Modal para subir/reemplazar archivos (Modal único por pedido) -->
+                        <div class="modal fade" id="uploadAttachmentModal-{{ $order->id }}" tabindex="-1"
+                            aria-labelledby="uploadAttachmentLabel-{{ $order->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="uploadAttachmentLabel-{{ $order->id }}">
+                                            Subir/Reemplazar
+                                            Comprobante</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="attachmentForm-{{ $order->id }}"
+                                            action="{{ route('customer.attachmentOrderCustomer', $order->id) }}"
+                                            method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <input type="hidden" name="order_id" value="{{ $order->id }}">
+
+                                            <label for="attachment-{{ $order->id }}" class="form-label">Seleccione un
+                                                archivo (PDF o
+                                                imagen)</label>
+                                            <div class="mb-2">
+                                                <input type="file" id="attachment-{{ $order->id }}"
+                                                    name="attachment" accept="image/*,application/pdf" required>
+                                            </div>
+
+                                            @if ($order->attachments->count())
+                                                <p class="text-muted">
+                                                    Actualmente hay un comprobante subido: <b style="color: red">
+                                                        {{ basename($order->attachments[0]->path) }}</b>. Puede
+                                                    reemplazarlo con uno
+                                                    nuevo.
+                                                </p>
+                                            @endif
+
+                                            <button type="submit" class="btn btn-primary w-100"
+                                                style="background: #6e40a3;">
+                                                Subir / Reemplazar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <p>No hay ventas canceladas para este cliente.</p>
+                @endforelse
+            </div>
+        </div>
     </div>
 @endsection

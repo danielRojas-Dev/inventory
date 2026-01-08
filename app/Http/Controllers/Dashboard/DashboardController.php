@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
         $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
 
-        $salesQuotas = OrderQuotasDetails::with(['order.customer'])
+        $salesQuotas = OrderQuotasDetails::with(['order.customer', 'order.orderDetails.product'])
             ->whereHas('order', function ($q) use ($userId) {
                 $q->where('employee_id', $userId);
             })

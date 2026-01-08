@@ -297,6 +297,7 @@
                                                 <tr>
                                                     <th>Fecha pago</th>
                                                     <th>Cliente</th>
+                                                    <th>Producto</th>
                                                     <th class="text-center" style="white-space: nowrap; min-width: 80px;">
                                                         Cuota</th>
                                                     <th class="text-right">Monto</th>
@@ -305,10 +306,15 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($salesQuotas as $quota)
+                                                    @php
+                                                        $firstDetail = $quota->order->orderDetails[0] ?? null;
+                                                        $productName = $firstDetail->product->product_name ?? 'N/A';
+                                                    @endphp
                                                     <tr>
                                                         <td>{{ \Carbon\Carbon::parse($quota->estimated_payment_date)->format('d/m/Y') }}
                                                         </td>
                                                         <td>{{ $quota->order->customer->name ?? 'N/A' }}</td>
+                                                        <td>{{ $productName }}</td>
                                                         <td class="text-center" style="white-space: nowrap;">
                                                             {{ $quota->number_quota }} / {{ $quota->order->quotas }}</td>
                                                         <td class="text-right">
@@ -340,6 +346,14 @@
                                                 <div class="mt-1">
                                                     <small class="text-muted">Cliente</small>
                                                     <div>{{ $quota->order->customer->name ?? 'N/A' }}</div>
+                                                </div>
+                                                @php
+                                                    $firstDetail = $quota->order->orderDetails[0] ?? null;
+                                                    $productName = $firstDetail->product->product_name ?? 'N/A';
+                                                @endphp
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Producto</small>
+                                                    <div>{{ $productName }}</div>
                                                 </div>
                                                 <div class="mt-1 d-flex justify-content-between align-items-center">
                                                     <div>
