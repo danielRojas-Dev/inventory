@@ -122,7 +122,7 @@
                                 <div class="d-flex flex-wrap align-items-center gap-2">
                                     <h6 class="mb-0">Tiene cuotas Asociadas:</h6>
                                     <a href="{{ Route('order.quotas', $order->id) }}" class="btn btn-success btn-sm">
-                                        Ver detalle
+                                        Pagar Cuotas
                                     </a>
                                 </div>
                             @endif
@@ -256,7 +256,7 @@
                                 <div class="d-flex flex-wrap align-items-center gap-2">
                                     <h6 class="mb-0">Tiene cuotas Asociadas:</h6>
                                     <a href="{{ Route('order.quotas', $order->id) }}" class="btn btn-success btn-sm">
-                                        Pagar Cuotas
+                                        Ver detalle
                                     </a>
                                 </div>
                             @endif
