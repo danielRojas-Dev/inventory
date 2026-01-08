@@ -75,7 +75,11 @@ class DashboardController extends Controller
                 return [
                     'customer' => $customer,
                     'product_name' => $productName,
+                    // Cuotas vencidas (cantidad de cuotas atrasadas)
                     'quotas_count' => $group->count(),
+                    // Datos del plan de venta original
+                    'plan_quotas' => $order->quotas,
+                    'interest_plan' => $order->interest_plan,
                     'total_estimated' => $group->sum('estimated_payment'),
                 ];
             })
@@ -92,9 +96,15 @@ class DashboardController extends Controller
             ->map(function ($group) {
                 $loan = $group->first()->loan;
                 $customer = $loan->customer;
+
                 return [
                     'customer' => $customer,
+                    // Cuotas vencidas (cantidad de cuotas atrasadas)
                     'quotas_count' => $group->count(),
+                    // Datos del préstamo original
+                    'loan_total' => $loan->total,
+                    'plan_quotas' => $loan->quotas,
+                    'interest_plan' => $loan->interest_plan,
                     'total_estimated' => $group->sum('estimated_payment'),
                 ];
             })

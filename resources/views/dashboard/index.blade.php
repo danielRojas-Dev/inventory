@@ -105,7 +105,9 @@
                                                 <tr>
                                                     <th>Cliente</th>
                                                     <th>Producto</th>
-                                                    <th class="text-center">Cuotas</th>
+                                                    <th class="text-center">Cuotas vencidas</th>
+                                                    <th class="text-center">Plan (cuotas)</th>
+                                                    <th class="text-center">Interés</th>
                                                     <th class="text-right">Total estimado</th>
                                                     <th class="text-center">Acción</th>
                                                 </tr>
@@ -119,6 +121,15 @@
                                                         <td>{{ $customer->name ?? 'N/A' }}</td>
                                                         <td>{{ $debtor['product_name'] ?? 'N/A' }}</td>
                                                         <td class="text-center">{{ $debtor['quotas_count'] }}</td>
+                                                        <td class="text-center">
+                                                            {{ $debtor['plan_quotas'] ?? '-' }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @php
+                                                                $interestPlan = $debtor['interest_plan'] ?? null;
+                                                            @endphp
+                                                            {{ $interestPlan !== null ? number_format($interestPlan, 1, ',', '.') . ' %' : '-' }}
+                                                        </td>
                                                         <td class="text-right">
                                                             ${{ number_format($debtor['total_estimated'], 0, ',', '.') }}
                                                         </td>
@@ -142,16 +153,30 @@
                                         @php
                                             $customer = $debtor['customer'];
                                             $productName = $debtor['product_name'] ?? 'N/A';
+                                            $planQuotas = $debtor['plan_quotas'] ?? null;
+                                            $interestPlan = $debtor['interest_plan'] ?? null;
                                         @endphp
                                         <div class="card mb-2">
                                             <div class="card-body p-2">
                                                 <div class="d-flex justify-content-between">
                                                     <span class="font-weight-bold">{{ $customer->name ?? 'N/A' }}</span>
-                                                    <span>Cuotas: {{ $debtor['quotas_count'] }}</span>
+                                                    <span>Cuotas vencidas: {{ $debtor['quotas_count'] }}</span>
                                                 </div>
                                                 <div class="mt-1">
                                                     <small class="text-muted">Producto</small>
                                                     <div>{{ $productName }}</div>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Plan de venta</small>
+                                                    <div>
+                                                        Cuotas totales: {{ $planQuotas ?? '-' }}
+                                                    </div>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Interés aplicado</small>
+                                                    <div>
+                                                        {{ $interestPlan !== null ? number_format($interestPlan, 1, ',', '.') . ' %' : '-' }}
+                                                    </div>
                                                 </div>
                                                 <div class="mt-1">
                                                     <small class="text-muted">Total vencido</small>
@@ -198,7 +223,10 @@
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th>Cliente</th>
-                                                    <th class="text-center">Cuotas</th>
+                                                    <th class="text-center">Cuotas vencidas</th>
+                                                    <th class="text-center">Plan (cuotas)</th>
+                                                    <th class="text-center">Interés</th>
+                                                    <th class="text-right">Monto inicial</th>
                                                     <th class="text-right">Total estimado</th>
                                                     <th class="text-center">Acción</th>
                                                 </tr>
@@ -211,6 +239,21 @@
                                                     <tr>
                                                         <td>{{ $customer->name ?? 'N/A' }}</td>
                                                         <td class="text-center">{{ $debtor['quotas_count'] }}</td>
+                                                        <td class="text-center">
+                                                            {{ $debtor['plan_quotas'] ?? '-' }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @php
+                                                                $interestPlan = $debtor['interest_plan'] ?? null;
+                                                            @endphp
+                                                            {{ $interestPlan !== null ? number_format($interestPlan, 1, ',', '.') . ' %' : '-' }}
+                                                        </td>
+                                                        <td class="text-right">
+                                                            @php
+                                                                $loanTotal = $debtor['loan_total'] ?? null;
+                                                            @endphp
+                                                            {{ $loanTotal !== null ? '$' . number_format($loanTotal, 0, ',', '.') : '-' }}
+                                                        </td>
                                                         <td class="text-right">
                                                             ${{ number_format($debtor['total_estimated'], 0, ',', '.') }}
                                                         </td>
@@ -233,12 +276,31 @@
                                     @foreach ($loanDebtors as $debtor)
                                         @php
                                             $customer = $debtor['customer'];
+                                            $planQuotas = $debtor['plan_quotas'] ?? null;
+                                            $interestPlan = $debtor['interest_plan'] ?? null;
+                                            $loanTotal = $debtor['loan_total'] ?? null;
                                         @endphp
                                         <div class="card mb-2">
                                             <div class="card-body p-2">
                                                 <div class="d-flex justify-content-between">
                                                     <span class="font-weight-bold">{{ $customer->name ?? 'N/A' }}</span>
-                                                    <span>Cuotas: {{ $debtor['quotas_count'] }}</span>
+                                                    <span>Cuotas vencidas: {{ $debtor['quotas_count'] }}</span>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Préstamo inicial</small>
+                                                    <div>
+                                                        {{ $loanTotal !== null ? '$' . number_format($loanTotal, 0, ',', '.') : '-' }}
+                                                    </div>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Plan de cuotas</small>
+                                                    <div>Cuotas totales: {{ $planQuotas ?? '-' }}</div>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Interés aplicado</small>
+                                                    <div>
+                                                        {{ $interestPlan !== null ? number_format($interestPlan, 1, ',', '.') . ' %' : '-' }}
+                                                    </div>
                                                 </div>
                                                 <div class="mt-1">
                                                     <small class="text-muted">Total vencido</small>
