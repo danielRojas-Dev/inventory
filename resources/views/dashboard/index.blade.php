@@ -23,7 +23,7 @@
                                 <h5 class="mb-1 text-white font-weight-bold" style="text-transform: uppercase;">
                                     VENTAS - CLIENTES CON CUOTAS MUY ATRASADAS
                                 </h5>
-                                <p class="mb-0 text-white-50">Cuotas de ventas vencidas hace más de 1 mes</p>
+                                <p class="mb-0 text-white-50">Clientes con ventas vencidas hace más de 1 mes</p>
                                 <h4 class="mb-0 text-white font-weight-bold">
                                     {{ isset($salesDebtors) ? $salesDebtors->count() : 0 }}
                                 </h4>
@@ -57,7 +57,8 @@
                                     style="color: rgba(0, 0, 0, 0.9); text-transform: uppercase;">
                                     PRÉSTAMOS - CLIENTES CON CUOTAS MUY ATRASADAS
                                 </h5>
-                                <p class="mb-0" style="color: rgba(0, 0, 0, 0.7);">Cuotas de préstamos vencidas hace más
+                                <p class="mb-0" style="color: rgba(0, 0, 0, 0.7);">Clientes con préstamos vencidos hace
+                                    más
                                     de 1 mes</p>
                                 <h4 class="mb-0 text-dark font-weight-bold">
                                     {{ isset($loanDebtors) ? $loanDebtors->count() : 0 }}
