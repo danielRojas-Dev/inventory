@@ -52,8 +52,19 @@
                             <h5 class="mb-2 mb-md-0 text-break">
                                 Factura No: {{ $order->invoice_no }}
 
-                                @if ($order->orderquotaDetails->count() && isset($order->orderDetails[0]->product->product_name))
-                                    ({{ $order->orderDetails[0]->product->product_name }})
+                                @php
+                                    $productNames = $order->orderDetails
+                                        ->map(function ($detail) {
+                                            return optional($detail->product)->product_name;
+                                        })
+                                        ->filter()
+                                        ->unique()
+                                        ->values()
+                                        ->toArray();
+                                @endphp
+
+                                @if ($order->orderquotaDetails->count() && count($productNames) > 0)
+                                    ({{ implode(' - ', $productNames) }})
                                 @endif
 
                                 <br>
@@ -186,8 +197,19 @@
                             <h5 class="mb-2 mb-md-0 text-break">
                                 Factura No: {{ $order->invoice_no }}
 
-                                @if ($order->orderquotaDetails->count() && isset($order->orderDetails[0]->product->product_name))
-                                    ({{ $order->orderDetails[0]->product->product_name }})
+                                @php
+                                    $productNames = $order->orderDetails
+                                        ->map(function ($detail) {
+                                            return optional($detail->product)->product_name;
+                                        })
+                                        ->filter()
+                                        ->unique()
+                                        ->values()
+                                        ->toArray();
+                                @endphp
+
+                                @if ($order->orderquotaDetails->count() && count($productNames) > 0)
+                                    ({{ implode(' - ', $productNames) }})
                                 @endif
 
                                 <br>
