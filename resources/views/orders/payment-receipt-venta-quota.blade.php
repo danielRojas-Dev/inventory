@@ -102,7 +102,7 @@
         <table style="width: 100%;" class="info">
             <tr>
                 <!-- Primera columna -->
-                <td style="text-align: left; vertical-align: top; width: 33%;">
+                <td style="text-align: left; vertical-align: top; width: 40%;">
                     <strong>Cliente:</strong> {{ $cliente->name }}<br>
                     <strong>Documento N°:</strong> {{ $cliente->dni }}<br>
                     <strong>Teléfono:</strong> {{ $cliente->phone }}
@@ -110,9 +110,19 @@
                 </td>
 
                 <!-- Segunda columna -->
-                <td style="text-align: left; vertical-align: top; width: 33%;">
+                <td style="text-align: left; vertical-align: top; width: 35%;">
                     <strong>Domicilio:</strong> {{ $cliente->address }} <br>
                     <strong>Localidad:</strong> {{ $cliente->city }}
+                </td>
+
+                <!-- Tercera columna: resumen del plan de cuotas -->
+                <td style="text-align: left; vertical-align: top; width: 25%;">
+                    <strong>Plan de cuotas:</strong>
+                    @if ($isEntregaInicial)
+                        {{ $order->quotas - 1 }} cuotas de ${{ number_format($valorCuota, 0, ',', '.') }}
+                    @else
+                        {{ $order->quotas }} cuotas de ${{ number_format($valorCuota, 0, ',', '.') }}
+                    @endif
                 </td>
             </tr>
         </table>
@@ -133,8 +143,6 @@
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Cantidad</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Marca</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Plan de Cuotas</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Monto de Cuotas</th>
                 </tr>
                 @foreach ($details as $detail)
                     <tr>
@@ -144,16 +152,6 @@
                             {{ $detail->product->product_name }}</td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">
                             {{ $detail->product->brand->name }}</td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
-                            @if ($isEntregaInicial)
-                                {{ $order->quotas - 1 }}
-                            @else
-                                {{ $order->quotas }}
-                            @endif
-                        </td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">$
-                            {{ number_format($valorCuota, 0, ',', '.') }}
-                        </td>
                     </tr>
                 @endforeach
             </table>
@@ -198,7 +196,7 @@
 
 
     </div>
-    -----------------------------------------------------------------------------------------------------------------------------------------------
+    {{-- -----------------------------------------------------------------------------------------------------------------------------------------------
 
     @if (!$isEntregaInicial)
         <div class="nota-pedido">
@@ -229,7 +227,7 @@
             <table style="width: 100%;" class="info">
                 <tr>
                     <!-- Primera columna -->
-                    <td style="text-align: left; vertical-align: top; width: 33%;">
+                    <td style="text-align: left; vertical-align: top; width: 40%;">
                         <strong>Cliente:</strong> {{ $cliente->name }}<br>
                         <strong>Documento N°:</strong> {{ $cliente->dni }}<br>
                         <strong>Teléfono:</strong> {{ $cliente->phone }}
@@ -237,9 +235,15 @@
                     </td>
 
                     <!-- Segunda columna -->
-                    <td style="text-align: left; vertical-align: top; width: 33%;">
+                    <td style="text-align: left; vertical-align: top; width: 35%;">
                         <strong>Domicilio:</strong> {{ $cliente->address }} <br>
                         <strong>Localidad:</strong> {{ $cliente->city }}
+                    </td>
+
+                    <!-- Tercera columna: resumen del plan de cuotas -->
+                    <td style="text-align: left; vertical-align: top; width: 25%;">
+                        <strong>Plan de cuotas:</strong> {{ $order->quotas }} cuotas de
+                        ${{ number_format($valorCuota, 0, ',', '.') }}
                     </td>
                 </tr>
             </table>
@@ -261,8 +265,6 @@
                         <th style="border: 1px solid black; padding: 1px; text-align: center;">Cantidad</th>
                         <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
                         <th style="border: 1px solid black; padding: 1px; text-align: center;">Marca</th>
-                        <th style="border: 1px solid black; padding: 1px; text-align: center;">Plan de Cuotas</th>
-                        <th style="border: 1px solid black; padding: 1px; text-align: center;">Monto de Cuotas</th>
                     </tr>
                     @foreach ($details as $detail)
                         <tr>
@@ -273,16 +275,6 @@
                                 {{ $detail->product->product_name }}</td>
                             <td style="border: 1px solid black; padding: 1px; text-align: center;">
                                 {{ $detail->product->brand->name }}</td>
-                            <td style="border: 1px solid black; padding: 1px; text-align: center;">
-                                @if ($isEntregaInicial)
-                                    {{ $order->quotas - 1 }}
-                                @else
-                                    {{ $order->quotas }}
-                                @endif
-                            </td>
-                            <td style="border: 1px solid black; padding: 1px; text-align: center;">$
-                                {{ number_format($valorCuota, 0, ',', '.') }}
-                            </td>
                         </tr>
                     @endforeach
                 </table>
@@ -324,4 +316,4 @@
     @endif
 </body>
 
-</html>
+</html> --}}

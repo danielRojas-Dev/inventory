@@ -141,17 +141,15 @@
         <div class="section">
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
                 <tr>
+                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Cantidad</th>
                     <th style="border: 1px solid black; padding: 1px; text-align: center;">Descripción</th>
-                    <th style="border: 1px solid black; padding: 1px; text-align: center;">Cuotas Pagadas</th>
                 </tr>
                 @foreach ($details as $detail)
                     <tr>
-                        </td>
+                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
+                            {{ $detail->quantity }}</td>
                         <td style="border: 1px solid black; padding: 1px; text-align: center;">
                             {{ $detail->product->product_name }}</td>
-                        <td style="border: 1px solid black; padding: 1px; text-align: center;">
-                            {{ $quota->number_quota }}/{{ $order->quotas }}
-                        </td>
                     </tr>
                 @endforeach
             </table>
